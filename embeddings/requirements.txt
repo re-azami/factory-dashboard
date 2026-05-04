@@ -1,0 +1,7 @@
+# Latest PyTorch with CUDA support (matches your CUDA 13 driver).
+# Default index includes CUDA-enabled wheels for modern torch versions.
+fastapi
+uvicorn[standard]
+FlagEmbedding
+torch
+pydantic
