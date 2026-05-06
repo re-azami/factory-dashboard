@@ -2,7 +2,14 @@
   "permissions": {
     "allow": [
       "Bash(python)",
-      "Bash(python3)"
+      "Bash(python3)",
+      "Bash(python -m pytest -x --no-header)",
+      "Bash(python -m pytest --no-header)",
+      "Bash(python *)",
+      "Bash(pip install *)",
+      "Bash(.venv/Scripts/python.exe -m pip install --upgrade pip)",
+      "Bash(.venv/Scripts/python.exe -m pip install -r requirements.txt -r requirements-test.txt)",
+      "Bash(.venv/Scripts/python.exe -m pytest -v)"
     ]
   }
 }
