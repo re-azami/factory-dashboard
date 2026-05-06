@@ -65,39 +65,82 @@ if page == "💬 Chat":
 
 # ── Upload page ───────────────────────────────────────────────────────────────
 elif page == "📂 Upload Data":
-    st.title("📂 Upload Excel Data")
-    st.write("Upload a daily report Excel file to add it to the database.")
+    st.title("📂 Ingest Data")
+    st.write(
+        "Bulk-scan the factory data folder, or upload a single .xlsx / .pdf file. "
+        "Every cell of every file is preserved as queryable SQL rows."
+    )
 
+    # ── Bulk scan ─────────────────────────────────────────────────────────────
+    st.subheader("Scan factory folder")
+    st.caption(
+        "Walks the folder mounted into the backend (default `/data/raw/factory`) "
+        "and ingests every new .xlsx and .pdf. Files already in the database "
+        "(matched by SHA-256) are skipped, so this is safe to re-run any time."
+    )
+    if st.button("Scan factory folder now", type="primary"):
+        with st.spinner("Scanning and ingesting… this may take several minutes for large workbooks."):
+            try:
+                resp = httpx.post(f"{BACKEND_URL}/ingest/scan", timeout=3600)
+                resp.raise_for_status()
+                summary = resp.json()
+                cols = st.columns(4)
+                cols[0].metric("Files seen", summary["files_seen"])
+                cols[1].metric("Newly ingested", summary["files_new"])
+                cols[2].metric("Skipped (already in DB)", summary["files_skipped"])
+                cols[3].metric("Failed", summary["files_failed"])
+                st.write(
+                    f"**Cells written:** xlsx={summary['xlsx_cells_inserted']:,}, "
+                    f"pdf pages={summary['pdf_pages_inserted']:,}, "
+                    f"pdf table cells={summary['pdf_table_cells_inserted']:,}, "
+                    f"production rows={summary['production_rows_added']:,}, "
+                    f"downtime rows={summary['downtime_rows_added']:,}."
+                )
+                with st.expander("Per-file results"):
+                    st.dataframe(summary["files"], use_container_width=True)
+            except httpx.HTTPStatusError as exc:
+                st.error(f"Server error {exc.response.status_code}: {exc.response.text}")
+            except Exception as exc:
+                st.error(f"Error: {exc}")
+
+    st.divider()
+
+    # ── Single-file upload ────────────────────────────────────────────────────
+    st.subheader("Upload a single file")
     source = st.selectbox(
         "Data source",
         options=["factory", "kitchen", "store", "weighing", "sales"],
-        help="Choose which type of report this file contains.",
+        help="Recorded as a label on the file. Doesn't change how parsing works.",
     )
-
-    uploaded_file = st.file_uploader("Choose an Excel file (.xlsx)", type=["xlsx", "xls"])
-
+    uploaded_file = st.file_uploader(
+        "Choose an .xlsx or .pdf file",
+        type=["xlsx", "xlsm", "xls", "pdf"],
+    )
     if uploaded_file and st.button("Ingest file"):
         with st.spinner("Ingesting..."):
             try:
                 response = httpx.post(
                     f"{BACKEND_URL}/ingest?source={source}",
                     files={"file": (uploaded_file.name, uploaded_file.getvalue())},
-                    timeout=120,
+                    timeout=600,
                 )
                 response.raise_for_status()
                 result = response.json()
-
-                st.success(
-                    f"Done! Parsed {result['sheets_parsed']} sheets. "
-                    f"Added {result['production_rows_added']} production rows "
-                    f"and {result['downtime_rows_added']} downtime rows."
-                )
-
-                if result.get("errors"):
-                    with st.expander("Warnings / parsing errors"):
-                        for err in result["errors"]:
-                            st.warning(err)
-
+                if result["status"] == "skipped":
+                    st.info(f"Already ingested — skipped (file_id={result['file_id']}).")
+                else:
+                    msg_parts = []
+                    if result["xlsx_cells"]:
+                        msg_parts.append(f"{result['xlsx_cells']:,} xlsx cells")
+                    if result["pdf_pages"]:
+                        msg_parts.append(f"{result['pdf_pages']:,} pdf pages")
+                    if result["pdf_table_cells"]:
+                        msg_parts.append(f"{result['pdf_table_cells']:,} pdf table cells")
+                    if result["production_rows"]:
+                        msg_parts.append(f"{result['production_rows']} production rows")
+                    if result["downtime_rows"]:
+                        msg_parts.append(f"{result['downtime_rows']} downtime rows")
+                    st.success("Done! Added " + ", ".join(msg_parts) + ".")
             except httpx.HTTPStatusError as exc:
                 st.error(f"Server error {exc.response.status_code}: {exc.response.text}")
             except Exception as exc:
@@ -105,7 +148,7 @@ elif page == "📂 Upload Data":
 
     st.divider()
     st.subheader("Run Enrichment")
-    st.write("After uploading, run enrichment to extract equipment codes and fault categories from downtime text.")
+    st.write("After ingestion, run enrichment to extract equipment codes and fault categories from downtime text.")
     if st.button("Run enrichment now"):
         with st.spinner("Enriching downtime text..."):
             try:

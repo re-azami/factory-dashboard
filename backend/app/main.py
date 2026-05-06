@@ -3,7 +3,8 @@ FastAPI application entry point.
 
 Routes:
   POST /chat          — send a question, get a streaming answer from the agent
-  POST /ingest        — upload an Excel file for ingestion
+  POST /ingest        — upload one xlsx or pdf file for ingestion
+  POST /ingest/scan   — walk the factory data folder and ingest everything new
   POST /ingest/enrich — run LLM enrichment on unprocessed downtime rows
   GET  /history       — last N query log entries (for debugging)
   GET  /health        — liveness check
@@ -19,11 +20,13 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
+from app.config import settings
 from app.database import get_db
 import app.agent as agent
-from app.ingestion.registry import get_parser
+from app.ingestion.orchestrator import ingest_file, scan_folder
+from app.ingestion.registry import is_known_source, KNOWN_SOURCES
 from app.ingestion.enrichment import enrich_all
-from app.models import DailyReport, ProductionShift, Downtime, RawSheetCells, QueryLog
+from app.models import QueryLog
 
 
 app = FastAPI(title="Factory Dashboard API")
@@ -65,75 +68,103 @@ def chat(req: ChatRequest, db: Session = Depends(get_db)):
 
 # ── Ingest ────────────────────────────────────────────────────────────────────
 
+def _result_to_dict(result):
+    return {
+        "path": result.path,
+        "status": result.status,
+        "kind": result.kind,
+        "file_id": result.file_id,
+        "xlsx_cells": result.xlsx_cells,
+        "pdf_pages": result.pdf_pages,
+        "pdf_table_cells": result.pdf_table_cells,
+        "production_rows": result.production_rows,
+        "downtime_rows": result.downtime_rows,
+        "daily_reports": result.daily_reports,
+        "error": result.error,
+    }
+
+
 @app.post("/ingest")
 def ingest(
-    source: str = Query(description="Data source folder: factory | kitchen | store | weighing | sales"),
+    source: str = Query(default="factory", description=f"Data source: {' | '.join(KNOWN_SOURCES)}"),
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
     """
-    Upload an Excel file and ingest it into the database.
-    The 'source' query parameter tells the system which parser to use.
-    Example: POST /ingest?source=factory
-    """
-    parser = get_parser(source)
-    if parser is None:
-        raise HTTPException(status_code=400, detail=f"Unknown source '{source}'. Known sources: factory")
+    Upload one xlsx or pdf file and ingest it into the database.
 
-    # Save the uploaded file to a temp location so the parser can open it
-    suffix = Path(file.filename).suffix
+    Every cell of every xlsx file goes into raw_xlsx_cells; every page of every
+    pdf goes into raw_pdf_pages. Files matching the production template ALSO
+    populate production_shift / downtime / daily_report.
+
+    Idempotent: re-uploading the same file (same SHA-256) returns status='skipped'.
+    """
+    if not is_known_source(source):
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unknown source '{source}'. Known sources: {list(KNOWN_SOURCES)}",
+        )
+
+    suffix = Path(file.filename).suffix.lower()
+    if suffix not in {".xlsx", ".xlsm", ".xls", ".pdf"}:
+        raise HTTPException(status_code=400, detail=f"Unsupported file type {suffix!r}")
+
+    # Save the uploaded file to a temp location so the orchestrator can open it.
     with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
         shutil.copyfileobj(file.file, tmp)
         tmp_path = tmp.name
 
     try:
-        result = parser(tmp_path)
+        result = ingest_file(db, tmp_path)
     finally:
-        os.unlink(tmp_path)
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
 
-    if result.sheets_parsed == 0:
-        raise HTTPException(status_code=422, detail={"errors": result.errors})
+    # Replace the temp path with the original filename for the response.
+    result.path = file.filename or result.path
 
-    # 1. Insert daily_report rows (skip if date already exists)
-    for header in result.daily_reports:
-        exists = db.query(DailyReport).filter_by(report_date=header["report_date"]).first()
-        if not exists:
-            db.add(DailyReport(**header))
+    if result.status == "error":
+        raise HTTPException(status_code=422, detail=_result_to_dict(result))
 
-    # 2. Insert production_shift rows (unique on date + shift + line)
-    for row in result.production_rows:
-        exists = db.query(ProductionShift).filter_by(
-            report_date=row["report_date"],
-            shift=row["shift"],
-            line=row["line"],
-        ).first()
-        if not exists:
-            db.add(ProductionShift(**row))
+    return _result_to_dict(result)
 
-    # 3. Insert downtime rows (always append — events have no natural unique key)
-    for row in result.downtime_rows:
-        db.add(Downtime(**row))
 
-    # 4. Insert raw_sheet_cells (one per sheet, skip if date already dumped)
-    for raw in result.raw_cells:
-        exists = db.query(RawSheetCells).filter_by(
-            report_date=raw["report_date"],
-            sheet_name=raw["sheet_name"],
-        ).first()
-        if not exists:
-            db.add(RawSheetCells(**raw))
+@app.post("/ingest/scan")
+def ingest_scan(db: Session = Depends(get_db)):
+    """
+    Walk the configured factory data folder and ingest every xlsx/pdf found.
 
-    db.commit()
+    Files already ingested (matched by SHA-256 in raw_files) are skipped — so
+    this endpoint is safe to call repeatedly as new files are dropped into the
+    folder. Returns per-file status plus aggregate counts.
+    """
+    root = settings.factory_data_dir
+    if not os.path.isdir(root):
+        raise HTTPException(
+            status_code=404,
+            detail=f"Factory data folder not found: {root}. "
+                   f"Mount your data into the backend container at this path.",
+        )
 
-    return {
-        "sheets_parsed": result.sheets_parsed,
-        "sheets_failed": result.sheets_failed,
-        "daily_reports_added": len(result.daily_reports),
-        "production_rows_added": len(result.production_rows),
-        "downtime_rows_added": len(result.downtime_rows),
-        "raw_cell_dumps_added": len(result.raw_cells),
-        "errors": result.errors,
+    results = scan_folder(db, root)
+
+    summary = {
+        "root": root,
+        "files_seen": len(results),
+        "files_new": sum(1 for r in results if r.status == "ok"),
+        "files_skipped": sum(1 for r in results if r.status == "skipped"),
+        "files_failed": sum(1 for r in results if r.status == "error"),
+        "xlsx_cells_inserted": sum(r.xlsx_cells for r in results),
+        "pdf_pages_inserted": sum(r.pdf_pages for r in results),
+        "pdf_table_cells_inserted": sum(r.pdf_table_cells for r in results),
+        "production_rows_added": sum(r.production_rows for r in results),
+        "downtime_rows_added": sum(r.downtime_rows for r in results),
+        "daily_reports_added": sum(r.daily_reports for r in results),
+        "files": [_result_to_dict(r) for r in results],
     }
+    return summary
 
 
 @app.post("/ingest/enrich")

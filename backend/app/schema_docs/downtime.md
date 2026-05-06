@@ -1,4 +1,4 @@
-# Tables: downtime, raw_sheet_cells
+# Tables: downtime
 
 ## Table: downtime
 
@@ -59,33 +59,7 @@ ORDER BY total_min DESC LIMIT 10;
 
 ---
 
-## Table: raw_sheet_cells
-
-**Insurance backup** — every non-empty cell from every sheet, dumped as JSON. One row per (date, sheet).
-
-| Column | Description |
-|--------|-------------|
-| report_date | Gregorian date |
-| sheet_name | original sheet name |
-| source_file | Excel filename |
-| **cells** | JSONB: `{ "A1": value, "C5": value, ... }` |
-
-Use this when:
-- The user asks about something not captured in the typed columns
-- You want to verify a specific cell value
-- Future analysis needs raw data we missed
-
-Example — find any cell containing a specific equipment code:
-```sql
-SELECT report_date, sheet_name, key, value
-FROM raw_sheet_cells, jsonb_each_text(cells)
-WHERE value LIKE '%110MI02%';
-```
-
-Example — get all values from a specific cell across the year:
-```sql
-SELECT report_date, cells->>'AD15' AS flocculant_grams_at_AD15
-FROM raw_sheet_cells
-WHERE cells ? 'AD15'
-ORDER BY report_date;
-```
+For data that **isn't** in `production_shift` / `downtime` (e.g. older
+yearly workbooks like `1402.xlsx`, daily PDFs), see `raw_data.md` — every
+cell of every ingested file lives in `raw_xlsx_cells` / `raw_pdf_pages` /
+`raw_pdf_table_cells` and is queryable with normal SQL.

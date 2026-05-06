@@ -18,5 +18,10 @@ class Settings:
     # Embeddings
     embeddings_url: str = os.getenv("EMBEDDINGS_URL", "http://embeddings:8001")
 
+    # Bulk ingest source folder (mounted into the backend container).
+    # docker-compose.yml mounts ./data/raw → /data/raw, so the factory subfolder
+    # ends up at /data/raw/factory inside the container.
+    factory_data_dir: str = os.getenv("FACTORY_DATA_DIR", "/data/raw/factory")
+
 
 settings = Settings()

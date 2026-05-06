@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from sqlalchemy import Date, DateTime, Float, Integer, Text, String, JSON, ForeignKey, UniqueConstraint
+from sqlalchemy import BigInteger, Boolean, Date, DateTime, Float, Index, Integer, Text, String, JSON, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
@@ -134,21 +134,85 @@ class Downtime(Base):
     source_file: Mapped[str] = mapped_column(Text, nullable=False)
 
 
-# ── 4. raw_sheet_cells ────────────────────────────────────────────────────────
-# Insurance: every non-empty cell from every sheet, dumped as JSONB.
-# Lets us recover or reanalyse data we might have missed in the typed columns.
+# ── 4. raw_files ──────────────────────────────────────────────────────────────
+# Registry of every file ever ingested. Idempotency lives here: we hash each
+# file with SHA-256 and skip ingestion if the hash is already present.
 
-class RawSheetCells(Base):
-    __tablename__ = "raw_sheet_cells"
+class RawFile(Base):
+    __tablename__ = "raw_files"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    report_date: Mapped[date] = mapped_column(Date, nullable=False, index=True)
-    sheet_name: Mapped[str] = mapped_column(String(50), nullable=False)
-    source_file: Mapped[str] = mapped_column(Text, nullable=False)
-    cells: Mapped[dict] = mapped_column(JSON, nullable=False)               # {"A1": "...", "C5": 123, ...}
+    path: Mapped[str] = mapped_column(Text, nullable=False)              # path relative to the factory data dir
+    filename: Mapped[str] = mapped_column(Text, nullable=False, index=True)
+    sha256: Mapped[str] = mapped_column(String(64), nullable=False, unique=True, index=True)
+    kind: Mapped[str] = mapped_column(String(10), nullable=False, index=True)   # 'xlsx' | 'pdf'
+    size_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    ingested_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    status: Mapped[str] = mapped_column(String(10), nullable=False, default="ok")   # 'ok' | 'error'
+    error_message: Mapped[str | None] = mapped_column(Text)
 
 
-# ── 5. query_log ──────────────────────────────────────────────────────────────
+# ── 5. raw_xlsx_cells ─────────────────────────────────────────────────────────
+# One row per non-empty cell across every xlsx file ever ingested.
+# This is the table the agent should query when the user asks about
+# data from a file whose structure isn't covered by production_shift / downtime.
+
+class RawXlsxCell(Base):
+    __tablename__ = "raw_xlsx_cells"
+    __table_args__ = (
+        Index("ix_raw_xlsx_cells_file_sheet", "file_id", "sheet_name"),
+        Index("ix_raw_xlsx_cells_sheet", "sheet_name"),
+    )
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    file_id: Mapped[int] = mapped_column(Integer, ForeignKey("raw_files.id", ondelete="CASCADE"), nullable=False)
+    sheet_name: Mapped[str] = mapped_column(String(120), nullable=False)
+    sheet_index: Mapped[int] = mapped_column(Integer, nullable=False)
+    row_idx: Mapped[int] = mapped_column(Integer, nullable=False)            # 1-based
+    col_idx: Mapped[int] = mapped_column(Integer, nullable=False)            # 1-based
+    cell_address: Mapped[str] = mapped_column(String(16), nullable=False)    # e.g. "C5", "AB42"
+    value_text: Mapped[str | None] = mapped_column(Text)
+    value_num: Mapped[float | None] = mapped_column(Float)
+    value_date: Mapped[date | None] = mapped_column(Date)
+    is_formula: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+
+
+# ── 6. raw_pdf_pages ──────────────────────────────────────────────────────────
+# One row per page of every PDF ingested. Holds the full extracted text.
+
+class RawPdfPage(Base):
+    __tablename__ = "raw_pdf_pages"
+    __table_args__ = (
+        Index("ix_raw_pdf_pages_file", "file_id"),
+    )
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    file_id: Mapped[int] = mapped_column(Integer, ForeignKey("raw_files.id", ondelete="CASCADE"), nullable=False)
+    page_num: Mapped[int] = mapped_column(Integer, nullable=False)           # 1-based
+    text: Mapped[str | None] = mapped_column(Text)
+    char_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+
+
+# ── 7. raw_pdf_table_cells ────────────────────────────────────────────────────
+# One row per cell of every table detected on every PDF page (via pdfplumber).
+
+class RawPdfTableCell(Base):
+    __tablename__ = "raw_pdf_table_cells"
+    __table_args__ = (
+        Index("ix_raw_pdf_table_cells_file_page", "file_id", "page_num"),
+    )
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    file_id: Mapped[int] = mapped_column(Integer, ForeignKey("raw_files.id", ondelete="CASCADE"), nullable=False)
+    page_num: Mapped[int] = mapped_column(Integer, nullable=False)
+    table_idx: Mapped[int] = mapped_column(Integer, nullable=False)          # 0-based per page
+    row_idx: Mapped[int] = mapped_column(Integer, nullable=False)            # 0-based within table
+    col_idx: Mapped[int] = mapped_column(Integer, nullable=False)            # 0-based within table
+    value_text: Mapped[str | None] = mapped_column(Text)
+    value_num: Mapped[float | None] = mapped_column(Float)
+
+
+# ── 8. query_log ──────────────────────────────────────────────────────────────
 # Every user question + tool calls + final answer, for debugging.
 
 class QueryLog(Base):

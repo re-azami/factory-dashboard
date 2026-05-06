@@ -47,7 +47,8 @@ services:
       DATABASE_URL_RO: postgresql+psycopg://factory_ro:factory_ro@db:5432/factory
       EMBEDDINGS_URL: http://embeddings:8001
     volumes:
-      - ./data/raw:/data/raw
+      # Read-only on purpose — the ingester reads files but must never modify or delete them.
+      - ./data/raw:/data/raw:ro
     ports:
       - "8000:8000"
     depends_on:

@@ -1,23 +1,24 @@
 """
-Maps each data source folder name to its parser function.
+Source registry — list of recognised data source folder names.
 
-To add a new Excel type (e.g. kitchen reports):
-  1. Write backend/app/ingestion/parsers/kitchen.py with a parse_workbook() function
-  2. Import it here and add one line to PARSERS
+The orchestrator is now the single dispatch point: it routes every file by
+extension (.xlsx vs .pdf), and runs the production-template parser
+automatically when a workbook matches its anchor labels. So the source name
+is just a label that gets recorded against ingested files; it no longer
+selects a parser.
 """
-from app.ingestion.parser import parse_workbook as production_parser
 
-# Key = folder name under data/raw/
-# Value = function that takes a file path and returns a ParseResult
-PARSERS = {
-    "factory": production_parser,
-    # "kitchen":  kitchen_parser,   ← add here when ready
-    # "store":    store_parser,
-    # "weighing": weighing_parser,
-    # "sales":    sales_parser,
+# Folder name → human label. The list exists so the upload UI can offer a
+# dropdown and so /ingest can validate the query parameter without erroring
+# on legacy values.
+KNOWN_SOURCES = {
+    "factory":  "Factory production reports",
+    "kitchen":  "Kitchen logs",
+    "store":    "Warehouse / store",
+    "weighing": "Weighing station",
+    "sales":    "Sales",
 }
 
 
-def get_parser(source: str):
-    """Return the parser for a given source folder name, or None if unknown."""
-    return PARSERS.get(source)
+def is_known_source(source: str) -> bool:
+    return source in KNOWN_SOURCES

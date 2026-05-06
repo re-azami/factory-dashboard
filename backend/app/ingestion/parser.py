@@ -465,6 +465,57 @@ class ParseResult:
     errors: list[str] = field(default_factory=list)
 
 
+def is_production_template(path: str | Path) -> bool:
+    """
+    Quick check: does this xlsx look like the 1405 daily production template?
+
+    We require all of:
+      - All three Persian anchor labels (date, day shift, factory downtime)
+      - A Jalali date cell starting with "1405/" somewhere in the first 3 sheets
+
+    The year check is important: older workbooks (1402, 1403, 1404, …) re-use
+    similar Persian headers but have a DIFFERENT cell-column layout, so running
+    the 1405-tuned typed parser on them would write incorrect values into
+    production_shift. Those files still flow into raw_xlsx_cells via the
+    generic dumper, where every value remains queryable.
+    """
+    try:
+        wb = openpyxl.load_workbook(path, data_only=True, read_only=True)
+    except Exception:
+        return False
+
+    needed = [
+        ["تاریخ"],
+        ["شیفت روز"],
+        ["علت توقف کارخانه", "دلایل توقف کارخانه", "دلایل توقف ختک"],
+    ]
+    year_pattern = re.compile(r"\b1405[/\-\.]\d{1,2}[/\-\.]\d{1,2}\b")
+
+    try:
+        for sheet_name in wb.sheetnames[:3]:
+            ws = wb[sheet_name]
+            found = [False] * len(needed)
+            year_found = False
+            for row in ws.iter_rows(values_only=True):
+                for value in row:
+                    if value is None:
+                        continue
+                    text = _normalize(value)
+                    for i, candidates in enumerate(needed):
+                        if not found[i] and any(c in text for c in candidates):
+                            found[i] = True
+                    if not year_found and year_pattern.search(text):
+                        year_found = True
+                if all(found) and year_found:
+                    return True
+            if all(found) and year_found:
+                return True
+    finally:
+        wb.close()
+
+    return False
+
+
 def parse_workbook(path: str | Path) -> ParseResult:
     """Parse all sheets in a production Excel workbook."""
     path = Path(path)
