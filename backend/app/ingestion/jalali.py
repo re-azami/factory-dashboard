@@ -28,5 +28,5 @@ def to_gregorian(jalali_str: str) -> date | None:
         year, month, day = int(parts[0]), int(parts[1]), int(parts[2])
         jdate = jdatetime.date(year, month, day)
         return jdate.togregorian()
-    except (ValueError, jdatetime.exceptions.IllegalMonthError):
+    except (ValueError, TypeError):
         return None
