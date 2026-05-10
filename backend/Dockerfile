@@ -1,8 +1,5 @@
 FROM python:3.11-slim
 
-# Use the local pip mirror (devneeds.ir) — pypi.org is unreliable on this network.
-ENV PIP_INDEX_URL=https://pypi.devneeds.ir/simple/
-ENV PIP_TRUSTED_HOST=pypi.devneeds.ir
 ENV PIP_DEFAULT_TIMEOUT=300
 
 WORKDIR /app

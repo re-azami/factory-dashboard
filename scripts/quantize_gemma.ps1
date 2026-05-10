@@ -135,7 +135,7 @@ docker run --rm `
     -v "${LlmsRoot}:/models" `
     -v "${ScriptsRoot}/convert_hf_to_gguf.py:/models/convert_hf_to_gguf.py:ro" `
     python:3.11-slim `
-    python /models/quantize_runner.py
+    /bin/bash -c "apt-get update -qq && apt-get install -y --no-install-recommends build-essential cmake && python /models/quantize_runner.py"
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host ""

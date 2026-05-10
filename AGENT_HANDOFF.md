@@ -146,18 +146,18 @@ The `llm/` abstraction layer handles format differences between providers (Anthr
 
 ## Mirror configuration (network is Iran-restricted)
 
-All Dockerfiles use:
-- `PIP_INDEX_URL=https://pypi.devneeds.ir/simple/` — pip packages
-- `HF_ENDPOINT=https://hf.devneeds.ir/` — HuggingFace (BUT: this mirror blocks many models)
+All Dockerfiles install pip packages from the global pypi.org index (default). The
+former `pypi.devneeds.ir` mirror was abandoned after it served corrupted wheels
+(hash mismatches mid-download). For HuggingFace, `huggingface.co` is reached directly
+— the `hf.devneeds.ir` mirror blocks several needed models.
 
 Docker registry mirror in Docker Desktop daemon.json:
 - `https://docker.arvancloud.ir` — works for Docker Hub images
 
 Direct access confirmed working from this machine:
+- `pypi.org` / `files.pythonhosted.org` — primary pip index, working
 - `huggingface.co` — accessible directly (tested, config.json returns 200)
 - `raw.githubusercontent.com` — accessible (convert_hf_to_gguf.py downloaded successfully)
-- `pypi.devneeds.ir` — works for pip packages
-- `pypi.org` / `files.pythonhosted.org` — slow/blocked
 
 Known blocked on `hf.devneeds.ir`:
 - `BAAI/bge-m3` — "Remote Manually Blocked"

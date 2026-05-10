@@ -1,0 +1,149 @@
+{
+  "files": [
+    {
+      "file": "1405.xlsx",
+      "sheets_total": 33,
+      "ok": 33,
+      "failed": 0,
+      "elapsed_seconds": 10.5
+    },
+    {
+      "file": "1404.xlsx",
+      "sheets_total": 363,
+      "ok": 358,
+      "failed": 5,
+      "elapsed_seconds": 117.9
+    },
+    {
+      "file": "1403_01_04.xlsx",
+      "sheets_total": 123,
+      "ok": 123,
+      "failed": 0,
+      "elapsed_seconds": 246.1
+    },
+    {
+      "file": "1403_04-12.xlsx",
+      "sheets_total": 269,
+      "ok": 262,
+      "failed": 7,
+      "elapsed_seconds": 257.0
+    },
+    {
+      "file": "1402.xlsx",
+      "sheets_total": 345,
+      "ok": 342,
+      "failed": 3,
+      "elapsed_seconds": 151.9
+    }
+  ],
+  "total_ok": 1118,
+  "total_failed": 15,
+  "elapsed_seconds": 786.4,
+  "failures": [
+    {
+      "file": "1404.xlsx",
+      "sheet": "03-15",
+      "phase": "missing_data",
+      "jalali_date": null,
+      "error": "night/line1: ton_per_hour (col exists, cell empty) || night/line2: ton_per_hour (col exists, cell empty)"
+    },
+    {
+      "file": "1404.xlsx",
+      "sheet": "04_02",
+      "phase": "missing_data",
+      "jalali_date": null,
+      "error": "night/line2: filter_press_operation_hour (col exists, cell empty)"
+    },
+    {
+      "file": "1404.xlsx",
+      "sheet": "08_17",
+      "phase": "parse",
+      "jalali_date": null,
+      "error": "expected 'شیفت شب' anchor at A9"
+    },
+    {
+      "file": "1404.xlsx",
+      "sheet": "08_18",
+      "phase": "parse",
+      "jalali_date": null,
+      "error": "could not find downtime block headers in row 14"
+    },
+    {
+      "file": "1404.xlsx",
+      "sheet": "08_20",
+      "phase": "parse",
+      "jalali_date": null,
+      "error": "expected 'شیفت شب' anchor at A9"
+    },
+    {
+      "file": "1403_04-12.xlsx",
+      "sheet": "06-28",
+      "phase": "parse",
+      "jalali_date": null,
+      "error": "could not find downtime block headers in row 14"
+    },
+    {
+      "file": "1403_04-12.xlsx",
+      "sheet": "06-29",
+      "phase": "parse",
+      "jalali_date": null,
+      "error": "could not find downtime block headers in row 14"
+    },
+    {
+      "file": "1403_04-12.xlsx",
+      "sheet": "06-31",
+      "phase": "parse",
+      "jalali_date": null,
+      "error": "could not find downtime block headers in row 14"
+    },
+    {
+      "file": "1403_04-12.xlsx",
+      "sheet": "07-07",
+      "phase": "parse",
+      "jalali_date": null,
+      "error": "expected 'شیفت شب' anchor at A9"
+    },
+    {
+      "file": "1403_04-12.xlsx",
+      "sheet": "07-14",
+      "phase": "parse",
+      "jalali_date": null,
+      "error": "expected 'شیفت شب' anchor at A9"
+    },
+    {
+      "file": "1403_04-12.xlsx",
+      "sheet": "09-26",
+      "phase": "parse",
+      "jalali_date": null,
+      "error": "expected 'شیفت شب' anchor at A9"
+    },
+    {
+      "file": "1403_04-12.xlsx",
+      "sheet": "10-02",
+      "phase": "parse",
+      "jalali_date": null,
+      "error": "expected 'شیفت شب' anchor at A9"
+    },
+    {
+      "file": "1402.xlsx",
+      "sheet": "05.19",
+      "phase": "parse",
+      "jalali_date": null,
+      "error": "missing date at U3"
+    },
+    {
+      "file": "1402.xlsx",
+      "sheet": "05.20",
+      "phase": "parse",
+      "jalali_date": null,
+      "error": "missing date at U3"
+    },
+    {
+      "file": "1402.xlsx",
+      "sheet": "05.22",
+      "phase": "parse",
+      "jalali_date": null,
+      "error": "missing date at U3"
+    }
+  ]
+}

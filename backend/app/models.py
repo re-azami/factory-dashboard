@@ -1,220 +1,219 @@
+"""
+SQLAlchemy ORM models for the factory dashboard.
+
+Conventions (apply to every domain table):
+  - Plural snake_case table names.
+  - All percentages stored as whole numbers (49.95 — NOT 0.4995).
+  - Audit columns: created_at, updated_at (TIMESTAMPTZ, default now()).
+    The updated_at trigger is defined in the initial Alembic migration.
+  - VARCHAR + CHECK constraint preferred over Postgres ENUM types.
+  - Every FK column gets an explicit index (Postgres does not auto-index FKs).
+"""
 from datetime import date, datetime
-from sqlalchemy import BigInteger, Boolean, Date, DateTime, Float, Index, Integer, Text, String, JSON, ForeignKey, UniqueConstraint
+from sqlalchemy import (
+    BigInteger,
+    CheckConstraint,
+    Date,
+    DateTime,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    JSON,
+    SmallInteger,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
 from app.database import Base
 
 
-# ── 1. daily_report ───────────────────────────────────────────────────────────
-# One row per Excel sheet. Stores header info that applies to the whole day.
+# ── 1. supervisors ────────────────────────────────────────────────────────────
+class Supervisor(Base):
+    __tablename__ = "supervisors"
 
-class DailyReport(Base):
-    __tablename__ = "daily_report"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    report_date: Mapped[date] = mapped_column(Date, nullable=False, unique=True, index=True)
-    jalali_date: Mapped[str] = mapped_column(String(20), nullable=False)
-    sheet_name: Mapped[str] = mapped_column(String(50), nullable=False)
-    source_file: Mapped[str] = mapped_column(Text, nullable=False)
-    batch_code: Mapped[str | None] = mapped_column(Text)               # e.g. "MIX (MAHCOARSE030711_MAH040701225"
-    supervisors: Mapped[str | None] = mapped_column(Text)              # supervisor names from row 3
-    ingested_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    name: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
 
 
-# ── 2. production_shift ───────────────────────────────────────────────────────
-# Wide table — every per-(date, shift, line) metric in one row.
-# 50+ columns covering production, equipment hours, consumption, and quality.
-
-class ProductionShift(Base):
-    __tablename__ = "production_shift"
+# ── 2. shifts ─────────────────────────────────────────────────────────────────
+class Shift(Base):
+    __tablename__ = "shifts"
     __table_args__ = (
-        UniqueConstraint("report_date", "shift", "line", name="uq_shift_date_shift_line"),
-    )
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    report_date: Mapped[date] = mapped_column(Date, nullable=False, index=True)
-    jalali_date: Mapped[str] = mapped_column(String(20), nullable=False)
-    shift: Mapped[str] = mapped_column(String(10), nullable=False)         # 'day' | 'night' | 'total'
-    line: Mapped[int | None] = mapped_column(Integer)                      # 1, 2, or NULL for totals
-    source_file: Mapped[str] = mapped_column(Text, nullable=False)
-
-    # ── Production: daily ─────────────────────────────────────────────────────
-    daily_feed_tonnage: Mapped[float | None] = mapped_column(Float)
-    daily_concentrate_tonnage: Mapped[float | None] = mapped_column(Float)
-    daily_recovery_percent: Mapped[float | None] = mapped_column(Float)
-    ore_grade_code: Mapped[str | None] = mapped_column(String(50))         # نوع بار, e.g. "MAH 040909225"
-
-    # ── Production: monthly running totals ────────────────────────────────────
-    monthly_feed_tonnage: Mapped[float | None] = mapped_column(Float)
-    monthly_concentrate_tonnage: Mapped[float | None] = mapped_column(Float)
-    monthly_recovery_percent: Mapped[float | None] = mapped_column(Float)
-
-    # ── Production: yearly running totals ─────────────────────────────────────
-    yearly_feed_tonnage: Mapped[float | None] = mapped_column(Float)
-    yearly_concentrate_tonnage: Mapped[float | None] = mapped_column(Float)
-    yearly_recovery_percent: Mapped[float | None] = mapped_column(Float)
-
-    # ── Throughput ────────────────────────────────────────────────────────────
-    throughput_ton_per_hour: Mapped[float | None] = mapped_column(Float)
-
-    # ── Equipment operation hours ─────────────────────────────────────────────
-    factory_operation_hours: Mapped[float | None] = mapped_column(Float)
-    factory_downtime_hours: Mapped[float | None] = mapped_column(Float)
-    feed_input_operation_hours: Mapped[float | None] = mapped_column(Float)
-    feed_input_downtime_hours: Mapped[float | None] = mapped_column(Float)
-    drum_filter_1_hours: Mapped[float | None] = mapped_column(Float)
-    drum_filter_2_hours: Mapped[float | None] = mapped_column(Float)
-    filter_press_operation_hours: Mapped[float | None] = mapped_column(Float)
-    filter_press_downtime_hours: Mapped[float | None] = mapped_column(Float)
-
-    # ── Material consumption ──────────────────────────────────────────────────
-    flocculant_grams: Mapped[float | None] = mapped_column(Float)
-    flocculant_type: Mapped[str | None] = mapped_column(String(50))        # e.g. "A28"
-    water_consumption_m3: Mapped[float | None] = mapped_column(Float)
-    ball_mill_primary_kg: Mapped[float | None] = mapped_column(Float)
-    ball_mill_secondary_kg: Mapped[float | None] = mapped_column(Float)
-
-    # ── Quality: feed ─────────────────────────────────────────────────────────
-    feed_fe_percent: Mapped[float | None] = mapped_column(Float)
-    feed_feo_percent: Mapped[float | None] = mapped_column(Float)
-    feed_moisture_percent: Mapped[float | None] = mapped_column(Float)
-    feed_k80_microns: Mapped[float | None] = mapped_column(Float)
-
-    # ── Quality: concentrate ──────────────────────────────────────────────────
-    concentrate_fe_percent: Mapped[float | None] = mapped_column(Float)
-    concentrate_feo_percent: Mapped[float | None] = mapped_column(Float)
-    concentrate_moisture_percent: Mapped[float | None] = mapped_column(Float)
-    concentrate_k80_microns: Mapped[float | None] = mapped_column(Float)
-
-    # ── Quality: tailings ─────────────────────────────────────────────────────
-    tailings_fe_percent: Mapped[float | None] = mapped_column(Float)
-    tailings_feo_percent: Mapped[float | None] = mapped_column(Float)
-    tailings_k80_microns: Mapped[float | None] = mapped_column(Float)
-
-    # ── Quality: intermediate streams ─────────────────────────────────────────
-    primary_mill_output: Mapped[float | None] = mapped_column(Float)
-    secondary_mill_output: Mapped[float | None] = mapped_column(Float)
-    hydrocyclone_1_overflow: Mapped[float | None] = mapped_column(Float)
-    hydrocyclone_2_overflow: Mapped[float | None] = mapped_column(Float)
-    primary_mill_output_fe_percent: Mapped[float | None] = mapped_column(Float)
-    primary_mill_output_feo_percent: Mapped[float | None] = mapped_column(Float)
-
-    # ── Quality: derived ──────────────────────────────────────────────────────
-    dry_weight_recovery_percent: Mapped[float | None] = mapped_column(Float)
-    assay_recovery_percent: Mapped[float | None] = mapped_column(Float)
-    separation_efficiency_percent: Mapped[float | None] = mapped_column(Float)
-    filter_cake_moisture_percent: Mapped[float | None] = mapped_column(Float)
-
-
-# ── 3. downtime ───────────────────────────────────────────────────────────────
-# All downtime events from all 3 sections of the daily report.
-
-class Downtime(Base):
-    __tablename__ = "downtime"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    report_date: Mapped[date] = mapped_column(Date, nullable=False, index=True)
-    jalali_date: Mapped[str] = mapped_column(String(20), nullable=False)
-
-    section: Mapped[str] = mapped_column(String(20), nullable=False, index=True)
-    # ↑ 'factory' | 'feed_input' | 'filter_press'
-
-    shift: Mapped[str | None] = mapped_column(String(10))                  # 'day' | 'night' | NULL
-    line: Mapped[int | None] = mapped_column(Integer)
-    raw_text: Mapped[str] = mapped_column(Text, nullable=False)
-    duration_minutes: Mapped[int | None] = mapped_column(Integer)
-
-    # Filled by enrichment.py (Phase 2)
-    equipment_code: Mapped[str | None] = mapped_column(String(50))
-    fault_category: Mapped[str | None] = mapped_column(String(50))
-    start_time: Mapped[str | None] = mapped_column(String(10))             # e.g. "07:00"
-    end_time: Mapped[str | None] = mapped_column(String(10))               # e.g. "19:00"
-
-    source_file: Mapped[str] = mapped_column(Text, nullable=False)
-
-
-# ── 4. raw_files ──────────────────────────────────────────────────────────────
-# Registry of every file ever ingested. Idempotency lives here: we hash each
-# file with SHA-256 and skip ingestion if the hash is already present.
-
-class RawFile(Base):
-    __tablename__ = "raw_files"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    path: Mapped[str] = mapped_column(Text, nullable=False)              # path relative to the factory data dir
-    filename: Mapped[str] = mapped_column(Text, nullable=False, index=True)
-    sha256: Mapped[str] = mapped_column(String(64), nullable=False, unique=True, index=True)
-    kind: Mapped[str] = mapped_column(String(10), nullable=False, index=True)   # 'xlsx' | 'pdf'
-    size_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
-    ingested_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    status: Mapped[str] = mapped_column(String(10), nullable=False, default="ok")   # 'ok' | 'error'
-    error_message: Mapped[str | None] = mapped_column(Text)
-
-
-# ── 5. raw_xlsx_cells ─────────────────────────────────────────────────────────
-# One row per non-empty cell across every xlsx file ever ingested.
-# This is the table the agent should query when the user asks about
-# data from a file whose structure isn't covered by production_shift / downtime.
-
-class RawXlsxCell(Base):
-    __tablename__ = "raw_xlsx_cells"
-    __table_args__ = (
-        Index("ix_raw_xlsx_cells_file_sheet", "file_id", "sheet_name"),
-        Index("ix_raw_xlsx_cells_sheet", "sheet_name"),
+        CheckConstraint("shift IN ('day','night')", name="ck_shifts_shift"),
+        UniqueConstraint("date", "shift", name="uq_shifts_date_shift"),
     )
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
-    file_id: Mapped[int] = mapped_column(Integer, ForeignKey("raw_files.id", ondelete="CASCADE"), nullable=False)
-    sheet_name: Mapped[str] = mapped_column(String(120), nullable=False)
-    sheet_index: Mapped[int] = mapped_column(Integer, nullable=False)
-    row_idx: Mapped[int] = mapped_column(Integer, nullable=False)            # 1-based
-    col_idx: Mapped[int] = mapped_column(Integer, nullable=False)            # 1-based
-    cell_address: Mapped[str] = mapped_column(String(16), nullable=False)    # e.g. "C5", "AB42"
-    value_text: Mapped[str | None] = mapped_column(Text)
-    value_num: Mapped[float | None] = mapped_column(Float)
-    value_date: Mapped[date | None] = mapped_column(Date)
-    is_formula: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    shift: Mapped[str] = mapped_column(String(8), nullable=False)              # 'day' | 'night'
+    date: Mapped[date] = mapped_column(Date, nullable=False, index=True)        # Gregorian date
+    jalali_date: Mapped[str] = mapped_column(Text, nullable=False)              # e.g. "1405/02/19"
+    supervisor_id: Mapped[int | None] = mapped_column(
+        BigInteger, ForeignKey("supervisors.id", ondelete="RESTRICT"), index=True
+    )
+    water_consumption: Mapped[float | None] = mapped_column(Float)              # cubic meters; one meter for the whole shift (both lines)
+    downtime_description: Mapped[str | None] = mapped_column(Text)              # free-text shift-level note; in source workbook appears in red font in input-feed-cause column with no associated duration
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
 
 
-# ── 6. raw_pdf_pages ──────────────────────────────────────────────────────────
-# One row per page of every PDF ingested. Holds the full extracted text.
+# ── 3. loads ──────────────────────────────────────────────────────────────────
+class Load(Base):
+    __tablename__ = "loads"
 
-class RawPdfPage(Base):
-    __tablename__ = "raw_pdf_pages"
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    code: Mapped[str] = mapped_column(Text, nullable=False, unique=True)        # input-feed batch code, e.g. "MAH 040701225"
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+
+
+# ── 4. line_shift_reports ─────────────────────────────────────────────────────
+class LineShiftReport(Base):
+    __tablename__ = "line_shift_reports"
     __table_args__ = (
-        Index("ix_raw_pdf_pages_file", "file_id"),
+        CheckConstraint("line_number IN (1,2)", name="ck_lsr_line_number"),
+        CheckConstraint("load_segment IN (1,2)", name="ck_lsr_load_segment"),
+        UniqueConstraint("shift_id", "line_number", "load_segment", name="uq_lsr_shift_line_segment"),
+        Index("ix_lsr_shift_id", "shift_id"),
+        Index("ix_lsr_load_id", "load_id"),
     )
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
-    file_id: Mapped[int] = mapped_column(Integer, ForeignKey("raw_files.id", ondelete="CASCADE"), nullable=False)
-    page_num: Mapped[int] = mapped_column(Integer, nullable=False)           # 1-based
-    text: Mapped[str | None] = mapped_column(Text)
-    char_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+
+    # Foreign keys
+    shift_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("shifts.id", ondelete="RESTRICT"), nullable=False)
+    load_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("loads.id", ondelete="RESTRICT"))
+
+    line_number: Mapped[int] = mapped_column(SmallInteger, nullable=False)      # 1 | 2
+    # Most shifts have one production segment (load_segment=1). When operator changes
+    # feed mid-shift (downtime row contains 'تعویض بار'), a second LSR is created with
+    # load_segment=2 holding the post-change production. Mill/quality stay on segment=1.
+    load_segment: Mapped[int] = mapped_column(SmallInteger, nullable=False, server_default="1")
+
+    # ── Production ────────────────────────────────────────────────────────────
+    input_feed_tonnage: Mapped[int | None] = mapped_column(Integer)             # tons fed into this line
+    production_tonnage: Mapped[int | None] = mapped_column(Integer)             # tons of concentrate produced
+    recovery: Mapped[float | None] = mapped_column(Float)                       # whole-number percent (production/feed). 0 when feed=0. Stored as Excel reports it.
+
+    # ── Equipment hours ───────────────────────────────────────────────────────
+    operation_hour: Mapped[float | None] = mapped_column(Float)                 # hours line was operating
+    downtime_hour: Mapped[float | None] = mapped_column(Float)                  # hours line was stopped
+    ton_per_hour: Mapped[float | None] = mapped_column(Float)                   # input_feed_tonnage / operation_hour, as Excel reports
+    drum_filter_1_hour: Mapped[float | None] = mapped_column(Float)
+    drum_filter_2_hour: Mapped[float | None] = mapped_column(Float)
+    filter_press_operation_hour: Mapped[float | None] = mapped_column(Float)
+    filter_press_downtime_hour: Mapped[float | None] = mapped_column(Float)
+
+    # ── Consumption ───────────────────────────────────────────────────────────
+    flocculant_consumption_grams: Mapped[int | None] = mapped_column(Integer)
+    flocculant_type: Mapped[str | None] = mapped_column(Text)                   # e.g. "A28"
+
+    # Primary mill ball additions (count of balls of each diameter)
+    primary_mill_30: Mapped[int | None] = mapped_column(Integer)
+    primary_mill_40: Mapped[int | None] = mapped_column(Integer)
+    primary_mill_50: Mapped[int | None] = mapped_column(Integer)
+    primary_mill_60: Mapped[int | None] = mapped_column(Integer)
+
+    # Secondary mill ball additions
+    secondary_mill_25: Mapped[int | None] = mapped_column(Integer)
+    secondary_mill_30: Mapped[int | None] = mapped_column(Integer)
+    secondary_mill_40: Mapped[int | None] = mapped_column(Integer)
+    secondary_mill_50: Mapped[int | None] = mapped_column(Integer)
+
+    # ── Quality: Fe / FeO percentages (whole-number percent) ──────────────────
+    fe_input_feed: Mapped[float | None] = mapped_column(Float)
+    feo_input_feed: Mapped[float | None] = mapped_column(Float)
+    fe_concentrate: Mapped[float | None] = mapped_column(Float)
+    feo_concentrate: Mapped[float | None] = mapped_column(Float)
+    fe_thickener_tailing: Mapped[float | None] = mapped_column(Float)
+    feo_thickener_tailing: Mapped[float | None] = mapped_column(Float)
+    fe_first_ballmill_output: Mapped[float | None] = mapped_column(Float)
+    feo_first_ballmill_output: Mapped[float | None] = mapped_column(Float)
+
+    # ── K80 particle sizes (microns) ──────────────────────────────────────────
+    k80_size_input_feed: Mapped[int | None] = mapped_column(Integer)
+    k80_size_primary_ballmill: Mapped[int | None] = mapped_column(Integer)
+    k80_size_secondary_ballmill: Mapped[int | None] = mapped_column(Integer)
+    k80_size_hydrocyclone_overflow_1: Mapped[int | None] = mapped_column(Integer)
+    k80_size_hydrocyclone_overflow_2: Mapped[int | None] = mapped_column(Integer)
+    k80_size_tailing: Mapped[int | None] = mapped_column(Integer)
+    k80_size_concentrate: Mapped[int | None] = mapped_column(Integer)
+
+    # ── Recoveries / efficiency (whole-number percent) ────────────────────────
+    dry_weight_recovery: Mapped[float | None] = mapped_column(Float)
+    metallurgical_recovery: Mapped[float | None] = mapped_column(Float)
+    separation_efficiency: Mapped[float | None] = mapped_column(Float)
+
+    # ── Moisture (whole-number percent) ───────────────────────────────────────
+    input_feed_moisture: Mapped[float | None] = mapped_column(Float)
+    concentrate_moisture: Mapped[float | None] = mapped_column(Float)
+    filter_press_cake_moisture: Mapped[float | None] = mapped_column(Float)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
 
 
-# ── 7. raw_pdf_table_cells ────────────────────────────────────────────────────
-# One row per cell of every table detected on every PDF page (via pdfplumber).
-
-class RawPdfTableCell(Base):
-    __tablename__ = "raw_pdf_table_cells"
+# ── 5. factory_downtimes ──────────────────────────────────────────────────────
+class FactoryDowntime(Base):
+    __tablename__ = "factory_downtimes"
     __table_args__ = (
-        Index("ix_raw_pdf_table_cells_file_page", "file_id", "page_num"),
+        Index("ix_factory_downtimes_lsr", "line_shift_report_id"),
     )
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
-    file_id: Mapped[int] = mapped_column(Integer, ForeignKey("raw_files.id", ondelete="CASCADE"), nullable=False)
-    page_num: Mapped[int] = mapped_column(Integer, nullable=False)
-    table_idx: Mapped[int] = mapped_column(Integer, nullable=False)          # 0-based per page
-    row_idx: Mapped[int] = mapped_column(Integer, nullable=False)            # 0-based within table
-    col_idx: Mapped[int] = mapped_column(Integer, nullable=False)            # 0-based within table
-    value_text: Mapped[str | None] = mapped_column(Text)
-    value_num: Mapped[float | None] = mapped_column(Float)
+    line_shift_report_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("line_shift_reports.id", ondelete="CASCADE"), nullable=False
+    )
+    description: Mapped[str | None] = mapped_column(Text)
+    duration: Mapped[int | None] = mapped_column(Integer)                       # minutes
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
 
 
-# ── 8. query_log ──────────────────────────────────────────────────────────────
-# Every user question + tool calls + final answer, for debugging.
+# ── 6. input_feed_downtimes ───────────────────────────────────────────────────
+class InputFeedDowntime(Base):
+    __tablename__ = "input_feed_downtimes"
+    __table_args__ = (
+        Index("ix_input_feed_downtimes_lsr", "line_shift_report_id"),
+        Index("ix_input_feed_downtimes_factory", "factory_downtime_id"),
+    )
 
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    line_shift_report_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("line_shift_reports.id", ondelete="CASCADE"), nullable=False
+    )
+    factory_downtime_id: Mapped[int | None] = mapped_column(
+        BigInteger, ForeignKey("factory_downtimes.id", ondelete="SET NULL")
+    )
+    description: Mapped[str | None] = mapped_column(Text)
+    duration: Mapped[int | None] = mapped_column(Integer)                       # minutes
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+
+
+# ── 7. filter_press_downtimes ─────────────────────────────────────────────────
+class FilterPressDowntime(Base):
+    __tablename__ = "filter_press_downtimes"
+    __table_args__ = (
+        Index("ix_filter_press_downtimes_lsr", "line_shift_report_id"),
+    )
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    line_shift_report_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("line_shift_reports.id", ondelete="CASCADE"), nullable=False
+    )
+    description: Mapped[str | None] = mapped_column(Text)
+    duration: Mapped[int | None] = mapped_column(Integer)                       # minutes
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+
+
+# ── 8. query_log (kept from Phase 1) ──────────────────────────────────────────
 class QueryLog(Base):
     __tablename__ = "query_log"
 

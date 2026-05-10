@@ -26,7 +26,7 @@ def get_db():
 
 def init_db():
     """Create tables and the read-only role on first startup."""
-    from app.models import ProductionShift, Downtime, QueryLog  # noqa: F401
+    from app.models import QueryLog  # noqa: F401
 
     with engine.connect() as conn:
         # Enable pgvector extension (safe to run multiple times)
