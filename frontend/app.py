@@ -21,12 +21,53 @@ import httpx
 import pandas as pd
 import streamlit as st
 
+from styles import CUSTOM_CSS
+
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
 st.set_page_config(page_title="Factory Dashboard", layout="wide", page_icon="🏭")
+st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 
-# ── Sidebar navigation ────────────────────────────────────────────────────────
-page = st.sidebar.radio("Navigation", ["💬 Chat", "📋 Query History"])
+# Session state defaults — initialised before the sidebar so widget keys bind cleanly.
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+if "agent_mode" not in st.session_state:
+    st.session_state.agent_mode = "Simple"
+
+MODE_LABELS = {
+    "Simple": ("simple", "Quick lookups — up to 8 tool turns."),
+    "Deep / Data Science": ("deep", "Iterative research — up to 128 turns, with Python + persistent memory."),
+}
+
+# ── Sidebar ───────────────────────────────────────────────────────────────────
+with st.sidebar:
+    st.markdown("### 🏭 Factory Dashboard")
+    st.caption("AI analytics for production data")
+    st.divider()
+
+    page = st.radio(
+        "Navigation",
+        ["💬 Chat", "📋 Query History"],
+        label_visibility="collapsed",
+    )
+
+    st.divider()
+
+    selected_label = st.selectbox(
+        "Agent mode",
+        list(MODE_LABELS.keys()),
+        index=list(MODE_LABELS.keys()).index(st.session_state.agent_mode),
+        key="agent_mode",
+        help="Simple = fast Q&A. Deep = research agent that remembers durable lessons across chats.",
+    )
+    mode_value, mode_caption = MODE_LABELS[selected_label]
+    st.caption(mode_caption)
+
+    st.divider()
+
+    if st.button("🗑️ Clear chat"):
+        st.session_state.messages = []
+        st.rerun()
 
 
 # ── Tool-card rendering helpers ───────────────────────────────────────────────
@@ -235,12 +276,6 @@ if page == "💬 Chat":
     st.title("🏭 Factory Dashboard — Ask a Question")
     st.caption("Ask anything about production data, downtime events, or trends.")
 
-    # Keep conversation history in session state
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-    if "agent_mode" not in st.session_state:
-        st.session_state.agent_mode = "Simple"
-
     # Display past messages
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
@@ -248,22 +283,6 @@ if page == "💬 Chat":
                 st.markdown(msg["content"])
             else:
                 render_blocks(msg.get("blocks", []))
-
-    # Agent-mode selector sits directly above the chat input so the user
-    # can flip modes without leaving the chat surface.
-    MODE_LABELS = {
-        "Simple": ("simple", "Quick lookups — up to 8 tool turns."),
-        "Deep / Data Science": ("deep", "Iterative research — up to 128 turns, with Python + persistent memory."),
-    }
-    selected_label = st.selectbox(
-        "Agent mode",
-        list(MODE_LABELS.keys()),
-        index=list(MODE_LABELS.keys()).index(st.session_state.agent_mode),
-        key="agent_mode",
-        help="Simple = fast Q&A. Deep = research agent that remembers durable lessons across chats.",
-    )
-    mode_value, mode_caption = MODE_LABELS[selected_label]
-    st.caption(mode_caption)
 
     # Chat input
     if question := st.chat_input("Type your question (Persian or English)..."):
@@ -291,16 +310,26 @@ elif page == "📋 Query History":
         entries = resp.json()
 
         for entry in entries:
-            with st.expander(f"[{entry['asked_at']}] {entry['question'][:80]}"):
-                st.markdown(f"**Provider:** {entry['llm_provider']}")
+            with st.container(border=True):
+                st.markdown(f"**{entry['question']}**")
+                meta_bits = [f"🕒 {entry['asked_at']}", entry["llm_provider"]]
                 if entry.get("agent_mode"):
-                    st.markdown(f"**Mode:** {entry['agent_mode']}")
-                st.markdown(f"**Answer:** {entry['answer']}")
+                    meta_bits.append(f"mode: {entry['agent_mode']}")
+                st.markdown(
+                    "<span style='color:#98A2B3; font-size:0.85em'>"
+                    + " · ".join(meta_bits)
+                    + "</span>",
+                    unsafe_allow_html=True,
+                )
+                st.markdown(entry["answer"])
 
                 if entry.get("tool_calls"):
-                    st.markdown("**Tool calls:**")
-                    for tc in entry["tool_calls"]:
-                        st.code(f"Tool: {tc['tool']}\nInput: {tc['input']}\nOutput: {tc['output']}", language="json")
+                    with st.expander(f"Tool calls ({len(entry['tool_calls'])})", expanded=False):
+                        for tc in entry["tool_calls"]:
+                            st.code(
+                                f"Tool: {tc['tool']}\nInput: {tc['input']}\nOutput: {tc['output']}",
+                                language="json",
+                            )
 
     except Exception as exc:
         st.error(f"Could not load history: {exc}")

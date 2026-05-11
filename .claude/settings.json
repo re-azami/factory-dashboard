@@ -5,7 +5,8 @@
       "Bash(grep -v \"^--$\")",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(xargs ls -la)"
+      "Bash(xargs ls -la)",
+      "Bash(Start-Process \"http://localhost:8501\")"
     ]
   }
 }

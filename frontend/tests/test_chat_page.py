@@ -165,6 +165,23 @@ class TestAgentModeDropdown:
         assert captured["json"] == {"question": "hi", "mode": "deep"}
 
 
+class TestClearChat:
+    def test_clear_chat_button_is_rendered(self, app_path):
+        at = AppTest.from_file(app_path).run()
+        assert any("Clear chat" in b.label for b in at.button)
+
+    def test_clear_chat_resets_messages(self, app_path):
+        at = AppTest.from_file(app_path).run()
+        at.session_state["messages"] = [
+            {"role": "user", "content": "old question"},
+            {"role": "assistant", "blocks": [{"type": "text", "content": "old answer"}]},
+        ]
+        clear_btn = next(b for b in at.button if "Clear chat" in b.label)
+        clear_btn.click().run()
+        assert not at.exception
+        assert at.session_state["messages"] == []
+
+
 class TestModeTimeouts:
     def test_simple_mode_uses_short_timeout(self, app_path, fake_stream):
         at = AppTest.from_file(app_path).run()
