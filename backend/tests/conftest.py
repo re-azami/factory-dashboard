@@ -25,6 +25,19 @@ if str(BACKEND_ROOT) not in sys.path:
 import pytest  # noqa: E402
 
 
+# SQLite doesn't auto-increment BigInteger primary keys (only INTEGER PRIMARY KEY
+# gets ROWID aliasing). The production schema uses BigInteger on Postgres where
+# BIGSERIAL handles this. For tests, compile BigInteger as INTEGER on SQLite so
+# PKs auto-generate. Safe because no test compares column types across dialects.
+from sqlalchemy import BigInteger  # noqa: E402
+from sqlalchemy.ext.compiler import compiles  # noqa: E402
+
+
+@compiles(BigInteger, "sqlite")
+def _sqlite_bigint_as_integer(_element, _compiler, **_kw):
+    return "INTEGER"
+
+
 @pytest.fixture
 def in_memory_db():
     """Create an in-memory SQLite database with all tables for unit tests."""

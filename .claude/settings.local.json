@@ -35,7 +35,16 @@
       "PowerShell(docker cp factory-dashboard-backend-1:/tmp/ingest_all_report.json scripts/ingest_all_report.json)",
       "PowerShell(docker compose exec -T db psql -U factory -d factory -c \"SELECT s.jalali_date, s.shift, lsr.line_number AS ln, lsr.load_segment AS seg, l.code AS load, lsr.input_feed_tonnage AS feed, lsr.production_tonnage AS prod, lsr.operation_hour AS op_h, lsr.ton_per_hour AS tph FROM line_shift_reports lsr JOIN shifts s ON s.id=lsr.shift_id LEFT JOIN loads l ON l.id=lsr.load_id WHERE s.jalali_date IN \\('1404/08/17','1404/08/18','1403/06/28'\\) ORDER BY s.jalali_date, s.shift, lsr.line_number, lsr.load_segment;\")",
       "PowerShell(docker compose exec -T db psql -U factory -d factory -c \"SELECT s.jalali_date, s.shift, s.date AS gregorian FROM shifts s WHERE s.jalali_date IN \\('1402/05/19','1402/05/20','1402/05/22'\\) ORDER BY s.jalali_date, s.shift;\")",
-      "PowerShell(docker compose exec -T db psql -U factory -d factory -c \"SELECT s.jalali_date, lsr.line_number AS ln, lsr.input_feed_tonnage AS feed, lsr.operation_hour AS op_h, lsr.ton_per_hour AS tph, lsr.filter_press_operation_hour AS fp_op FROM line_shift_reports lsr JOIN shifts s ON s.id=lsr.shift_id WHERE \\(s.jalali_date='1404/03/15' AND s.shift='night'\\) OR \\(s.jalali_date='1404/04/02' AND s.shift='night'\\) ORDER BY s.jalali_date, lsr.line_number;\")"
+      "PowerShell(docker compose exec -T db psql -U factory -d factory -c \"SELECT s.jalali_date, lsr.line_number AS ln, lsr.input_feed_tonnage AS feed, lsr.operation_hour AS op_h, lsr.ton_per_hour AS tph, lsr.filter_press_operation_hour AS fp_op FROM line_shift_reports lsr JOIN shifts s ON s.id=lsr.shift_id WHERE \\(s.jalali_date='1404/03/15' AND s.shift='night'\\) OR \\(s.jalali_date='1404/04/02' AND s.shift='night'\\) ORDER BY s.jalali_date, lsr.line_number;\")",
+      "PowerShell(docker compose exec -T db psql -U factory -d factory -c \"SELECT id, name FROM supervisors ORDER BY id;\")",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\User\\\\OneDrive\\\\Documents\\\\Agentic\\\\agentic_projects\\\\factory-dashboard\" -Directory)",
+      "Bash(Select-Object Name)",
+      "Bash(MSYS_NO_PATHCONV=1 docker compose exec -T -e PYTHONPATH=/app backend python /tmp/enrich_downtimes.py)",
+      "Bash(docker cp *)",
+      "Bash(findstr -i python)",
+      "Bash(git -C .trees/agentic_flow status --short)",
+      "Bash(git -C .trees/ingestion status --short)",
+      "Bash(git -C .trees/write_tests status --short)"
     ]
   }
 }

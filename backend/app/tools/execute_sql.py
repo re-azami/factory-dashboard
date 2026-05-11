@@ -1,28 +1,8 @@
 import json
 from sqlalchemy import text
+from langchain_core.tools import tool
 
 from app.database import engine_ro
-
-# Tool definition in Anthropic format (also converted to OpenAI format in openai_compat.py)
-TOOL_DEFINITION = {
-    "name": "execute_sql",
-    "description": (
-        "Run a read-only SQL SELECT query against the factory database. "
-        "Use this to answer questions about production data, downtime events, and trends. "
-        "Always use SELECT — INSERT, UPDATE, DELETE, and DROP are blocked. "
-        "Return column names and all rows."
-    ),
-    "input_schema": {
-        "type": "object",
-        "properties": {
-            "query": {
-                "type": "string",
-                "description": "A valid PostgreSQL SELECT query.",
-            }
-        },
-        "required": ["query"],
-    },
-}
 
 
 def run(query: str) -> str:
@@ -54,3 +34,17 @@ def run(query: str) -> str:
 
     except Exception as exc:
         return json.dumps({"error": str(exc)})
+
+
+@tool("execute_sql")
+def execute_sql(query: str) -> str:
+    """Run a read-only SQL SELECT query against the factory database.
+
+    Use this to answer questions about production data, downtime events, and trends.
+    Always use SELECT — INSERT, UPDATE, DELETE, and DROP are blocked.
+    Returns a JSON string with column names and all rows.
+
+    Args:
+        query: A valid PostgreSQL SELECT query.
+    """
+    return run(query)

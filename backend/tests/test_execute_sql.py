@@ -10,23 +10,23 @@ from app.tools import execute_sql
 
 class TestQueryGuardrails:
     def test_rejects_insert(self):
-        out = json.loads(execute_sql.run("INSERT INTO production_shift VALUES (1)"))
+        out = json.loads(execute_sql.run("INSERT INTO line_shift_reports (line_number) VALUES (1)"))
         assert out["error"] == "Only SELECT queries are allowed."
 
     def test_rejects_update(self):
-        out = json.loads(execute_sql.run("UPDATE downtime SET duration_minutes = 0"))
+        out = json.loads(execute_sql.run("UPDATE factory_downtimes SET duration = 0"))
         assert "Only SELECT" in out["error"]
 
     def test_rejects_delete(self):
-        out = json.loads(execute_sql.run("DELETE FROM downtime"))
+        out = json.loads(execute_sql.run("DELETE FROM factory_downtimes"))
         assert "Only SELECT" in out["error"]
 
     def test_rejects_drop(self):
-        out = json.loads(execute_sql.run("DROP TABLE downtime"))
+        out = json.loads(execute_sql.run("DROP TABLE factory_downtimes"))
         assert "Only SELECT" in out["error"]
 
     def test_rejects_truncate(self):
-        out = json.loads(execute_sql.run("TRUNCATE downtime"))
+        out = json.loads(execute_sql.run("TRUNCATE factory_downtimes"))
         assert "Only SELECT" in out["error"]
 
     def test_accepts_select_lowercase(self, monkeypatch):
@@ -109,19 +109,20 @@ class TestQueryExecution:
     def test_persian_text_is_preserved(self, monkeypatch):
         self._stub_engine(
             monkeypatch,
-            columns=["raw_text"],
+            columns=["description"],
             rows=[("خرابی برق پمپ",)],
         )
-        out_str = execute_sql.run("SELECT raw_text FROM downtime")
+        out_str = execute_sql.run("SELECT description FROM factory_downtimes")
         # ensure_ascii=False — Persian must round-trip
         assert "خرابی برق پمپ" in out_str
         out = json.loads(out_str)
-        assert out["rows"][0]["raw_text"] == "خرابی برق پمپ"
+        assert out["rows"][0]["description"] == "خرابی برق پمپ"
 
 
 class TestToolDefinition:
-    def test_definition_shape(self):
-        d = execute_sql.TOOL_DEFINITION
-        assert d["name"] == "execute_sql"
-        assert "query" in d["input_schema"]["properties"]
-        assert d["input_schema"]["required"] == ["query"]
+    def test_langchain_tool_shape(self):
+        t = execute_sql.execute_sql
+        assert t.name == "execute_sql"
+        schema = t.args_schema.model_json_schema()
+        assert "query" in schema["properties"]
+        assert "query" in schema.get("required", [])

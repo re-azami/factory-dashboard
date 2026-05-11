@@ -23,15 +23,18 @@ the two shifts and the four line_shift_reports written for that sheet.
 """
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 import openpyxl
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
+from app.enrichment.downtimes import enrich
 from app.ingestion.jalali import to_gregorian
+from app.ingestion.loads_normalize import normalize_load_code
 from app.ingestion.parser_v1 import (
     LineDowntimes,
     LineRow,
@@ -106,10 +109,13 @@ def _get_or_create_supervisor(db: Session, name: Optional[str]) -> Optional[Supe
 def _get_or_create_load(db: Session, code: Optional[str]) -> Optional[Load]:
     if not code:
         return None
-    row = db.execute(select(Load).where(Load.code == code)).scalar_one_or_none()
+    canonical = normalize_load_code(code)
+    if not canonical:
+        return None
+    row = db.execute(select(Load).where(Load.code == canonical)).scalar_one_or_none()
     if row:
         return row
-    row = Load(code=code)
+    row = Load(code=canonical)
     db.add(row)
     db.flush()
     return row
@@ -220,8 +226,38 @@ def _upsert_report(db: Session, shift: Shift, line: LineRow, load: Optional[Load
     return new
 
 
+_DOWNTIME_LOG = logging.getLogger(__name__)
+
+
+def _safe_enrich(description: Optional[str]) -> dict[str, Any]:
+    """Wrap enrich() so ingest never fails when enrichment hits a snag.
+
+    The fallback returns valid values for NOT-NULL-bound columns so the
+    constraints added in migration 003 can't be violated.
+    """
+    try:
+        return enrich(description)
+    except Exception as exc:
+        _DOWNTIME_LOG.warning("downtime enrichment failed (%s): %s",
+                              (description or "")[:60], exc)
+        return {
+            "embedding": None,
+            "category": "other",
+            "department_tag": None,
+            "equipment_codes": None,
+            "start_time": None,
+            "end_time": None,
+            "is_planned": False,
+        }
+
+
 def _replace_downtimes(db: Session, lsr: LineShiftReport, downs: LineDowntimes) -> None:
-    """Wipe and re-insert the three downtime child tables for this LSR."""
+    """Wipe and re-insert the three downtime child tables for this LSR.
+
+    Each inserted row is enriched in-place via app.enrichment.downtimes.enrich
+    (embedding + category + extracted fields). Enrichment failures degrade
+    gracefully — they never block ingest.
+    """
     db.execute(delete(InputFeedDowntime).where(InputFeedDowntime.line_shift_report_id == lsr.id))
     db.execute(delete(FilterPressDowntime).where(FilterPressDowntime.line_shift_report_id == lsr.id))
     db.execute(delete(FactoryDowntime).where(FactoryDowntime.line_shift_report_id == lsr.id))
@@ -229,10 +265,12 @@ def _replace_downtimes(db: Session, lsr: LineShiftReport, downs: LineDowntimes) 
 
     factory_rows: list[FactoryDowntime] = []
     for ev in downs.factory:
+        e = _safe_enrich(ev.description)
         row = FactoryDowntime(
             line_shift_report_id=lsr.id,
             description=ev.description,
             duration=ev.duration_minutes,
+            **e,
         )
         db.add(row)
         factory_rows.append(row)
@@ -241,18 +279,22 @@ def _replace_downtimes(db: Session, lsr: LineShiftReport, downs: LineDowntimes) 
 
     for ev, link_idx in downs.input_feed:
         link_id = factory_rows[link_idx].id if (link_idx is not None and link_idx < len(factory_rows)) else None
+        e = _safe_enrich(ev.description)
         db.add(InputFeedDowntime(
             line_shift_report_id=lsr.id,
             factory_downtime_id=link_id,
             description=ev.description,
             duration=ev.duration_minutes,
+            **e,
         ))
 
     for ev in downs.filter_press:
+        e = _safe_enrich(ev.description)
         db.add(FilterPressDowntime(
             line_shift_report_id=lsr.id,
             description=ev.description,
             duration=ev.duration_minutes,
+            **e,
         ))
 
 

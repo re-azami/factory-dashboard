@@ -1,39 +1,36 @@
 """
-Agent loop — calls the LLM, runs tools, streams the final answer.
+Agent loop — built on LangChain's `create_agent` (LangGraph runtime).
 
-Phase 1 tools: execute_sql only.
-Phase 2 adds: semantic_search.
-Phase 3 adds: run_python.
+The graph alternates between the chat model and the tool nodes until the
+model produces a final answer (or `MAX_ITERATIONS` is reached). We stream the
+intermediate AIMessage / ToolMessage events so the FastAPI endpoint can yield
+chunks to the client.
 
-To add a tool: import it, add its TOOL_DEFINITION to TOOLS list,
-and add its name + run() to the TOOL_RUNNERS dict.
+To add a new tool: import it, append it to `TOOLS`.
 """
 import json
 from typing import Generator
 
 from sqlalchemy.orm import Session
+from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
+from langchain.agents import create_agent
+from langgraph.errors import GraphRecursionError
 
-from app.llm import get_llm_client
-from app.llm.claude import ClaudeClient
 from app.config import settings
+from app.llm import get_chat_model
 import app.tools.execute_sql as sql_tool
-# Phase 2: import app.tools.semantic_search as search_tool
+import app.tools.semantic_search as search_tool
 
 from app.query_log.log import save as save_log
 
-MAX_ITERATIONS = 8  # prevent infinite tool loops
+MAX_ITERATIONS = 8  # max number of LLM turns before we bail out
 
 # ── Tool registry ─────────────────────────────────────────────────────────────
 
 TOOLS = [
-    sql_tool.TOOL_DEFINITION,
-    # Phase 2: search_tool.TOOL_DEFINITION,
+    sql_tool.execute_sql,
+    search_tool.semantic_search,
 ]
-
-TOOL_RUNNERS = {
-    "execute_sql": lambda inp: sql_tool.run(**inp),
-    # Phase 2: "semantic_search": lambda inp: search_tool.run(**inp),
-}
 
 # ── System prompt ─────────────────────────────────────────────────────────────
 
@@ -64,75 +61,107 @@ Always:
 # ── Agent loop ────────────────────────────────────────────────────────────────
 
 def run(question: str, db: Session) -> Generator[str, None, None]:
-    """
-    Run the agent loop and yield text chunks for streaming.
+    """Run the agent loop and yield text chunks for streaming.
+
     Saves the full Q&A to query_log when done.
     """
-    client = get_llm_client()
+    model = get_chat_model()
     system = _build_system_prompt()
-    messages = [{"role": "user", "content": question}]
 
-    all_tool_calls_log = []
+    graph = create_agent(model, tools=TOOLS, system_prompt=system)
 
-    for iteration in range(MAX_ITERATIONS):
-        response = client.chat(system=system, messages=messages, tools=TOOLS)
+    # LangGraph counts every node visit toward `recursion_limit`. One LLM turn
+    # is roughly two nodes (agent + tools), plus a final agent step, so allow
+    # 2*N + 1 to give the model N tool-calling iterations.
+    config = {"recursion_limit": MAX_ITERATIONS * 2 + 1}
 
-        if response.content:
-            yield response.content
+    tool_calls_log: list[dict] = []
+    final_answer = ""
+    seen_msg_ids: set[str] = set()
 
-        if not response.wants_tool:
-            # Model finished — save to log and stop
-            save_log(
-                db=db,
-                question=question,
-                tool_calls=all_tool_calls_log,
-                answer=response.content,
-                llm_provider=settings.llm_provider,
-            )
-            return
+    try:
+        for event in graph.stream(
+            {"messages": [HumanMessage(content=question)]},
+            config=config,
+            stream_mode="values",
+        ):
+            for msg in event.get("messages", []):
+                key = getattr(msg, "id", None) or id(msg)
+                if key in seen_msg_ids:
+                    continue
+                seen_msg_ids.add(key)
 
-        # Run each tool the model asked for
-        for tool_call in response.tool_calls:
-            tool_name = tool_call["name"]
-            tool_input = tool_call["input"]
+                if isinstance(msg, AIMessage):
+                    text = _extract_text(msg.content)
+                    if text:
+                        yield text
+                        if not msg.tool_calls:
+                            final_answer = text
+                    for tc in msg.tool_calls or []:
+                        yield f"\n\n[tool: {tc['name']}]\n"
+                        tool_calls_log.append({
+                            "tool": tc["name"],
+                            "input": tc.get("args", {}),
+                            "output": None,
+                            "_id": tc.get("id"),
+                        })
 
-            yield f"\n\n[tool: {tool_name}]\n"
+                elif isinstance(msg, ToolMessage):
+                    _fill_tool_output(tool_calls_log, msg)
 
-            runner = TOOL_RUNNERS.get(tool_name)
-            if runner is None:
-                tool_result = json.dumps({"error": f"Unknown tool: {tool_name}"})
-            else:
-                tool_result = runner(tool_input)
+    except GraphRecursionError:
+        for entry in tool_calls_log:
+            entry.pop("_id", None)
+        save_log(
+            db=db,
+            question=question,
+            tool_calls=tool_calls_log,
+            answer="[max iterations reached]",
+            llm_provider=settings.llm_provider,
+        )
+        yield "\n\n[Reached maximum tool iterations. Please rephrase your question.]"
+        return
 
-            all_tool_calls_log.append({
-                "tool": tool_name,
-                "input": tool_input,
-                "output": tool_result,
-            })
+    for entry in tool_calls_log:
+        entry.pop("_id", None)
 
-            # Add assistant message + tool result back into the conversation
-            if isinstance(client, ClaudeClient):
-                # Anthropic format: assistant turn includes the tool_use block
-                messages.append({"role": "assistant", "content": response.raw.content})
-                messages.append(client.build_tool_result_message(tool_call, tool_result))
-            else:
-                # OpenAI format
-                messages.append({
-                    "role": "assistant",
-                    "tool_calls": [{
-                        "id": tool_call["id"],
-                        "type": "function",
-                        "function": {"name": tool_name, "arguments": json.dumps(tool_input)},
-                    }],
-                })
-                messages.append(client.build_tool_result_message(tool_call, tool_result))
-
-    # Safety: if we hit MAX_ITERATIONS without finishing, log what we have
     save_log(
         db=db,
         question=question,
-        tool_calls=all_tool_calls_log,
-        answer="[max iterations reached]",
+        tool_calls=tool_calls_log,
+        answer=final_answer,
         llm_provider=settings.llm_provider,
     )
-    yield "\n\n[Reached maximum tool iterations. Please rephrase your question.]"
+
+
+def _extract_text(content) -> str:
+    """AIMessage.content can be a plain string or a list of content blocks
+    (Anthropic returns the latter when text and tool_use are interleaved)."""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts = []
+        for block in content:
+            if isinstance(block, str):
+                parts.append(block)
+            elif isinstance(block, dict) and block.get("type") == "text":
+                parts.append(block.get("text", ""))
+        return "".join(parts)
+    return ""
+
+
+def _fill_tool_output(log: list[dict], msg: ToolMessage) -> None:
+    """Attach the tool result to its matching entry in the log."""
+    tool_call_id = getattr(msg, "tool_call_id", None)
+    result = msg.content if isinstance(msg.content, str) else json.dumps(msg.content, default=str)
+
+    if tool_call_id:
+        for entry in log:
+            if entry.get("_id") == tool_call_id and entry["output"] is None:
+                entry["output"] = result
+                return
+
+    for entry in reversed(log):
+        if entry["output"] is None and entry["tool"] == getattr(msg, "name", entry["tool"]):
+            entry["output"] = result
+            return

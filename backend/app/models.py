@@ -9,9 +9,10 @@ Conventions (apply to every domain table):
   - VARCHAR + CHECK constraint preferred over Postgres ENUM types.
   - Every FK column gets an explicit index (Postgres does not auto-index FKs).
 """
-from datetime import date, datetime
+from datetime import date, datetime, time
 from sqlalchemy import (
     BigInteger,
+    Boolean,
     CheckConstraint,
     Date,
     DateTime,
@@ -23,12 +24,22 @@ from sqlalchemy import (
     SmallInteger,
     String,
     Text,
+    Time,
     UniqueConstraint,
 )
+from sqlalchemy.dialects.postgresql import ARRAY as PG_ARRAY
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
+from pgvector.sqlalchemy import Vector
 
 from app.database import Base
+
+
+# Vector(1024) on Postgres; JSON on SQLite so unit-test fixtures can compile.
+# Behavior in production is governed by the Postgres path.
+_VectorOrJson = Vector(1024).with_variant(JSON, "sqlite")
+# Postgres-native text[]; falls back to JSON on SQLite for the same reason.
+_TextArrayOrJson = PG_ARRAY(Text).with_variant(JSON, "sqlite")
 
 
 # ── 1. supervisors ────────────────────────────────────────────────────────────
@@ -171,6 +182,16 @@ class FactoryDowntime(Base):
     )
     description: Mapped[str | None] = mapped_column(Text)
     duration: Mapped[int | None] = mapped_column(Integer)                       # minutes
+
+    # ── Enrichment (populated by app.enrichment.downtimes.enrich) ─────────────
+    embedding: Mapped[list[float] | None] = mapped_column(_VectorOrJson)         # BGE-M3 of description; NOT NULL after migration 003
+    category: Mapped[str | None] = mapped_column(Text)                          # one of taxonomy values; NOT NULL after migration 003
+    department_tag: Mapped[str | None] = mapped_column(Text)                    # raw Persian tag from trailing (...)
+    equipment_codes: Mapped[list[str] | None] = mapped_column(_TextArrayOrJson)      # ISA-style codes mentioned in description
+    start_time: Mapped[time | None] = mapped_column(Time)                       # from "از ساعت X الی Y"
+    end_time: Mapped[time | None] = mapped_column(Time)
+    is_planned: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="false")
+
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
 
@@ -192,6 +213,15 @@ class InputFeedDowntime(Base):
     )
     description: Mapped[str | None] = mapped_column(Text)
     duration: Mapped[int | None] = mapped_column(Integer)                       # minutes
+
+    embedding: Mapped[list[float] | None] = mapped_column(_VectorOrJson)
+    category: Mapped[str | None] = mapped_column(Text)
+    department_tag: Mapped[str | None] = mapped_column(Text)
+    equipment_codes: Mapped[list[str] | None] = mapped_column(_TextArrayOrJson)
+    start_time: Mapped[time | None] = mapped_column(Time)
+    end_time: Mapped[time | None] = mapped_column(Time)
+    is_planned: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="false")
+
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
 
@@ -209,6 +239,15 @@ class FilterPressDowntime(Base):
     )
     description: Mapped[str | None] = mapped_column(Text)
     duration: Mapped[int | None] = mapped_column(Integer)                       # minutes
+
+    embedding: Mapped[list[float] | None] = mapped_column(_VectorOrJson)
+    category: Mapped[str | None] = mapped_column(Text)
+    department_tag: Mapped[str | None] = mapped_column(Text)
+    equipment_codes: Mapped[list[str] | None] = mapped_column(_TextArrayOrJson)
+    start_time: Mapped[time | None] = mapped_column(Time)
+    end_time: Mapped[time | None] = mapped_column(Time)
+    is_planned: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="false")
+
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
 
