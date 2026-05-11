@@ -1,4 +1,5 @@
 """Tests for the FastAPI HTTP endpoints in app.main."""
+import json
 from unittest.mock import patch
 
 import pytest
@@ -44,16 +45,34 @@ class TestHealth:
 
 
 class TestChat:
-    def test_chat_streams_agent_chunks(self, client):
+    def test_chat_streams_ndjson_events(self, client):
         def fake_run(question, db, mode="simple"):
-            yield "Hello "
-            yield "world."
+            yield {"type": "text", "content": "Hello "}
+            yield {"type": "text", "content": "world."}
 
         with patch("app.main.agent.run", side_effect=fake_run):
             resp = client.post("/chat", json={"question": "Hi?"})
 
         assert resp.status_code == 200
-        assert resp.text == "Hello world."
+        assert resp.headers["content-type"].startswith("application/x-ndjson")
+
+        lines = [ln for ln in resp.text.split("\n") if ln]
+        events = [json.loads(ln) for ln in lines]
+        assert events == [
+            {"type": "text", "content": "Hello "},
+            {"type": "text", "content": "world."},
+        ]
+
+    def test_chat_preserves_persian_in_events(self, client):
+        """ensure_ascii=False must be set so Persian characters survive."""
+        def fake_run(question, db, mode="simple"):
+            yield {"type": "text", "content": "میانگین ۶۶.۹۹٪"}
+
+        with patch("app.main.agent.run", side_effect=fake_run):
+            resp = client.post("/chat", json={"question": "Hi?"})
+
+        event = json.loads(resp.text.strip())
+        assert event["content"] == "میانگین ۶۶.۹۹٪"
 
     def test_chat_requires_question(self, client):
         resp = client.post("/chat", json={})
@@ -64,7 +83,7 @@ class TestChat:
 
         def fake_run(question, db, mode="simple"):
             captured["mode"] = mode
-            yield "ok"
+            yield {"type": "text", "content": "ok"}
 
         with patch("app.main.agent.run", side_effect=fake_run):
             client.post("/chat", json={"question": "Hi?"})
@@ -76,7 +95,7 @@ class TestChat:
 
         def fake_run(question, db, mode="simple"):
             captured["mode"] = mode
-            yield "ok"
+            yield {"type": "text", "content": "ok"}
 
         with patch("app.main.agent.run", side_effect=fake_run):
             client.post("/chat", json={"question": "Hi?", "mode": "deep"})

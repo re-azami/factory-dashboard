@@ -30,7 +30,12 @@ def app_path():
 
 
 class FakeStreamResponse:
-    """Mimics the context manager returned by httpx.stream()."""
+    """Mimics the context manager returned by httpx.stream().
+
+    `chunks` is a list of strings. Each string is yielded verbatim by both
+    iter_text() and iter_lines() — for NDJSON tests, pass one full JSON object
+    per chunk (the frontend uses iter_lines() now).
+    """
     def __init__(self, chunks, status_code=200):
         self._chunks = chunks
         self.status_code = status_code
@@ -53,6 +58,12 @@ class FakeStreamResponse:
     def iter_text(self):
         for c in self._chunks:
             yield c
+
+    def iter_lines(self):
+        for c in self._chunks:
+            # Caller is responsible for passing one logical line per chunk;
+            # strip trailing newlines so the test author can include them or not.
+            yield c.rstrip("\n")
 
 
 class FakeJSONResponse:

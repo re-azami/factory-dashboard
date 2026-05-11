@@ -9,14 +9,14 @@ chunks to the client.
 Two modes are exposed:
 
   simple — 8 turns, tools = execute_sql + semantic_search. Quick lookups.
-  deep   — 64 turns, tools = execute_sql + semantic_search + python_exec +
+  deep   — 128 turns, tools = execute_sql + semantic_search + python_exec +
            save_memory. Loads prior agent_memory rows into the system prompt so
            the agent can build on previously-learned insights across sessions.
 
 To add a new tool: import it, append it to the relevant tool list in MODES.
 """
 import json
-from typing import Generator
+from typing import Any, Generator
 
 from sqlalchemy.orm import Session
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
@@ -41,7 +41,7 @@ DEEP_TOOLS = SIMPLE_TOOLS + [python_tool.python_exec, memory_tool.save_memory]
 
 MODES: dict[str, dict] = {
     "simple": {"tools": SIMPLE_TOOLS, "max_iterations": 8},
-    "deep":   {"tools": DEEP_TOOLS,   "max_iterations": 64},
+    "deep":   {"tools": DEEP_TOOLS,   "max_iterations": 128},
 }
 
 # Back-compat alias for older tests / call sites.
@@ -63,7 +63,7 @@ Always:
 """
 
 _DEEP_PROMPT_EXTRA = """
-You are running in DEEP RESEARCH mode. You have up to 64 turns. Use them.
+You are running in DEEP RESEARCH mode. You have up to 128 turns. Use them.
 
 Approach:
 - Break the question into sub-questions. Run a SQL query, read the result,
@@ -130,13 +130,22 @@ def _build_system_prompt(mode: str = "simple", db: Session | None = None) -> str
 
 # ── Agent loop ────────────────────────────────────────────────────────────────
 
-def run(question: str, db: Session, mode: str = "simple") -> Generator[str, None, None]:
-    """Run the agent loop and yield text chunks for streaming.
+def run(question: str, db: Session, mode: str = "simple") -> Generator[dict[str, Any], None, None]:
+    """Run the agent loop and yield structured events for streaming.
+
+    Yields dicts of these shapes:
+      {"type": "text", "content": str}
+      {"type": "tool_start", "id": str, "name": str, "args": dict}
+      {"type": "tool_end", "id": str | None, "name": str, "output": str}
+      {"type": "error", "message": str}
+
+    The /chat endpoint serializes each event as one NDJSON line; the frontend
+    parses them into chat-message blocks (text + collapsible tool cards).
 
     Args:
         question: The user's question.
         db: SQLAlchemy session used for query_log and (in deep mode) memory recall.
-        mode: 'simple' (8 turns, SQL + search) or 'deep' (64 turns, + python + memory).
+        mode: 'simple' (8 turns, SQL + search) or 'deep' (128 turns, + python + memory).
 
     Saves the full Q&A to query_log when done.
     """
@@ -159,6 +168,23 @@ def run(question: str, db: Session, mode: str = "simple") -> Generator[str, None
     tool_calls_log: list[dict] = []
     final_answer = ""
     seen_msg_ids: set[str] = set()
+    # Tool outputs emitted by _fill_tool_output need to be turned into tool_end
+    # events. We track which entries have already been emitted by their _id.
+    emitted_tool_end: set[str] = set()
+
+    def _drain_tool_ends():
+        """Emit a tool_end event for every tool entry whose output landed since
+        the last drain. Called after each graph step."""
+        for entry in tool_calls_log:
+            tid = entry.get("_id")
+            if entry.get("output") is not None and tid and tid not in emitted_tool_end:
+                emitted_tool_end.add(tid)
+                yield {
+                    "type": "tool_end",
+                    "id": tid,
+                    "name": entry["tool"],
+                    "output": entry["output"],
+                }
 
     try:
         for event in graph.stream(
@@ -175,20 +201,30 @@ def run(question: str, db: Session, mode: str = "simple") -> Generator[str, None
                 if isinstance(msg, AIMessage):
                     text = _extract_text(msg.content)
                     if text:
-                        yield text
+                        yield {"type": "text", "content": text}
                         if not msg.tool_calls:
                             final_answer = text
                     for tc in msg.tool_calls or []:
-                        yield f"\n\n[tool: {tc['name']}]\n"
                         tool_calls_log.append({
                             "tool": tc["name"],
                             "input": tc.get("args", {}),
                             "output": None,
                             "_id": tc.get("id"),
                         })
+                        yield {
+                            "type": "tool_start",
+                            "id": tc.get("id"),
+                            "name": tc["name"],
+                            "args": tc.get("args", {}),
+                        }
 
                 elif isinstance(msg, ToolMessage):
                     _fill_tool_output(tool_calls_log, msg)
+                    yield from _drain_tool_ends()
+
+            # In case a tool result was attached without a matching ToolMessage
+            # event in this iteration, flush anything pending.
+            yield from _drain_tool_ends()
 
     except GraphRecursionError:
         for entry in tool_calls_log:
@@ -201,7 +237,10 @@ def run(question: str, db: Session, mode: str = "simple") -> Generator[str, None
             llm_provider=settings.llm_provider,
             agent_mode=mode,
         )
-        yield "\n\n[Reached maximum tool iterations. Please rephrase your question.]"
+        yield {
+            "type": "error",
+            "message": "Reached maximum tool iterations. Please rephrase your question.",
+        }
         return
 
     for entry in tool_calls_log:

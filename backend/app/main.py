@@ -6,6 +6,8 @@ Routes:
   GET  /history  — last N query log entries (for debugging)
   GET  /health   — liveness check
 """
+import json
+
 from fastapi import FastAPI, Depends, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -43,12 +45,16 @@ class ChatRequest(BaseModel):
 
 @app.post("/chat")
 def chat(req: ChatRequest, db: Session = Depends(get_db)):
-    """Stream the agent's answer back as plain text chunks."""
-    def generate():
-        for chunk in agent.run(question=req.question, db=db, mode=req.mode):
-            yield chunk
+    """Stream the agent's events back as NDJSON (one JSON object per line).
 
-    return StreamingResponse(generate(), media_type="text/plain")
+    Event shapes — see app.agent.run for details. The frontend parses each
+    line and renders text / tool-call cards / errors accordingly.
+    """
+    def generate():
+        for event in agent.run(question=req.question, db=db, mode=req.mode):
+            yield json.dumps(event, ensure_ascii=False, default=str) + "\n"
+
+    return StreamingResponse(generate(), media_type="application/x-ndjson")
 
 
 @app.get("/history")

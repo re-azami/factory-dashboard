@@ -1,8 +1,14 @@
 """Tests for the Streamlit Chat page."""
+import json
 from unittest.mock import patch
 
 import pytest
 from streamlit.testing.v1 import AppTest
+
+
+def _events(*evts) -> list[str]:
+    """Encode events as NDJSON lines for the fake stream."""
+    return [json.dumps(e) + "\n" for e in evts]
 
 
 class TestChatPageInitialRender:
@@ -18,34 +24,82 @@ class TestChatPageInitialRender:
 
 
 class TestChatPageStreaming:
-    def test_streamed_chunks_render_into_assistant_message(self, app_path, fake_stream):
-        """Type a question, mocked stream returns chunks, full answer is appended."""
+    def test_text_events_render_into_assistant_message(self, app_path, fake_stream):
+        """Type a question, stream text events, the joined text is stored."""
         at = AppTest.from_file(app_path).run()
-
-        # Type into chat_input then run
         at.chat_input[0].set_value("What is the average Fe%?")
 
-        with patch("httpx.stream", return_value=fake_stream(["66.99", "%"])):
+        stream = fake_stream(_events(
+            {"type": "text", "content": "66.99"},
+            {"type": "text", "content": "%"},
+        ))
+        with patch("httpx.stream", return_value=stream):
             at.run()
 
         assert not at.exception
         msgs = at.session_state["messages"]
-        # user + assistant
-        roles = [m["role"] for m in msgs]
-        assert roles == ["user", "assistant"]
+        assert [m["role"] for m in msgs] == ["user", "assistant"]
         assert msgs[0]["content"] == "What is the average Fe%?"
-        assert "66.99" in msgs[1]["content"]
 
-    def test_tool_marker_is_dimmed_with_blockquote(self, app_path, fake_stream):
+        # Assistant message is structured: one text block holding "66.99%"
+        blocks = msgs[1]["blocks"]
+        text_blocks = [b for b in blocks if b["type"] == "text"]
+        assert any("66.99" in b["content"] for b in text_blocks)
+
+    def test_tool_call_becomes_structured_block(self, app_path, fake_stream):
+        """A tool_start + tool_end pair produces a single 'tool' block with args + output."""
         at = AppTest.from_file(app_path).run()
-        at.chat_input[0].set_value("hi")
+        at.chat_input[0].set_value("how many rows?")
 
-        with patch("httpx.stream", return_value=fake_stream(["hello [tool: execute_sql]\nrows..."])):
+        stream = fake_stream(_events(
+            {"type": "tool_start", "id": "tu_1", "name": "execute_sql",
+             "args": {"query": "SELECT COUNT(*) FROM downtime"}},
+            {"type": "tool_end", "id": "tu_1", "name": "execute_sql",
+             "output": json.dumps({"row_count": 1, "rows": [{"count": 214}]})},
+            {"type": "text", "content": "There are 214 events."},
+        ))
+        with patch("httpx.stream", return_value=stream):
             at.run()
 
-        # Final answer stored in session_state contains the raw stream (formatting is rendered, not stored)
-        assistant = at.session_state["messages"][-1]["content"]
-        assert "[tool: execute_sql]" in assistant
+        blocks = at.session_state["messages"][-1]["blocks"]
+        tool_blocks = [b for b in blocks if b["type"] == "tool"]
+        assert len(tool_blocks) == 1
+        assert tool_blocks[0]["name"] == "execute_sql"
+        assert tool_blocks[0]["args"] == {"query": "SELECT COUNT(*) FROM downtime"}
+        assert "214" in tool_blocks[0]["output"]
+
+    def test_text_before_and_after_tool_call_are_separate_blocks(self, app_path, fake_stream):
+        """Text→tool→text must produce three blocks in order, not one merged."""
+        at = AppTest.from_file(app_path).run()
+        at.chat_input[0].set_value("q")
+
+        stream = fake_stream(_events(
+            {"type": "text", "content": "Let me check."},
+            {"type": "tool_start", "id": "tu_2", "name": "execute_sql", "args": {"query": "SELECT 1"}},
+            {"type": "tool_end", "id": "tu_2", "name": "execute_sql", "output": "{}"},
+            {"type": "text", "content": "Done."},
+        ))
+        with patch("httpx.stream", return_value=stream):
+            at.run()
+
+        kinds = [b["type"] for b in at.session_state["messages"][-1]["blocks"]]
+        assert kinds == ["text", "tool", "text"]
+
+    def test_error_event_renders_and_persists(self, app_path, fake_stream):
+        at = AppTest.from_file(app_path).run()
+        at.chat_input[0].set_value("loop forever")
+
+        stream = fake_stream(_events(
+            {"type": "error", "message": "Reached maximum tool iterations."},
+        ))
+        with patch("httpx.stream", return_value=stream):
+            at.run()
+
+        assert not at.exception
+        blocks = at.session_state["messages"][-1]["blocks"]
+        error_blocks = [b for b in blocks if b["type"] == "error"]
+        assert error_blocks
+        assert "maximum tool iterations" in error_blocks[0]["message"].lower()
 
     def test_http_error_renders_error(self, app_path):
         at = AppTest.from_file(app_path).run()
@@ -58,8 +112,8 @@ class TestChatPageStreaming:
             at.run()
 
         assert not at.exception
-        # Error message gets stored as the assistant's content
-        assert "Error:" in at.session_state["messages"][-1]["content"]
+        blocks = at.session_state["messages"][-1]["blocks"]
+        assert any(b["type"] == "error" and "backend down" in b["message"] for b in blocks)
 
 
 class TestAgentModeDropdown:
@@ -85,7 +139,7 @@ class TestAgentModeDropdown:
 
         def capture(method, url, *, json, **kw):
             captured["json"] = json
-            return fake_stream(["ok"])
+            return fake_stream(_events({"type": "text", "content": "ok"}))
 
         with patch("httpx.stream", side_effect=capture):
             at.run()
@@ -103,9 +157,43 @@ class TestAgentModeDropdown:
 
         def capture(method, url, *, json, **kw):
             captured["json"] = json
-            return fake_stream(["ok"])
+            return fake_stream(_events({"type": "text", "content": "ok"}))
 
         with patch("httpx.stream", side_effect=capture):
             at.run()
 
         assert captured["json"] == {"question": "hi", "mode": "deep"}
+
+
+class TestModeTimeouts:
+    def test_simple_mode_uses_short_timeout(self, app_path, fake_stream):
+        at = AppTest.from_file(app_path).run()
+        at.chat_input[0].set_value("hi")
+
+        captured = {}
+
+        def capture(method, url, *, json, timeout, **kw):
+            captured["timeout"] = timeout
+            return fake_stream(_events({"type": "text", "content": "ok"}))
+
+        with patch("httpx.stream", side_effect=capture):
+            at.run()
+
+        assert captured["timeout"] == 300
+
+    def test_deep_mode_uses_long_timeout(self, app_path, fake_stream):
+        at = AppTest.from_file(app_path).run()
+        mode_selector = next(s for s in at.selectbox if s.label == "Agent mode")
+        mode_selector.set_value("Deep / Data Science").run()
+        at.chat_input[0].set_value("hi")
+
+        captured = {}
+
+        def capture(method, url, *, json, timeout, **kw):
+            captured["timeout"] = timeout
+            return fake_stream(_events({"type": "text", "content": "ok"}))
+
+        with patch("httpx.stream", side_effect=capture):
+            at.run()
+
+        assert captured["timeout"] == 3600

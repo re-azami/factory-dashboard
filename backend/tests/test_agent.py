@@ -71,9 +71,12 @@ class TestAgentRun:
         final = AIMessage(content="The Fe% is 66.99%.")
 
         with patch.object(agent, "get_chat_model", return_value=_fake_model([final])):
-            chunks = list(agent.run(question="What is Fe%?", db=in_memory_db))
+            events = list(agent.run(question="What is Fe%?", db=in_memory_db))
 
-        assert "The Fe% is 66.99%." in "".join(chunks)
+        text_events = [e for e in events if e["type"] == "text"]
+        assert any("The Fe% is 66.99%." in e["content"] for e in text_events)
+        # No tool events should appear when the model never called a tool.
+        assert not any(e["type"] in ("tool_start", "tool_end") for e in events)
 
     def test_tool_call_then_final_answer(self, in_memory_db):
         """Model calls execute_sql, then produces a final answer."""
@@ -82,11 +85,36 @@ class TestAgentRun:
 
         with patch.object(agent, "get_chat_model", return_value=_fake_model([tool_resp, final])), \
              patch.object(agent.sql_tool, "run", return_value=json.dumps({"row_count": 1, "rows": [{"x": 42}]})):
-            chunks = list(agent.run(question="Q?", db=in_memory_db))
+            events = list(agent.run(question="Q?", db=in_memory_db))
 
-        joined = "".join(chunks)
-        assert "[tool: execute_sql]" in joined
-        assert "Done — answer is 42." in joined
+        # Stream should have a tool_start, a matching tool_end with output, and a final text.
+        starts = [e for e in events if e["type"] == "tool_start"]
+        ends = [e for e in events if e["type"] == "tool_end"]
+        texts = [e for e in events if e["type"] == "text"]
+
+        assert len(starts) == 1
+        assert starts[0]["name"] == "execute_sql"
+        assert starts[0]["args"] == {"query": "SELECT 1"}
+
+        assert len(ends) == 1
+        assert ends[0]["name"] == "execute_sql"
+        assert "42" in ends[0]["output"]
+
+        assert any("Done — answer is 42." in e["content"] for e in texts)
+
+    def test_tool_end_matches_tool_start_by_id(self, in_memory_db):
+        """The tool_end event must carry the same id as its tool_start so the
+        frontend can wire them together when calls overlap."""
+        tool_resp = _tool_call("execute_sql", {"query": "SELECT 1"}, call_id="tu_match")
+        final = AIMessage(content="done")
+
+        with patch.object(agent, "get_chat_model", return_value=_fake_model([tool_resp, final])), \
+             patch.object(agent.sql_tool, "run", return_value="{}"):
+            events = list(agent.run(question="Q?", db=in_memory_db))
+
+        start = next(e for e in events if e["type"] == "tool_start")
+        end = next(e for e in events if e["type"] == "tool_end")
+        assert start["id"] == end["id"]
 
     def test_query_log_is_written(self, in_memory_db):
         from app.models import QueryLog
@@ -123,9 +151,11 @@ class TestAgentRun:
 
         with patch.object(agent, "get_chat_model", return_value=_fake_model([infinite])), \
              patch.object(agent.sql_tool, "run", return_value="{}"):
-            chunks = list(agent.run(question="loop forever", db=in_memory_db))
+            events = list(agent.run(question="loop forever", db=in_memory_db))
 
-        assert "maximum tool iterations" in "".join(chunks).lower()
+        errors = [e for e in events if e["type"] == "error"]
+        assert errors, "expected an error event when max iterations is hit"
+        assert "maximum tool iterations" in errors[-1]["message"].lower()
 
 
 class TestSystemPrompt:
@@ -157,8 +187,8 @@ class TestAgentModes:
         names = [t.name for t in agent.MODES["deep"]["tools"]]
         assert {"execute_sql", "semantic_search", "python_exec", "save_memory"} <= set(names)
 
-    def test_deep_mode_has_64_iterations(self):
-        assert agent.MODES["deep"]["max_iterations"] == 64
+    def test_deep_mode_has_128_iterations(self):
+        assert agent.MODES["deep"]["max_iterations"] == 128
 
     def test_simple_mode_has_8_iterations(self):
         assert agent.MODES["simple"]["max_iterations"] == 8
@@ -187,7 +217,7 @@ class TestDeepModePrompt:
     def test_deep_prompt_adds_research_instructions(self):
         prompt = agent._build_system_prompt(mode="deep")
         assert "DEEP RESEARCH mode" in prompt
-        assert "64 turns" in prompt
+        assert "128 turns" in prompt
 
     def test_simple_prompt_omits_research_instructions(self):
         prompt = agent._build_system_prompt(mode="simple")
