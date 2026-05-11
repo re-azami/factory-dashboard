@@ -3,7 +3,8 @@
     "allow": [
       "Bash(grep -iE \"app[/\\\\\\\\\\\\\\\\].*\\\\.py:.*deprecat|tests[/\\\\\\\\\\\\\\\\].*\\\\.py:.*deprecat\")",
       "Bash(grep -v \"^--$\")",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }
