@@ -9,6 +9,7 @@ def save(
     tool_calls: list[dict],
     answer: str,
     llm_provider: str,
+    agent_mode: str | None = None,
 ) -> None:
     """Save a completed Q&A turn to the query_log table."""
     entry = QueryLog(
@@ -16,6 +17,7 @@ def save(
         tool_calls=tool_calls,
         answer=answer,
         llm_provider=llm_provider,
+        agent_mode=agent_mode,
     )
     db.add(entry)
     db.commit()

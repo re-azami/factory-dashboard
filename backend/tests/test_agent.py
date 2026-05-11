@@ -143,3 +143,69 @@ class TestToolRegistry:
     def test_semantic_search_is_registered(self):
         names = [t.name for t in agent.TOOLS]
         assert "semantic_search" in names
+
+
+class TestAgentModes:
+    def test_simple_mode_uses_basic_tools_only(self):
+        names = [t.name for t in agent.MODES["simple"]["tools"]]
+        assert "execute_sql" in names
+        assert "semantic_search" in names
+        assert "python_exec" not in names
+        assert "save_memory" not in names
+
+    def test_deep_mode_includes_research_tools(self):
+        names = [t.name for t in agent.MODES["deep"]["tools"]]
+        assert {"execute_sql", "semantic_search", "python_exec", "save_memory"} <= set(names)
+
+    def test_deep_mode_has_64_iterations(self):
+        assert agent.MODES["deep"]["max_iterations"] == 64
+
+    def test_simple_mode_has_8_iterations(self):
+        assert agent.MODES["simple"]["max_iterations"] == 8
+
+    def test_unknown_mode_falls_back_to_simple(self, in_memory_db):
+        """A bogus mode string must not crash the loop — it falls back to simple."""
+        final = AIMessage(content="hi")
+        with patch.object(agent, "get_chat_model", return_value=_fake_model([final])):
+            list(agent.run(question="q", db=in_memory_db, mode="not-a-mode"))
+
+        from app.models import QueryLog
+        rows = in_memory_db.query(QueryLog).all()
+        assert rows[0].agent_mode == "simple"
+
+    def test_deep_mode_is_persisted_to_query_log(self, in_memory_db):
+        final = AIMessage(content="deep answer")
+        with patch.object(agent, "get_chat_model", return_value=_fake_model([final])):
+            list(agent.run(question="q", db=in_memory_db, mode="deep"))
+
+        from app.models import QueryLog
+        rows = in_memory_db.query(QueryLog).all()
+        assert rows[0].agent_mode == "deep"
+
+
+class TestDeepModePrompt:
+    def test_deep_prompt_adds_research_instructions(self):
+        prompt = agent._build_system_prompt(mode="deep")
+        assert "DEEP RESEARCH mode" in prompt
+        assert "64 turns" in prompt
+
+    def test_simple_prompt_omits_research_instructions(self):
+        prompt = agent._build_system_prompt(mode="simple")
+        assert "DEEP RESEARCH" not in prompt
+
+    def test_deep_prompt_loads_existing_memories(self, in_memory_db):
+        from app.models import AgentMemory
+        in_memory_db.add(AgentMemory(kind="insight", content="Line 2 dips in winter."))
+        in_memory_db.add(AgentMemory(kind="preference", content="Prefer Persian answers."))
+        in_memory_db.commit()
+
+        prompt = agent._build_system_prompt(mode="deep", db=in_memory_db)
+        assert "Line 2 dips in winter." in prompt
+        assert "Prefer Persian answers." in prompt
+        assert "Prior lessons" in prompt
+
+    def test_deep_prompt_handles_empty_memory_table(self, in_memory_db):
+        """No memories yet — prompt should still build, just without the memory section."""
+        prompt = agent._build_system_prompt(mode="deep", db=in_memory_db)
+        assert "DEEP RESEARCH" in prompt
+        assert "Prior lessons" not in prompt

@@ -262,3 +262,26 @@ class QueryLog(Base):
     tool_calls: Mapped[dict | None] = mapped_column(JSON)
     answer: Mapped[str | None] = mapped_column(Text)
     llm_provider: Mapped[str | None] = mapped_column(String(30))
+    agent_mode: Mapped[str | None] = mapped_column(String(16))                  # 'simple' | 'deep'
+
+
+# ── 9. agent_memory ───────────────────────────────────────────────────────────
+class AgentMemory(Base):
+    """Persistent notes the deep-research agent has written about prior chats.
+
+    Stores only durable lessons — patterns, user preferences, useful SQL recipes,
+    domain glossary entries. Never raw daily data: the underlying tables are
+    refreshed every day, so anything tied to a specific date goes stale fast.
+    """
+    __tablename__ = "agent_memory"
+    __table_args__ = (
+        CheckConstraint("kind IN ('insight','preference','recipe','glossary')", name="ck_agent_memory_kind"),
+        Index("ix_agent_memory_kind", "kind"),
+    )
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    kind: Mapped[str] = mapped_column(String(16), nullable=False)
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+    source_question: Mapped[str | None] = mapped_column(Text)                   # the user question that taught this lesson
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    last_used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

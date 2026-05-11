@@ -38,13 +38,14 @@ def health():
 
 class ChatRequest(BaseModel):
     question: str
+    mode: str = "simple"   # 'simple' | 'deep'
 
 
 @app.post("/chat")
 def chat(req: ChatRequest, db: Session = Depends(get_db)):
     """Stream the agent's answer back as plain text chunks."""
     def generate():
-        for chunk in agent.run(question=req.question, db=db):
+        for chunk in agent.run(question=req.question, db=db, mode=req.mode):
             yield chunk
 
     return StreamingResponse(generate(), media_type="text/plain")
@@ -62,6 +63,7 @@ def history(limit: int = Query(default=20, le=200), db: Session = Depends(get_db
             "answer": r.answer,
             "llm_provider": r.llm_provider,
             "tool_calls": r.tool_calls,
+            "agent_mode": r.agent_mode,
         }
         for r in rows
     ]

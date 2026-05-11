@@ -60,3 +60,52 @@ class TestChatPageStreaming:
         assert not at.exception
         # Error message gets stored as the assistant's content
         assert "Error:" in at.session_state["messages"][-1]["content"]
+
+
+class TestAgentModeDropdown:
+    def test_dropdown_is_rendered(self, app_path):
+        at = AppTest.from_file(app_path).run()
+        labels = [s.label for s in at.selectbox]
+        assert "Agent mode" in labels
+
+    def test_dropdown_options(self, app_path):
+        at = AppTest.from_file(app_path).run()
+        mode_selector = next(s for s in at.selectbox if s.label == "Agent mode")
+        assert mode_selector.options == ["Simple", "Deep / Data Science"]
+
+    def test_default_mode_is_simple(self, app_path):
+        at = AppTest.from_file(app_path).run()
+        assert at.session_state["agent_mode"] == "Simple"
+
+    def test_simple_mode_posts_simple_to_backend(self, app_path, fake_stream):
+        at = AppTest.from_file(app_path).run()
+        at.chat_input[0].set_value("hi")
+
+        captured = {}
+
+        def capture(method, url, *, json, **kw):
+            captured["json"] = json
+            return fake_stream(["ok"])
+
+        with patch("httpx.stream", side_effect=capture):
+            at.run()
+
+        assert captured["json"] == {"question": "hi", "mode": "simple"}
+
+    def test_deep_mode_posts_deep_to_backend(self, app_path, fake_stream):
+        at = AppTest.from_file(app_path).run()
+        mode_selector = next(s for s in at.selectbox if s.label == "Agent mode")
+        mode_selector.set_value("Deep / Data Science").run()
+
+        at.chat_input[0].set_value("hi")
+
+        captured = {}
+
+        def capture(method, url, *, json, **kw):
+            captured["json"] = json
+            return fake_stream(["ok"])
+
+        with patch("httpx.stream", side_effect=capture):
+            at.run()
+
+        assert captured["json"] == {"question": "hi", "mode": "deep"}

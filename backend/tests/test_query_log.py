@@ -41,3 +41,11 @@ def test_save_handles_persian(in_memory_db):
     row = in_memory_db.query(QueryLog).one()
     assert "میانگین" in row.question
     assert "۶۶.۹۹" in row.answer
+
+
+def test_save_records_agent_mode(in_memory_db):
+    save(db=in_memory_db, question="q1", tool_calls=[], answer="a1", llm_provider="anthropic", agent_mode="deep")
+    save(db=in_memory_db, question="q2", tool_calls=[], answer="a2", llm_provider="anthropic", agent_mode="simple")
+
+    rows = in_memory_db.query(QueryLog).order_by(QueryLog.id).all()
+    assert [r.agent_mode for r in rows] == ["deep", "simple"]
