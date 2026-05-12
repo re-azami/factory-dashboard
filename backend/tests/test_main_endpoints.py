@@ -31,10 +31,17 @@ def client():
             db.close()
 
     fastapi_app.dependency_overrides[get_db] = override_get_db
-    with TestClient(fastapi_app) as c:
-        yield c
-    fastapi_app.dependency_overrides.clear()
-    engine.dispose()
+    # Redirect agent.run's save-session opener to the test engine so production
+    # code paths land in the in-memory SQLite instead of the real DB.
+    patcher = patch("app.agent._open_save_session", lambda: TestSession())
+    patcher.start()
+    try:
+        with TestClient(fastapi_app) as c:
+            yield c
+    finally:
+        patcher.stop()
+        fastapi_app.dependency_overrides.clear()
+        engine.dispose()
 
 
 class TestHealth:
@@ -101,6 +108,36 @@ class TestChat:
             client.post("/chat", json={"question": "Hi?", "mode": "deep"})
 
         assert captured["mode"] == "deep"
+
+
+class TestChatPersistsAcrossCalls:
+    def test_two_sequential_chats_both_logged(self, client):
+        """Regression: the FastAPI-injected db session is closed before the
+        StreamingResponse generator finishes, so the original implementation
+        only persisted the first chat. agent.run must use its own session."""
+        def fake_run(question, db, mode="simple"):
+            from app.query_log.log import save
+            from app.agent import _open_save_session
+            yield {"type": "text", "content": f"answer to {question}"}
+            s = _open_save_session()
+            try:
+                save(
+                    db=s,
+                    question=question,
+                    tool_calls=[],
+                    answer=f"answer to {question}",
+                    llm_provider="anthropic",
+                    agent_mode=mode,
+                )
+            finally:
+                s.close()
+
+        with patch("app.main.agent.run", side_effect=fake_run):
+            assert client.post("/chat", json={"question": "q1"}).status_code == 200
+            assert client.post("/chat", json={"question": "q2"}).status_code == 200
+
+        hist = client.get("/history").json()
+        assert {h["question"] for h in hist} == {"q1", "q2"}
 
 
 class TestHistory:

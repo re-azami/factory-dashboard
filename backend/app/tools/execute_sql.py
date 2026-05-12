@@ -5,23 +5,25 @@ from langchain_core.tools import tool
 from app.database import engine_ro
 
 
+READ_ONLY_ERROR_MESSAGE = "Only read-only queries are allowed."
+
+
 def run(query: str) -> str:
     """
-    Execute a SELECT query using the read-only database connection.
-    Returns results as a JSON string so the LLM can read them easily.
-    Blocks any query that is not a SELECT.
-    """
-    stripped = query.strip().upper()
-    if not stripped.startswith("SELECT"):
-        return json.dumps({"error": "Only SELECT queries are allowed."})
+    Execute a query using the read-only database connection.
 
+    Safety is enforced by Postgres itself: we issue `SET TRANSACTION READ ONLY`
+    before the query, so any data-modifying statement (including ones hidden
+    inside a CTE with RETURNING) raises SQLSTATE 25006 and is reported back
+    as a friendly error. No string-based prefix matching is involved.
+    """
     try:
         with engine_ro.connect() as conn:
+            conn.execute(text("SET TRANSACTION READ ONLY"))
             result = conn.execute(text(query))
             columns = list(result.keys())
             rows = [dict(zip(columns, row)) for row in result.fetchall()]
 
-        # Limit to 500 rows to avoid flooding the LLM context
         truncated = len(rows) > 500
         if truncated:
             rows = rows[:500]
@@ -33,18 +35,24 @@ def run(query: str) -> str:
         return json.dumps(output, ensure_ascii=False, default=str)
 
     except Exception as exc:
-        return json.dumps({"error": str(exc)})
+        msg = str(exc)
+        if "read-only transaction" in msg.lower():
+            return json.dumps({"error": READ_ONLY_ERROR_MESSAGE})
+        return json.dumps({"error": msg})
 
 
 @tool("execute_sql")
 def execute_sql(query: str) -> str:
-    """Run a read-only SQL SELECT query against the factory database.
+    """Run a read-only SQL query against the factory database.
 
-    Use this to answer questions about production data, downtime events, and trends.
-    Always use SELECT — INSERT, UPDATE, DELETE, and DROP are blocked.
-    Returns a JSON string with column names and all rows.
+    The transaction is set to READ ONLY at the database level, so SELECT, CTE
+    (WITH ... SELECT), VALUES, and other read-only constructs are all allowed.
+    INSERT / UPDATE / DELETE / DDL — including writes hidden inside CTEs — are
+    rejected by Postgres.
+
+    Returns a JSON string with column names and rows (truncated to 500).
 
     Args:
-        query: A valid PostgreSQL SELECT query.
+        query: A read-only PostgreSQL query.
     """
     return run(query)

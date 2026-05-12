@@ -24,6 +24,7 @@ from langchain.agents import create_agent
 from langgraph.errors import GraphRecursionError
 
 from app.config import settings
+from app.database import SessionLocal
 from app.llm import get_chat_model
 import app.tools.execute_sql as sql_tool
 import app.tools.semantic_search as search_tool
@@ -32,6 +33,17 @@ import app.tools.python_exec as python_tool
 from app.models import AgentMemory
 
 from app.query_log.log import save as save_log
+
+
+def _open_save_session():
+    """Open a fresh session for the final query_log write.
+
+    The session FastAPI injects into /chat is closed when the route returns its
+    StreamingResponse — before this generator finishes — so committing through
+    it loses rows after the first request. Tests patch this helper to redirect
+    saves into the in-memory test engine.
+    """
+    return SessionLocal()
 
 
 # ── Mode registry ─────────────────────────────────────────────────────────────
@@ -155,7 +167,7 @@ def run(question: str, db: Session, mode: str = "simple") -> Generator[dict[str,
     tools = spec["tools"]
     max_iterations = spec["max_iterations"]
 
-    model = get_chat_model()
+    model = get_chat_model(mode=mode)
     system = _build_system_prompt(mode=mode, db=db)
 
     graph = create_agent(model, tools=tools, system_prompt=system)
@@ -227,33 +239,29 @@ def run(question: str, db: Session, mode: str = "simple") -> Generator[dict[str,
             yield from _drain_tool_ends()
 
     except GraphRecursionError:
-        for entry in tool_calls_log:
-            entry.pop("_id", None)
-        save_log(
-            db=db,
-            question=question,
-            tool_calls=tool_calls_log,
-            answer="[max iterations reached]",
-            llm_provider=settings.llm_provider,
-            agent_mode=mode,
-        )
+        final_answer = "[max iterations reached]"
         yield {
             "type": "error",
             "message": "Reached maximum tool iterations. Please rephrase your question.",
         }
-        return
-
-    for entry in tool_calls_log:
-        entry.pop("_id", None)
-
-    save_log(
-        db=db,
-        question=question,
-        tool_calls=tool_calls_log,
-        answer=final_answer,
-        llm_provider=settings.llm_provider,
-        agent_mode=mode,
-    )
+    except Exception as exc:
+        final_answer = f"[error: {exc}]"
+        yield {"type": "error", "message": str(exc)}
+    finally:
+        for entry in tool_calls_log:
+            entry.pop("_id", None)
+        save_db = _open_save_session()
+        try:
+            save_log(
+                db=save_db,
+                question=question,
+                tool_calls=tool_calls_log,
+                answer=final_answer,
+                llm_provider=settings.llm_provider,
+                agent_mode=mode,
+            )
+        finally:
+            save_db.close()
 
 
 def _extract_text(content) -> str:

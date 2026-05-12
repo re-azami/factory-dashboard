@@ -212,6 +212,24 @@ class TestAgentModes:
         rows = in_memory_db.query(QueryLog).all()
         assert rows[0].agent_mode == "deep"
 
+    def test_run_passes_simple_mode_to_get_chat_model(self, in_memory_db):
+        final = AIMessage(content="ok")
+        with patch.object(agent, "get_chat_model", return_value=_fake_model([final])) as factory:
+            list(agent.run(question="q", db=in_memory_db, mode="simple"))
+        assert factory.call_args.kwargs.get("mode") == "simple"
+
+    def test_run_passes_deep_mode_to_get_chat_model(self, in_memory_db):
+        final = AIMessage(content="ok")
+        with patch.object(agent, "get_chat_model", return_value=_fake_model([final])) as factory:
+            list(agent.run(question="q", db=in_memory_db, mode="deep"))
+        assert factory.call_args.kwargs.get("mode") == "deep"
+
+    def test_run_with_unknown_mode_passes_simple_to_factory(self, in_memory_db):
+        final = AIMessage(content="ok")
+        with patch.object(agent, "get_chat_model", return_value=_fake_model([final])) as factory:
+            list(agent.run(question="q", db=in_memory_db, mode="not-a-mode"))
+        assert factory.call_args.kwargs.get("mode") == "simple"
+
 
 class TestDeepModePrompt:
     def test_deep_prompt_adds_research_instructions(self):

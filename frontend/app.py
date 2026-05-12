@@ -41,13 +41,13 @@ MODE_LABELS = {
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("### 🏭 Factory Dashboard")
+    st.markdown("### Factory Dashboard")
     st.caption("AI analytics for production data")
     st.divider()
 
     page = st.radio(
         "Navigation",
-        ["💬 Chat", "📋 Query History"],
+        ["Chat", "Query History"],
         label_visibility="collapsed",
     )
 
@@ -65,7 +65,7 @@ with st.sidebar:
 
     st.divider()
 
-    if st.button("🗑️ Clear chat"):
+    if st.button("Clear chat"):
         st.session_state.messages = []
         st.rerun()
 
@@ -272,8 +272,8 @@ def _stream_assistant_response(question: str, mode: str) -> list[dict]:
 
 
 # ── Chat page ─────────────────────────────────────────────────────────────────
-if page == "💬 Chat":
-    st.title("🏭 Factory Dashboard — Ask a Question")
+if page == "Chat":
+    st.title("Ask a Question")
     st.caption("Ask anything about production data, downtime events, or trends.")
 
     # Display past messages
@@ -298,8 +298,8 @@ if page == "💬 Chat":
         st.session_state.messages.append({"role": "assistant", "blocks": blocks})
 
 # ── History page ──────────────────────────────────────────────────────────────
-elif page == "📋 Query History":
-    st.title("📋 Query History")
+elif page == "Query History":
+    st.title("Query History")
     st.write("All past questions and the agent's answers — useful for debugging.")
 
     limit = st.slider("Show last N queries", 5, 100, 20)

@@ -6,7 +6,7 @@ from streamlit.testing.v1 import AppTest
 
 
 def _switch_to_history(at):
-    at.sidebar.radio[0].set_value("📋 Query History")
+    at.sidebar.radio[0].set_value("Query History")
     at.run()
     return at
 

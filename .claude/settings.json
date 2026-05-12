@@ -6,7 +6,32 @@
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
       "Bash(xargs ls -la)",
-      "Bash(Start-Process \"http://localhost:8501\")"
+      "Bash(Start-Process \"http://localhost:8501\")",
+      "PowerShell(docker compose exec -T frontend bash -c \"grep -roE 'chatAvatar[a-zA-Z-]+|stChatMessage[a-zA-Z]+' /usr/local/lib/python3.11/site-packages/streamlit/static/static/js/ 2>/dev/null | sort -u | head -20\")",
+      "PowerShell(docker compose exec -T frontend bash -c \"grep -roE 'stStatusWidget|stExpanderDetails|stExpanderHeader|stMainBlockContainer|stMain[a-zA-Z]+|stAppViewContainer|block-container' /usr/local/lib/python3.11/site-packages/streamlit/static/static/js/ 2>/dev/null | sort -u | head -20\")",
+      "Bash(ls \"C:\\\\Users\\\\User\\\\.claude\\\\plans\\\\\" 2>nul || mkdir \"C:\\\\Users\\\\User\\\\.claude\\\\plans\\\\\")",
+      "Read(//c/Users/User/.claude/**)",
+      "PowerShell(if \\(-not \\(Test-Path \"C:\\\\Users\\\\User\\\\.claude\\\\plans\"\\)\\) { New-Item -ItemType Directory -Path \"C:\\\\Users\\\\User\\\\.claude\\\\plans\" -Force | Out-Null }; Test-Path \"C:\\\\Users\\\\User\\\\.claude\\\\plans\")",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\User\\\\OneDrive\\\\Documents\\\\Agentic\\\\agentic_projects\\\\factory-dashboard\" -Recurse -Name)",
+      "Bash(Select-String -Pattern \"\\(llm|agent|config\\)\")",
+      "Bash(Start-Sleep -Seconds 3)",
+      "PowerShell(docker compose exec -T backend ls /app)",
+      "PowerShell(docker compose exec -T backend bash -c \"pip install -q pytest pytest-asyncio pytest-mock httpx openpyxl 2>&1 | tail -3\")",
+      "PowerShell(docker compose exec -T backend ls /app/tests 2>&1)",
+      "PowerShell(docker compose cp backend/tests factory-dashboard-backend-1:/app/tests)",
+      "PowerShell(docker compose exec -T backend python -m pytest /app/tests/test_execute_sql.py -v 2>&1)",
+      "PowerShell(tail -60)",
+      "PowerShell(docker cp backend/tests factory-dashboard-backend-1:/app/tests)",
+      "PowerShell(docker cp backend/app/tools/execute_sql.py factory-dashboard-backend-1:/app/app/tools/execute_sql.py)",
+      "PowerShell(docker cp backend/tests/_integration_check.py factory-dashboard-backend-1:/app/_integration_check.py)",
+      "PowerShell(docker compose exec -T backend python /app/_integration_check.py)",
+      "PowerShell(docker compose exec -T backend rm /app/_integration_check.py)",
+      "PowerShell(docker compose exec -T backend python -m pytest /app/tests -q 2>&1)",
+      "PowerShell(docker cp frontend/tests factory-dashboard-frontend-1:/app/tests 2>&1)",
+      "PowerShell(docker compose exec -T frontend bash -c \"pip install -q pytest pytest-mock 2>&1 | Select-Object -Last 2; python -m pytest /app/tests -q\" 2>&1)",
+      "Bash(git check-ignore *)",
+      "Bash(findstr /i \"env\")",
+      "PowerShell(Remove-Item -Path \".env_back\" -Force; if \\(-not \\(Test-Path \".env_back\"\\)\\) { \"deleted\" } else { \"still present\" })"
     ]
   }
 }
