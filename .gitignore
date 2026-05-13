@@ -44,3 +44,9 @@ logs/
 
 # Alembic — don't ignore versions/, only the compiled cache
 migrations/__pycache__/
+
+# Playwright CLI scratch output (snapshots, screenshots, console logs)
+.playwright-cli/
+tests/e2e/*.png
+backend/*.png
+backend/*.yml
