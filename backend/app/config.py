@@ -43,5 +43,16 @@ class Settings:
     admin_username: str = os.getenv("ADMIN_USERNAME", "")
     admin_password: str = os.getenv("ADMIN_PASSWORD", "")
 
+    # JWT — used by app.auth.jwt_tokens. Empty `jwt_secret` raises at first
+    # encode/decode call (never at import time, so tests that don't touch
+    # auth stay unaffected).
+    jwt_secret: str = os.getenv("JWT_SECRET", "")
+    jwt_algorithm: str = os.getenv("JWT_ALGORITHM", "HS256")
+    jwt_access_token_minutes: int = int(os.getenv("JWT_ACCESS_TOKEN_MINUTES", "720"))  # 12 h
+
+    # CORS — comma-separated list of allowed frontend origins. Default is the
+    # Streamlit dev port; production deployments override via env.
+    frontend_origin: str = os.getenv("FRONTEND_ORIGIN", "http://localhost:8501")
+
 
 settings = Settings()

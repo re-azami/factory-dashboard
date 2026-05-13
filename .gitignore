@@ -17,6 +17,9 @@ build/
 data/raw/
 data/models/
 
+# Local prompt drafts — kept out of git
+prompts/
+
 # Jupyter
 .ipynb_checkpoints/
 *.ipynb

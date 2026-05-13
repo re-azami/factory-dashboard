@@ -25,6 +25,8 @@ os.environ.setdefault("OPENAI_MODEL_DEEP", "gpt-4o")
 os.environ.setdefault("DEEP_THINKING_BUDGET_TOKENS", "16000")
 os.environ.setdefault("DEEP_REASONING_EFFORT", "high")
 os.environ.setdefault("EMBEDDINGS_URL", "http://embeddings:8001")
+os.environ.setdefault("JWT_SECRET", "test-jwt-secret-do-not-use-in-prod")
+os.environ.setdefault("FRONTEND_ORIGIN", "http://localhost:8501")
 
 # Make `app` importable from backend/ when pytest is run from anywhere.
 BACKEND_ROOT = Path(__file__).resolve().parents[1]

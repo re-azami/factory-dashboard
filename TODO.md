@@ -41,30 +41,7 @@ _(empty)_
 
 ## To Do
 
----
-
-## Backlog
-
-### TEST — Playwright integration testing
-
-#### TEST-002 — Shared test fixtures
-- [ ] Reset / seed DB fixture
-- [ ] `login_as(role)` helper that drops a session cookie / token
-- [ ] Screenshot on failure
-- [ ] CI-friendly run (artifacts on failure)
-
----
-
 ### AUTH — Login, users, permissions
-
-#### AUTH-002 — Auth endpoints + permission dependency
-- [ ] `POST /auth/login` returns session token (decision: JWT vs. signed cookie — see Open Decisions)
-- [ ] `POST /auth/logout`
-- [ ] `GET /auth/me` returns user + permission list
-- [ ] `require_permission(name)` FastAPI dependency
-- [ ] Tighten CORS to only the frontend origin
-- [ ] Playwright integration test passes
-- _Depends on:_ AUTH-001
 
 #### AUTH-003 — Frontend login page + auth state
 - [ ] Login page with username / password
@@ -201,6 +178,18 @@ _(empty)_
 - [ ] Updated on successful login (AUTH-002)
 - [ ] Shown on profile page (AUTH-014) and admin users list
 - _Depends on:_ AUTH-002
+
+---
+
+## Backlog
+
+### TEST — Playwright integration testing
+
+#### TEST-002 — Shared test fixtures
+- [ ] Reset / seed DB fixture
+- [ ] `login_as(role)` helper that drops a session cookie / token
+- [ ] Screenshot on failure
+- [ ] CI-friendly run (artifacts on failure)
 
 ---
 
@@ -482,6 +471,15 @@ Seed list (extend as needed; target ≥ 20):
 ---
 
 ## Done
+
+#### AUTH-002 — Auth endpoints + permission dependency _(2026-05-13)_
+- [x] `POST /auth/login` returns session token (decision: JWT vs. signed cookie — see Open Decisions)
+- [x] `POST /auth/logout`
+- [x] `GET /auth/me` returns user + permission list
+- [x] `require_permission(name)` FastAPI dependency
+- [x] Tighten CORS to only the frontend origin
+- [x] Playwright integration test passes
+- _Depends on:_ AUTH-001
 
 ### TEST-001 — Configure Playwright _(2026-05-13)_
 - [x] `pytest-playwright` + chromium installed

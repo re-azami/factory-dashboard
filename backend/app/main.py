@@ -2,9 +2,12 @@
 FastAPI application entry point.
 
 Routes:
-  POST /chat     — send a question, get a streaming answer from the agent
-  GET  /history  — last N query log entries (for debugging)
-  GET  /health   — liveness check
+  POST /chat         — send a question, get a streaming answer from the agent
+  GET  /history      — last N query log entries (for debugging)
+  GET  /health       — liveness check
+  POST /auth/login   — exchange username/password for a JWT
+  POST /auth/logout  — stateless ack; client discards the token
+  GET  /auth/me      — current user + permission list
 
 Interactive API docs:
   - Swagger UI: http://localhost:8000/docs
@@ -23,6 +26,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
+from app.auth.routes import router as auth_router
 from app.auth.seed import seed_admin
 from app.config import settings
 from app.database import SessionLocal, get_db
@@ -56,6 +60,8 @@ The backend exposes a small HTTP surface:
   tool calls, errors).
 * **GET `/history`** — recent `query_log` entries, newest first.
 * **GET `/health`** — liveness probe.
+* **POST `/auth/login`**, **POST `/auth/logout`**, **GET `/auth/me`** —
+  JWT-based session management (see `backend/app/auth/`).
 
 The agent loop, available tools, and database schema docs live in
 `backend/app/agent.py` and `backend/app/schema_docs/`.
@@ -66,7 +72,13 @@ tags_metadata = [
     {"name": "chat", "description": "Streaming LLM agent endpoints."},
     {"name": "history", "description": "Audit trail of past agent questions and answers."},
     {"name": "system", "description": "Health and liveness checks."},
+    {"name": "auth", "description": "Login, logout, and current-user info."},
 ]
+
+
+# Comma-separated origin list; trim whitespace and drop empties so a stray
+# trailing comma in the env var doesn't turn into an empty-string origin.
+_ALLOWED_ORIGINS = [o.strip() for o in settings.frontend_origin.split(",") if o.strip()]
 
 
 app = FastAPI(
@@ -81,10 +93,13 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # tighten this for production
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=_ALLOWED_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
+
+app.include_router(auth_router)
 
 
 # Tables are managed by Alembic — run `alembic upgrade head` to create/update them.

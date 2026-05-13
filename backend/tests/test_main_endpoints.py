@@ -176,3 +176,69 @@ class TestHistory:
     def test_limit_capped_at_200(self, client):
         resp = client.get("/history?limit=999")
         assert resp.status_code == 422
+
+
+class TestCORS:
+    """Edge case 20: CORS preflight must allow the configured frontend origin
+    and refuse anything else. Edge case 21: health still works after the
+    tightened middleware."""
+
+    def test_preflight_from_allowed_origin_is_echoed(self, client):
+        resp = client.options(
+            "/health",
+            headers={
+                "Origin": "http://localhost:8501",
+                "Access-Control-Request-Method": "GET",
+                "Access-Control-Request-Headers": "Authorization",
+            },
+        )
+        # FastAPI CORS middleware returns 200 on preflight when origin is allowed.
+        assert resp.status_code == 200
+        assert resp.headers.get("access-control-allow-origin") == "http://localhost:8501"
+
+    def test_preflight_from_disallowed_origin_is_not_echoed(self, client):
+        resp = client.options(
+            "/health",
+            headers={
+                "Origin": "http://evil.example",
+                "Access-Control-Request-Method": "GET",
+                "Access-Control-Request-Headers": "Authorization",
+            },
+        )
+        # The CORS middleware must NOT echo the evil origin back. (Status may
+        # be 400 from Starlette's CORS or 200 with the header absent; either
+        # way, the disallowed origin must not appear in Allow-Origin.)
+        assert resp.headers.get("access-control-allow-origin") != "http://evil.example"
+
+    def test_health_still_works_after_cors_tightening(self, client):
+        """Edge case 21: a plain GET /health (no Origin header) still returns 200."""
+        resp = client.get("/health")
+        assert resp.status_code == 200
+        assert resp.json() == {"status": "ok"}
+
+
+class TestAuthRoutesRegistered:
+    """Sanity: /auth/login, /auth/logout, /auth/me must be reachable (not 404)."""
+
+    def test_auth_routes_present_in_app(self, client):
+        paths = {r.path for r in client.app.routes}
+        assert "/auth/login" in paths
+        assert "/auth/logout" in paths
+        assert "/auth/me" in paths
+
+    def test_auth_login_is_not_404(self, client):
+        # Empty body → 422 (Pydantic validation), not 404 — proves route exists.
+        resp = client.post("/auth/login", json={})
+        assert resp.status_code != 404
+        assert resp.status_code == 422
+
+    def test_auth_logout_is_not_404(self, client):
+        resp = client.post("/auth/logout")
+        assert resp.status_code != 404
+        assert resp.status_code == 200
+
+    def test_auth_me_is_not_404(self, client):
+        # No token → 401, not 404 — proves the route is wired up.
+        resp = client.get("/auth/me")
+        assert resp.status_code != 404
+        assert resp.status_code == 401

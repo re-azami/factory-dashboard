@@ -56,10 +56,20 @@
       "Bash(playwright-cli click *)",
       "Bash(playwright-cli console *)",
       "Bash(playwright-cli --raw snapshot --depth=10)",
-      "Bash(playwright-cli requests *)"
+      "Bash(playwright-cli requests *)",
+      "Bash(git push *)",
+      "PowerShell(python -c \"import jwt; print\\(jwt.__version__\\)\")",
+      "Bash(echo \"BACKEND_EXIT=$?\")",
+      "PowerShell(python -m pytest backend/tests -q | Out-Null; \"BACKEND_EXIT=$LASTEXITCODE\")",
+      "Bash(mv \"c:/Users/User/OneDrive/Documents/Agentic/agentic_projects/factory-dashboard/.claude/commands/scrum_master_rules.md\" \"c:/Users/User/OneDrive/Documents/Agentic/agentic_projects/factory-dashboard/.claude/scrum_master_rules.md\")",
+      "Bash(Select-String -Pattern \"prompts\")",
+      "Bash(Select-Object -First 50)",
+      "PowerShell(Get-ChildItem -Recurse -Depth 3 -Directory | Where-Object { $_.Name -eq \"prompts\" } | Select-Object FullName)",
+      "PowerShell(git rm --cached -r prompts/)"
     ],
     "additionalDirectories": [
-      "C:\\Users\\User\\OneDrive\\Documents\\Agentic\\agentic_projects\\factory-dashboard\\.claude"
+      "C:\\Users\\User\\OneDrive\\Documents\\Agentic\\agentic_projects\\factory-dashboard\\.claude",
+      "c:\\Users\\User\\OneDrive\\Documents\\Agentic\\agentic_projects\\factory-dashboard\\.claude\\commands"
     ]
   }
 }
