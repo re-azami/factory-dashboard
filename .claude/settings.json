@@ -31,7 +31,35 @@
       "PowerShell(docker compose exec -T frontend bash -c \"pip install -q pytest pytest-mock 2>&1 | Select-Object -Last 2; python -m pytest /app/tests -q\" 2>&1)",
       "Bash(git check-ignore *)",
       "Bash(findstr /i \"env\")",
-      "PowerShell(Remove-Item -Path \".env_back\" -Force; if \\(-not \\(Test-Path \".env_back\"\\)\\) { \"deleted\" } else { \"still present\" })"
+      "PowerShell(Remove-Item -Path \".env_back\" -Force; if \\(-not \\(Test-Path \".env_back\"\\)\\) { \"deleted\" } else { \"still present\" })",
+      "Bash(playwright-cli --help)",
+      "Bash(playwright-cli open *)",
+      "Bash(playwright-cli snapshot *)",
+      "Bash(playwright-cli fill *)",
+      "Bash(playwright-cli press *)",
+      "Bash(playwright-cli screenshot *)",
+      "Bash(playwright-cli close *)",
+      "PowerShell(if \\(Test-Path .claude/commands\\) { Get-ChildItem .claude/commands } else { \"no project commands dir\" }; \"---\"; if \\(Test-Path \"$env:USERPROFILE\\\\.claude\\\\commands\"\\) { Get-ChildItem \"$env:USERPROFILE\\\\.claude\\\\commands\" | Select-Object -First 10 -ExpandProperty Name } else { \"no user commands dir\" })",
+      "Bash(mkdir -p .claude/commands)",
+      "Skill(playwright-cli)",
+      "Skill(playwright-cli:*)",
+      "Bash(tasklist /FI \"IMAGENAME eq Docker Desktop.exe\")",
+      "PowerShell(Get-Process \"Docker Desktop\" -ErrorAction SilentlyContinue)",
+      "Bash(netstat -ano)",
+      "PowerShell(try { \\(Invoke-WebRequest http://localhost:8000/ -UseBasicParsing -TimeoutSec 5\\).StatusCode } catch { \"backend err: $_\" }; try { \\(Invoke-WebRequest http://localhost:8501/ -UseBasicParsing -TimeoutSec 5\\).StatusCode } catch { \"frontend err: $_\" })",
+      "PowerShell(try { \\(Invoke-WebRequest http://localhost:8000/docs -UseBasicParsing -TimeoutSec 5\\).StatusCode } catch { \"err: $_\" })",
+      "Bash(Get-Content .env -ErrorAction SilentlyContinue)",
+      "Bash(Select-String -Pattern \"ADMIN_\")",
+      "PowerShell($env:ADMIN_USERNAME='admin'; $env:ADMIN_PASSWORD='admin'; python -m pytest tests/e2e/test_auth_001_seed.py -v 2>&1 | Select-Object -Last 60)",
+      "Bash(ADMIN_USERNAME=admin ADMIN_PASSWORD=admin python -m pytest tests/e2e -q --timeout=120)",
+      "PowerShell($env:ADMIN_USERNAME='admin'; $env:ADMIN_PASSWORD='admin'; python -m pytest tests/e2e -q 2>&1 | Select-Object -Last 30)",
+      "Bash(playwright-cli click *)",
+      "Bash(playwright-cli console *)",
+      "Bash(playwright-cli --raw snapshot --depth=10)",
+      "Bash(playwright-cli requests *)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\User\\OneDrive\\Documents\\Agentic\\agentic_projects\\factory-dashboard\\.claude"
     ]
   }
 }

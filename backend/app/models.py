@@ -265,7 +265,46 @@ class QueryLog(Base):
     agent_mode: Mapped[str | None] = mapped_column(String(16))                  # 'simple' | 'deep'
 
 
-# ── 9. agent_memory ───────────────────────────────────────────────────────────
+# ── 9. users / permissions / user_permissions ────────────────────────────────
+# Auth tables. The factory_ro read-only role used by the SQL agent MUST NOT
+# have SELECT on `users` — the password_hash column would leak to LLM queries.
+# The migration that creates these tables explicitly REVOKEs that grant
+# (migration 001 set ALTER DEFAULT PRIVILEGES … GRANT SELECT, so by default
+# new tables become readable to factory_ro).
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    username: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
+    password_hash: Mapped[str] = mapped_column(Text, nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="true")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+
+
+class Permission(Base):
+    __tablename__ = "permissions"
+
+    name: Mapped[str] = mapped_column(Text, primary_key=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+
+
+class UserPermission(Base):
+    __tablename__ = "user_permissions"
+    __table_args__ = (
+        Index("ix_user_permissions_user_id", "user_id"),
+        Index("ix_user_permissions_permission_name", "permission_name"),
+    )
+
+    user_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
+    )
+    permission_name: Mapped[str] = mapped_column(
+        Text, ForeignKey("permissions.name", ondelete="CASCADE"), primary_key=True
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
+
+
+# ── 10. agent_memory ──────────────────────────────────────────────────────────
 class AgentMemory(Base):
     """Persistent notes the deep-research agent has written about prior chats.
 

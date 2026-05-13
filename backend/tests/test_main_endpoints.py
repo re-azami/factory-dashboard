@@ -35,10 +35,15 @@ def client():
     # code paths land in the in-memory SQLite instead of the real DB.
     patcher = patch("app.agent._open_save_session", lambda: TestSession())
     patcher.start()
+    # The FastAPI lifespan calls SessionLocal() to run the admin seed; point
+    # it at the test engine so seeding sees the tables this fixture created.
+    lifespan_patcher = patch("app.main.SessionLocal", TestSession)
+    lifespan_patcher.start()
     try:
         with TestClient(fastapi_app) as c:
             yield c
     finally:
+        lifespan_patcher.stop()
         patcher.stop()
         fastapi_app.dependency_overrides.clear()
         engine.dispose()

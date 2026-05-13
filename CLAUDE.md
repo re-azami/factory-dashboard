@@ -29,6 +29,16 @@ docker compose logs -f backend
 
 # Rebuild backend after dependency changes
 docker compose build backend && docker compose up -d backend
+
+# Unit + integration tests (run against in-memory SQLite, no services needed)
+python -m pytest backend/tests        # 203 tests
+python -m pytest frontend/tests       # 22 tests
+
+# End-to-end tests via Playwright (requires backend + frontend running)
+python -m pip install -r tests/e2e/requirements-test.txt
+python -m playwright install chromium    # one-time, ~110 MB
+python -m pytest tests/e2e               # headless
+python -m pytest tests/e2e --headed      # watch the browser
 ```
 
 **Services:** PostgreSQL 5432, FastAPI 8000, Streamlit 8501, embeddings 8001.

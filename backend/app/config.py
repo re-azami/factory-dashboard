@@ -39,5 +39,9 @@ class Settings:
     # ends up at /data/raw/factory inside the container.
     factory_data_dir: str = os.getenv("FACTORY_DATA_DIR", "/data/raw/factory")
 
+    # Seed admin (consumed once by app.auth.seed on startup if the users table is empty)
+    admin_username: str = os.getenv("ADMIN_USERNAME", "")
+    admin_password: str = os.getenv("ADMIN_PASSWORD", "")
+
 
 settings = Settings()
