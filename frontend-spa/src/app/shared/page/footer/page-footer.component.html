@@ -1,0 +1,37 @@
+@for (item of menu; track $index) {
+
+<!-- SINGLE MENU ITEM -->
+@if (item.children.length === 1) {
+<button mat-button [class.button-selected]="id === item.id">
+    <div class="menu-button" (click)="click(item.children[0])">
+        <mat-icon [color]="id === item.id ? 'accent' : ''">{{ item.icon }}</mat-icon>
+        <div class="menu-button-title" [class.menu-button-selected]="id === item.id">{{ item.title }}</div>
+    </div>
+</button>
+}
+
+<!-- MULTIPLE MENU ITEM -->
+@else {
+<button
+    mat-button
+    [matMenuTriggerFor]="subMenu"
+    (menuOpened)="openedMenu = $index"
+    (menuClosed)="openedMenu = undefined"
+    [class.button-opened]="openedMenu === $index"
+    [class.button-selected]="id === item.id"
+>
+    <div class="menu-button">
+        <mat-icon [color]="id === item.id ? 'accent' : ''">{{ item.icon }}</mat-icon>
+        <div class="menu-button-title" [class.menu-button-selected]="id === item.id">{{ item.title }}</div>
+    </div>
+</button>
+<mat-menu #subMenu="matMenu">
+    @for (child of item.children; track $index) {
+    @if (child === 'DIVIDER') { <mat-divider></mat-divider> }
+    @else {
+    <button mat-menu-item (click)="click(child)">{{ child.title }}</button>
+    }
+    }
+</mat-menu>
+}
+}

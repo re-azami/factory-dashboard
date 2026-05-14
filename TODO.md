@@ -41,6 +41,59 @@ _(empty)_
 
 ## To Do
 
+### UI — Theme + PWA
+
+#### UI-001a-dark — Add dark mode to Angular SPA (deferred from UI-001a)
+- [ ] Define dark palette as overrides on top of `theme/style/factory/color.scss` light tokens
+- [ ] Add `AppService.colorMode` + `toggleColorMode()` (RxJS Subject) — pattern not in reference, build it here
+- [ ] Add a toggle button to the page header (Persian aria-labels "تغییر به حالت تاریک"/"تغییر به حالت روشن")
+- [ ] Persist choice to localStorage under `factory-dashboard:color-mode` (`LIGHT`/`DARK`)
+- [ ] Angular unit tests + Playwright e2e
+- _Depends on:_ UI-001a
+
+#### UI-001b — Port Chat page to Angular SPA
+- [ ] Build Chat route in the new Angular SPA
+- [ ] NDJSON stream parser for `POST /chat` (text, tool_start, tool_end, error events)
+- [ ] Tool-card collapsible component with SQL/Python syntax highlighting
+- [ ] Persian/RTL handling for mixed-script messages
+- [ ] Agent mode selector (Simple / Deep) — reuse from existing Streamlit semantics
+- [ ] Angular unit tests + Playwright e2e
+- _Depends on:_ UI-001a
+
+#### UI-001c — Port Query History page to Angular SPA
+- [ ] Build History route in the new Angular SPA
+- [ ] `GET /history?limit=N` fetch + paginated render
+- [ ] Tool-calls expandable JSON view
+- [ ] Angular unit tests + Playwright e2e
+- [ ] Once chat + history parity is verified, remove Streamlit `frontend/` service from docker-compose (track in a follow-up cleanup task — do not delete in this one)
+- _Depends on:_ UI-001b
+
+#### UI-001d — Retire Streamlit frontend
+- [ ] Remove `frontend/` service from docker-compose and stop building/publishing its image
+- [ ] Delete `frontend/` Python code and `frontend/tests/`
+- [ ] Drop Streamlit-specific Playwright tests in `tests/e2e/` (replaced by SPA-targeted ones)
+- [ ] Update CLAUDE.md (Common Commands, Architecture sections) to reflect Angular SPA
+- _Depends on:_ UI-001c
+
+#### UI-002 — PWA support
+- [ ] `manifest.json` (name, icons, theme color, start URL)
+- [ ] Service worker (offline shell, cache strategy)
+- [ ] Install prompt
+- [ ] Feasibility note if staying on Streamlit (may need custom component or proxy)
+- _Depends on:_ UI-001
+
+#### UI-003 — Mobile-responsive layout pass
+- [ ] Test all pages at 360px and 768px viewports
+- [ ] RTL still correct on mobile
+- [ ] Tap targets ≥ 44px
+
+#### UI-004 — Playwright: theme + PWA
+- [ ] Theme switch persists
+- [ ] `manifest.json` served with correct content-type
+- [ ] Service worker registers (`navigator.serviceWorker.controller`)
+- [ ] On mobile viewport, install prompt is reachable
+- _Depends on:_ UI-001, UI-002, TEST-001
+
 ### AUTH — Login, users, permissions
 
 #### AUTH-003 — Frontend login page + auth state
@@ -336,35 +389,6 @@ _(empty)_
 
 ---
 
-### UI — Theme + PWA
-
-#### UI-001 — New theme
-- [ ] **Resolve Open Decision #1 (frontend stack) before starting**
-- [ ] Define palette (likely dark + light)
-- [ ] Apply via [frontend/styles.py](frontend/styles.py) or replacement frontend
-- [ ] Theme toggle in header
-
-#### UI-002 — PWA support
-- [ ] `manifest.json` (name, icons, theme color, start URL)
-- [ ] Service worker (offline shell, cache strategy)
-- [ ] Install prompt
-- [ ] Feasibility note if staying on Streamlit (may need custom component or proxy)
-- _Depends on:_ UI-001
-
-#### UI-003 — Mobile-responsive layout pass
-- [ ] Test all pages at 360px and 768px viewports
-- [ ] RTL still correct on mobile
-- [ ] Tap targets ≥ 44px
-
-#### UI-004 — Playwright: theme + PWA
-- [ ] Theme switch persists
-- [ ] `manifest.json` served with correct content-type
-- [ ] Service worker registers (`navigator.serviceWorker.controller`)
-- [ ] On mobile viewport, install prompt is reachable
-- _Depends on:_ UI-001, UI-002, TEST-001
-
----
-
 ### MODELS — New models + external auth
 
 #### MODELS-001 — Add Gemma 4 model
@@ -471,6 +495,20 @@ Seed list (extend as needed; target ≥ 20):
 ---
 
 ## Done
+
+#### UI-001a — Angular SPA scaffold _(2026-05-14)_
+- [x] **Resolve Open Decision #1 (frontend stack)** — RESOLVED 2026-05-14: Angular 21 SPA, NgModule-based, mirroring `temp/frontend-true/apps/admin/`
+- [x] Rebuilt `frontend-spa/` on Angular 21 (NgModule, not standalone). `@angular/core@21.2.13`, `@angular/material@21.2.11`, `@angular/build@21.2.11`.
+- [x] Full @webilix family installed: `helper-library@6.1.7`, `jalali-date-time@2.0.9`, `ngx-form@5.2.5`, `ngx-helper@0.1.50` — and used (NgxHelperModule.forRoot, NgxFormModule.forRoot in AppModule).
+- [x] Supporting deps installed: `echarts@6.0.0`, `ngx-echarts@21.0.0`, `device-detector-js@3.0.3`, `ol@10.9.0`.
+- [x] Theme structure mirrors reference: `frontend-spa/theme/fonts/yekan/` (33 files), `theme/fonts/icon/` (6 files), `theme/style/factory/{color,palette}.scss` (byte-identical to reference admin variants), `theme/style/styles.scss`.
+- [x] Color tokens EXACT from reference: `--primaryColor: rgb(56,77,84)`, `--accentColor: rgb(228,190,146)`, `--backgroundColor: rgb(238,242,246)`, `--warnColor: rgb(255,49,27)`, `--whiteColor: rgb(255,255,255)`, etc.
+- [x] **Light-only**. Dark mode deferred to UI-001a-dark.
+- [x] Page-header strip-down: copied reference visuals/icons/Persian labels ("داشبورد کارخانه", "داشبورد", "درباره نرم‌افزار", "اپلیکیشن با موفقیت به‌روزرسانی شد."); dropped ApiService/UserService/ConfigService/VersionService/AppSwitcher/AlertButton/sign-out flows.
+- [x] Placeholder dashboard page renders "صفحه چت و تاریخچه به‌زودی اضافه می‌شوند".
+- [x] docker-compose: `frontend-spa` service on port 4200 alongside Streamlit on 8501.
+- [x] Karma+Jasmine: 45 tests authored (Stage 2) + a few existing = 47 total, all green.
+- [x] Playwright e2e at `tests/e2e/test_ui_001a_scaffold.py`: 7 tests (Persian title, RTL, dashboard placeholder, header title/menu/about labels, reference color tokens applied, Iran-Yekan font loaded).
 
 #### AUTH-002 — Auth endpoints + permission dependency _(2026-05-13)_
 - [x] `POST /auth/login` returns session token (decision: JWT vs. signed cookie — see Open Decisions)

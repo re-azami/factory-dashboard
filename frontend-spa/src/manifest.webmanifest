@@ -1,0 +1,10 @@
+{
+    "name": "داشبورد کارخانه",
+    "short_name": "داشبورد کارخانه",
+    "theme_color": "#384d54",
+    "background_color": "#eef2f6",
+    "display": "standalone",
+    "scope": "./",
+    "start_url": "./",
+    "icons": []
+}

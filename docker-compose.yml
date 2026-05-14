@@ -68,5 +68,16 @@ services:
       - backend
     restart: unless-stopped
 
+  # Angular SPA — runs alongside the Streamlit frontend during the migration.
+  # Streamlit is on 8501, this is on 4200. Both hit the same backend; CORS
+  # whitelists both via FRONTEND_ORIGIN.
+  frontend-spa:
+    build: ./frontend-spa
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
 volumes:
   postgres_data:

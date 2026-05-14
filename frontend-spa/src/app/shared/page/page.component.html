@@ -1,0 +1,26 @@
+<header>
+    <app-page-header [id]="id" [menu]="menu" [size]="size" [loading]="loading"></app-page-header>
+</header>
+
+<content>
+    <ng-content></ng-content>
+</content>
+
+<footer [@footer]="size.isMobile && menu.length > 0 ? 'show' : 'hide'">
+    <app-page-footer [id]="id" [menu]="menu"></app-page-footer>
+</footer>
+
+<!-- LOADING -->
+@if (loading) {
+<div class="loading"></div>
+}
+
+<!-- OFFLINE -->
+@if (offline) {
+<div class="offline">
+    <div class="message">خطا در اتصال به شبکه</div>
+</div>
+}
+
+<!-- UPDATE -->
+<div class="update" [@update]="updated ? 'show' : 'hide'" (click)="update()">به‌روزرسانی</div>

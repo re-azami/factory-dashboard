@@ -1,0 +1,99 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+
+    header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+
+        overflow: hidden;
+        display: block;
+        height: var(--headerHeight);
+        background-color: var(--primaryColor);
+    }
+
+    content {
+        flex: 1;
+
+        display: flex;
+        flex-direction: column;
+
+        width: var(--pageWidth);
+        max-width: calc(100vw - 2rem);
+        margin: 0 auto;
+        padding-bottom: 1rem;
+    }
+
+    footer {
+        position: sticky;
+        bottom: 0;
+        z-index: 100;
+
+        overflow: hidden;
+        display: block;
+        height: var(--footerHeight);
+        background-color: var(--primaryColor);
+    }
+
+    .loading {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 10001;
+
+        background-color: rgba(0, 0, 0, 0.32);
+    }
+
+    .offline {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 10001;
+        background-color: rgba(0, 0, 0, 0.32);
+
+        .message {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+
+            font-weight: 600;
+            height: var(--footerHeight);
+            color: var(--whiteColor);
+            background-color: var(--primaryColor);
+            text-shadow: 0 1px 0 var(--blackColor);
+        }
+    }
+
+    .update {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        position: fixed;
+        left: 1rem;
+        bottom: -35px;
+
+        cursor: pointer;
+        padding: 0 2rem;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--whiteColor);
+        border-radius: 5px;
+        background-color: var(--warnColor);
+        height: 35px;
+        z-index: 11000;
+        text-shadow: 0 1px 0 #000;
+        box-shadow: 0 0 5px 0 var(--primaryColor);
+    }
+}

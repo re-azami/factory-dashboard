@@ -14,6 +14,7 @@ import pytest
 
 BACKEND_URL = os.environ.get("E2E_BACKEND_URL", "http://localhost:8000")
 FRONTEND_URL = os.environ.get("E2E_FRONTEND_URL", "http://localhost:8501")
+SPA_URL = os.environ.get("E2E_SPA_URL", "http://localhost:4200")
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -36,3 +37,19 @@ def backend_url():
 @pytest.fixture
 def frontend_url():
     return FRONTEND_URL
+
+
+@pytest.fixture
+def spa_url():
+    return SPA_URL
+
+
+@pytest.fixture
+def require_spa(spa_url):
+    """Fail fast with a clear message if the Angular SPA isn't reachable."""
+    try:
+        r = httpx.get(spa_url, timeout=5.0)
+    except httpx.HTTPError as e:
+        pytest.exit(f"E2E precondition failed: spa unreachable at {spa_url} ({e})")
+    if r.status_code >= 500:
+        pytest.exit(f"E2E precondition failed: spa returned {r.status_code} at {spa_url}")

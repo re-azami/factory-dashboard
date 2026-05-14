@@ -1,0 +1,59 @@
+<div class="title">
+    @if (!size.isMobile) {
+    <div class="header-background"></div>
+    }
+
+    <mat-icon class="brand-icon">factory</mat-icon>
+    <div class="company">{{ applicationTitle }}</div>
+</div>
+
+@if (menu.length > 0) {
+<div class="menu" [@menu]="size.isMobile ? 'hide' : 'show'">
+    @for (item of menu; track $index) {
+    <!-- SINGLE MENU ITEM  -->
+    @if (item.children.length === 1) {
+    <button mat-button [disabled]="size.isMobile" (click)="click(item.children[0])">
+        <div class="menu-button">
+            <mat-icon [color]="id === item.id ? 'accent' : ''">{{ item.icon }}</mat-icon>
+            <div class="menu-button-title" [class.menu-button-selected]="id === item.id">{{ item.title }}</div>
+        </div>
+    </button>
+    }
+    <!-- MULTIPLE MENU ITEM  -->
+    @else {
+    <button
+        mat-button
+        [matMenuTriggerFor]="subMenu"
+        (menuOpened)="openedMenu = $index"
+        (menuClosed)="openedMenu = undefined"
+        [disabled]="size.isMobile"
+    >
+        <div class="menu-button" [class.menu-button-opened]="openedMenu === $index">
+            <mat-icon [color]="id === item.id ? 'accent' : ''">{{ item.icon }}</mat-icon>
+            <div class="menu-button-title" [class.menu-button-selected]="id === item.id">{{ item.title }}</div>
+        </div>
+    </button>
+    <mat-menu #subMenu="matMenu">
+        @for (child of item.children; track $index) {
+        @if (child === 'DIVIDER') {
+        <mat-divider></mat-divider>
+        } @else {
+        <button mat-menu-item (click)="click(child)">{{ child.title }}</button>
+        }
+        }
+    </mat-menu>
+    }
+    }
+</div>
+}
+
+<div class="seperator"></div>
+
+<div class="icons" [@icon]="'show'">
+    <button mat-icon-button type="button" (click)="about()" aria-label="درباره نرم‌افزار">
+        <mat-icon>info</mat-icon>
+    </button>
+</div>
+
+<!-- LOADING -->
+@if (loading) { <mat-progress-bar mode="indeterminate" color="accent"></mat-progress-bar> }

@@ -1,0 +1,113 @@
+{
+    "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+    "cli": { "analytics": false },
+    "version": 1,
+    "newProjectRoot": "projects",
+    "projects": {
+        "factory": {
+            "projectType": "application",
+            "schematics": {
+                "@schematics/angular:component": { "style": "scss", "standalone": false },
+                "@schematics/angular:directive": { "standalone": false },
+                "@schematics/angular:pipe": { "standalone": false }
+            },
+            "root": "",
+            "sourceRoot": "src",
+            "prefix": "app",
+            "architect": {
+                "build": {
+                    "builder": "@angular/build:application",
+                    "options": {
+                        "outputPath": { "base": "dist/factory", "browser": "" },
+                        "index": "src/index.html",
+                        "browser": "src/main.ts",
+                        "polyfills": ["zone.js"],
+                        "tsConfig": "tsconfig.app.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "src/favicon.ico",
+                            "src/assets",
+                            "src/manifest.webmanifest"
+                        ],
+                        "styles": [
+                            "node_modules/ol/ol.css",
+                            "theme/fonts/icon/material-icons-outlined.css",
+                            "theme/fonts/yekan/iran-yekan.css",
+                            "theme/style/factory/color.scss",
+                            "theme/style/factory/palette.scss",
+                            "theme/style/styles.scss"
+                        ],
+                        "scripts": [],
+                        "allowedCommonJsDependencies": [
+                            "@webilix/helper-library",
+                            "@webilix/jalali-date-time",
+                            "device-detector-js",
+                            "color-name",
+                            "rbush"
+                        ]
+                    },
+                    "configurations": {
+                        "production": {
+                            "budgets": [
+                                { "type": "initial", "maximumWarning": "5mb", "maximumError": "5mb" },
+                                { "type": "anyComponentStyle", "maximumWarning": "50kb", "maximumError": "50kb" }
+                            ],
+                            "outputHashing": "all",
+                            "serviceWorker": "ngsw-config.json"
+                        },
+                        "development": {
+                            "optimization": false,
+                            "extractLicenses": false,
+                            "sourceMap": true
+                        }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "serve": {
+                    "builder": "@angular/build:dev-server",
+                    "configurations": {
+                        "production": { "buildTarget": "factory:build:production" },
+                        "development": { "buildTarget": "factory:build:development" }
+                    },
+                    "defaultConfiguration": "development"
+                },
+                "extract-i18n": {
+                    "builder": "@angular/build:extract-i18n",
+                    "options": { "buildTarget": "factory:build" }
+                },
+                "test": {
+                    "builder": "@angular/build:karma",
+                    "options": {
+                        "polyfills": ["zone.js", "zone.js/testing"],
+                        "tsConfig": "tsconfig.spec.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "src/favicon.ico",
+                            "src/assets",
+                            "src/manifest.webmanifest"
+                        ],
+                        "styles": [
+                            "node_modules/ol/ol.css",
+                            "theme/fonts/icon/material-icons-outlined.css",
+                            "theme/fonts/yekan/iran-yekan.css",
+                            "theme/style/factory/color.scss",
+                            "theme/style/factory/palette.scss",
+                            "theme/style/styles.scss"
+                        ],
+                        "scripts": []
+                    }
+                }
+            }
+        }
+    },
+    "schematics": {
+        "@schematics/angular:component": { "type": "component" },
+        "@schematics/angular:directive": { "type": "directive" },
+        "@schematics/angular:service": { "type": "service" },
+        "@schematics/angular:guard": { "typeSeparator": "." },
+        "@schematics/angular:interceptor": { "typeSeparator": "." },
+        "@schematics/angular:module": { "typeSeparator": "." },
+        "@schematics/angular:pipe": { "typeSeparator": "." },
+        "@schematics/angular:resolver": { "typeSeparator": "." }
+    }
+}
