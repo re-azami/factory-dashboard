@@ -1,0 +1,82 @@
+<page-title [title]="title" (calendarChanged)="setDate($event)"></page-title>
+
+<page-tab [activeTab]="activeTab" (activeTabChanged)="activeTab = $event; loadReport()">
+    @for (item of laboratoryKhatkaList; track $index) {
+    <page-tab-content [title]="laboratoryKhatkaInfo[item].title" [active]="activeTab === $index">
+        <!-- LOADING -->
+        @if (loading) { <ngx-helper-loader></ngx-helper-loader> } @else {
+        <!-- NO REPORT -->
+        @if (!hasReport) {
+        <div class="empty">آزمایش ثبت نشده است.</div>
+        } @else {
+        <!-- TEST -->
+        <div class="tests">
+            @for (test of laboratoryResultList; track $index) {
+            <!-- CHECK TEST COUNT -->
+            @if (report[test].count !== 0) {
+            <page-card
+                [title]="laboratoryResultInfo[test].title"
+                [description]="report[test].count === 0 ? '' : report[test].count + ' آزمایش'"
+                [buttons]="report[test].buttons"
+                [padding]="'0'"
+            >
+                <!-- LINES -->
+                <div class="lines">
+                    @for (line of laboratoryLineList; track $index) {
+                    <!-- CHECK DATA -->
+                    @if (report[test].lines[line].count !== 0) {
+                    <div class="line">
+                        <div class="header" [style.color]="$index === 0 ? '#1da756' : '#0068b3'">
+                            <div class="content">
+                                <div class="title">{{ laboratoryLineInfo[line].title }}</div>
+                                <div class="count">{{ report[test].lines[line].count | number }} آزمایش</div>
+                            </div>
+                            <button
+                                mat-button
+                                type="button"
+                                [style.color]="$index === 0 ? '#1da756' : '#0068b3'"
+                                [matMenuTriggerFor]="downloadMenu"
+                            >
+                                دانلود
+                            </button>
+                            <mat-menu #downloadMenu="matMenu" [xPosition]="'before'">
+                                @for (type of exportTypeList; track $index) {
+                                <button mat-menu-item type="button" (click)="export(test, type, line)">
+                                    {{ exportTypeInfo[type].title }}
+                                </button>
+                                }
+                            </mat-menu>
+                        </div>
+                        <!-- WEIGHT AVERAGE -->
+                        @if ((item === 'FEED' || item === 'CONCENTRATE') && getWeightAverage(item, line, test)) {
+                        <div class="weight-average" [style.color]="$index === 0 ? '#1da756' : '#0068b3'">
+                            <div class="title">میانگین وزنی:</div>
+                            <div class="average">{{ getWeightAverage(item, line, test)?.average | number }}</div>
+                            <div class="count">
+                                تناژ: {{ getWeightAverage(item, line, test)?.tonnage | number }}
+                                <!-- COUNT -->
+                                @if (getWeightAverage(item, line, test)?.count !== report[test].lines[line].count) { &nbsp;
+                                &nbsp; ({{ getWeightAverage(item, line, test)?.count | number }} آزمایش) }
+                            </div>
+                        </div>
+                        }
+                        <page-block
+                            [blocks]="[
+                                { title: 'متوسط', value: report[test].lines[line].average },
+                                { title: 'حداقل', value: report[test].lines[line].min },
+                                { title: 'حداکثر', value: report[test].lines[line].max }
+                            ]"
+                            [column]="3"
+                            [border]="false"
+                        ></page-block>
+                    </div>
+                    } }
+                </div>
+                <div echarts class="page-chart" [options]="report[test].chart" style="height: 200px"></div>
+            </page-card>
+            } }
+        </div>
+        } }
+    </page-tab-content>
+    }
+</page-tab>

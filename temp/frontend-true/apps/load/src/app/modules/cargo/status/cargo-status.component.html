@@ -1,0 +1,13 @@
+<ngx-form [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)">
+    @if (prior) {
+    <div class="prior">
+        <div class="cargo">
+            <div class="title">بار پیشین</div>
+            <div class="value">{{ prior }}</div>
+        </div>
+        <div class="description">
+            فعال سازی اتوماتیک برای این بار ثبت شده است. در صورت تغییر وضعیت بار، فعال سازی اتوماتیک لغو می‌شود.<br />
+        </div>
+    </div>
+    }
+</ngx-form>

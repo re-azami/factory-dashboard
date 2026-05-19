@@ -1,0 +1,42 @@
+.item {
+    display: flex;
+    align-items: flex-start;
+    column-gap: 1rem;
+    margin-bottom: 0.5rem;
+
+    .title {
+        width: 40px;
+        font-size: 11px;
+        color: var(--grayColor);
+    }
+
+    .value {
+        flex: 1;
+        font-weight: 500;
+
+        ul {
+            list-style: none;
+        }
+    }
+}
+
+.data {
+    margin-top: 2rem;
+
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+
+    .counts {
+        flex: 1;
+    }
+
+    .progress {
+        flex: 1;
+        text-align: left;
+    }
+}
+
+mat-progress-bar {
+    margin-bottom: 0.25rem;
+}

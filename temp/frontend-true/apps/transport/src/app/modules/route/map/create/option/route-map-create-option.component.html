@@ -1,0 +1,12 @@
+<ngx-form [ngxForm]="ngxForm" (ngxChange)="ngxChange($event)" (ngxSubmit)="ngxSubmit($event)">
+    <div class="counts">
+        <div class="page-count">
+            <div class="title">ظرفیت ناوگان</div>
+            <div class="value en">{{ capacity | number }}</div>
+        </div>
+        <div class="page-count">
+            <div class="title">تعداد مسافر</div>
+            <div class="value en">{{ passenger | number }}</div>
+        </div>
+    </div>
+</ngx-form>

@@ -1,0 +1,37 @@
+@if (loading) {
+<ngx-helper-loader></ngx-helper-loader>
+} @else {
+<div class="options">
+    <ngx-helper-menu [menu]="partiesMenu" [icon]="'diversity_3'" [title]="'طرف حساب'" [border]="1"></ngx-helper-menu>
+    <ngx-helper-menu [menu]="shipmentsMenu" [icon]="'inventory_2'" [title]="'محموله'" [border]="1"></ngx-helper-menu>
+    <div class="search">
+        <input type="text" placeholder="عنوان" (keyup)="setQueryFilter(queryInput.value)" #queryInput />
+        <mat-icon>search</mat-icon>
+    </div>
+</div>
+<div class="table">
+    <table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+        <tr>
+            <th>بار</th>
+            <th>طرف حساب</th>
+            <th>محموله</th>
+            <th class="status">بارگیری</th>
+        </tr>
+        @for (item of filtered; track $index;) {
+        <tr [class.odd]="$odd">
+            <td>
+                <span class="title" (click)="select(item)">{{ item.title }}</span>
+                <div class="type">{{ loadCargoInfo[item.type].title }}</div>
+            </td>
+            <td>{{ item.party ? item.party.title : '' }}</td>
+            <td>{{ item.shipment ? item.shipment.title : '' }}</td>
+            <td class="status">{{ loadStatusInfo[item.status].title }}</td>
+        </tr>
+        } @empty {
+        <td colspan="4">
+            <div class="page-comment">باری با مشخصات داده شده ثبت نشده است.</div>
+        </td>
+        }
+    </table>
+</div>
+}

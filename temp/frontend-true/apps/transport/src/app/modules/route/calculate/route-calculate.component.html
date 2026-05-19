@@ -1,0 +1,18 @@
+<div class="comment">برای مشاهده فاصله زمانی هر ایستگاه از ایستگاه‌های بعد از آن، بر روی ایستگاه مورد نظر کلیک کنید.</div>
+
+<div class="centers">
+    @for (item of path.centers; track $index) {
+    <div class="center" [class.deactive]="$index < center" [class.selected]="$index === center" (click)="select($index)">
+        <mat-icon>{{ center === $index ? 'task_alt' : 'radio_button_unchecked' }}</mat-icon>
+        <div class="title">ایستگاه {{ $index + 1 }}</div>
+        @if (times[$index] !== 0) {
+        <div class="time">{{ times[$index] | ngxHelperDuration }}</div>
+        }
+    </div>
+    }
+    <div class="center">
+        <mat-icon>radio_button_unchecked</mat-icon>
+        <div class="title">مقصد</div>
+        <div class="time">{{ times[path.centers.length] | ngxHelperDuration }}</div>
+    </div>
+</div>

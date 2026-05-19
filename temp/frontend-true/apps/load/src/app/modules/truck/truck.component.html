@@ -1,0 +1,7 @@
+<page-title [(page)]="page" [title]="title" (paramChanged)="loadList($event)"></page-title>
+
+@if (owners.length === 0) {
+<div class="page-comment">مالک ثبت نشده است.</div>
+} @else {
+<list [list]="list" [loading]="loading" [data]="trucks" [pagination]="pagination" (pageChanged)="page = $event"></list>
+}

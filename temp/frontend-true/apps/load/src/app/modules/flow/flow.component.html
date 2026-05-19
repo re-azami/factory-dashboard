@@ -1,0 +1,6 @@
+@if (loading) {
+<ngx-helper-loader></ngx-helper-loader>
+} @else {
+<page-title [title]="title" (paramChanged)="filterList($event)"></page-title>
+<list [list]="list" [loading]="false" [data]="filtered"></list>
+}

@@ -1,0 +1,68 @@
+@if (!draft.weight.empty && !draft.weight.full) {
+<div class="page-comment">با توجه به مشخص نشدن اطلاعات وزنی حواله، امکان ویرایش اطلاعات وجود ندارد.</div>
+} @else {
+<page-section>
+    <page-section-column>
+        <page-card [title]="'اطلاعات وزنی ثبت شده'" [icon]="'scale'">
+            <div class="weights">
+                <div class="weight">
+                    <div class="title">وزن خالی</div>
+                    <div class="value" [class.empty]="!draft.weight.empty">
+                        {{ draft.weight.empty ? (draft.weight.empty | number) : 'مشخص نشده است' }}
+                    </div>
+                </div>
+                <div class="weight">
+                    <div class="title">وزن پر</div>
+                    <div class="value" [class.empty]="!draft.weight.full">
+                        {{ draft.weight.full ? (draft.weight.full | number) : 'مشخص نشده است' }}
+                    </div>
+                </div>
+                @if (draft.weight.net) {
+                <div class="weight">
+                    <div class="title">وزن خالص</div>
+                    <div class="value">{{ draft.weight.net | number }}</div>
+                </div>
+                }
+            </div>
+        </page-card>
+
+        <div class="page-seperator"></div>
+        <ul>
+            <!-- NO EMPTY WEIGHT -->
+            @if (!draft.weight.empty) {
+            <li>با توجه به مشخص نبودن وزن خالی، امکان ایجاد تغییر در این گزینه وجود ندارد.</li>
+            }
+
+            <!-- NO FULL WEIGHT -->
+            @if (!draft.weight.full) {
+            <li>با توجه به مشخص نبودن وزن پر، امکان ایجاد تغییر در این گزینه وجود ندارد.</li>
+            }
+
+            <!-- HAS WEIGHT -->
+            @if (draft.weight.empty && draft.weight.full) {
+            <li>
+                با توجه به مشخص بودن وزن خالی و پر، با تغییر این موارد، وزن خالص بار در حواله به صورت اتوماتیک محاسبه و ذخیره
+                می‌شود.
+            </li>
+            }
+
+            <!-- PAYMENT -->
+            @if (draft.payment && draft.payment.value) {
+            <li>
+                با توجه به ثبت اطلاعات پرداخت هزینه حمل برای این حواله، تغییر مشخصات وزنی حواله باعت ایجاد تغییر در مبلغ حمل
+                خواهد شد.
+            </li>
+            }
+
+            <!-- GENERAL -->
+            <li>
+                مشخص کردن توضیحات در هنگام ویرایش اطلاعات وزنی الزامی است و این توضیحات در گزارش تغییرات حواله نمایش داده
+                خواهد شد.
+            </li>
+        </ul>
+    </page-section-column>
+    <page-section-column>
+        <ngx-form [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form>
+    </page-section-column>
+</page-section>
+}

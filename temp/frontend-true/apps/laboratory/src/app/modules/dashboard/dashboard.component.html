@@ -1,0 +1,24 @@
+@if (!count.loading) {
+<div class="page-seperator"></div>
+<page-section>
+    <page-section-column>
+        <page-card [title]="'آزمایش سنگ شکن'" [icon]="'hardware'" [padding]="'0'">
+            <page-block [blocks]="count.blocks[0]" [column]="2" [border]="false"></page-block>
+        </page-card>
+    </page-section-column>
+    <page-section-column>
+        <page-card [title]="'آزمایش ختکا'" [icon]="'terrain'" [padding]="'0'">
+            <page-block [blocks]="count.blocks[1]" [column]="2" [border]="false"></page-block>
+        </page-card>
+    </page-section-column>
+</page-section>
+
+<div class="page-seperator"></div>
+<page-block [blocks]="count.blocks[2]" [column]="4"></page-block>
+}
+
+<!-- DAILY -->
+@if (dailyAccess) {
+<div class="page-seperator"></div>
+<dashboard-daily></dashboard-daily>
+}

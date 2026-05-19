@@ -1,0 +1,78 @@
+.description {
+    font-size: 12px;
+    text-align: center;
+    border-radius: 4px;
+    border: 1px solid var(--borderColor);
+    background-color: var(--backgroundColor);
+    padding: 0.75rem 0;
+    margin-bottom: 1rem;
+    color: var(--primaryColor);
+}
+
+.info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    column-gap: 1rem;
+    margin-bottom: 1rem;
+
+    .color {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        position: relative;
+        border-radius: 4px;
+
+        .background {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            opacity: 0.25;
+        }
+    }
+
+    .letter {
+        border-radius: 4px;
+        text-align: center;
+        padding: 1.5rem 0;
+
+        .title {
+            font-size: 10px;
+        }
+
+        .value {
+            margin-top: 0.5rem;
+            font-size: 18px;
+        }
+    }
+}
+
+table {
+    tr {
+        th {
+            padding: 1rem 1rem;
+            background-color: var(--backgroundColor);
+        }
+
+        th.title {
+            text-align: right;
+        }
+
+        td {
+            padding: 0.5rem 1rem;
+            border-top: 1px solid var(--borderColor);
+        }
+
+        td.flow {
+            font-size: 12px;
+        }
+
+        td.status {
+            font-size: 12px;
+            text-align: center;
+        }
+    }
+}

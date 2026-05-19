@@ -1,0 +1,42 @@
+<page-card [title]="'مشخصات بار'" [icon]="'terrain'" [padding]="'0'">
+    <page-section>
+        <page-section-column><page-block [blocks]="blocks[0]" [border]="false"></page-block></page-section-column>
+        <page-section-column><page-block [blocks]="blocks[1]" [border]="false"></page-block></page-section-column>
+    </page-section>
+
+    @if (cargo.prior) {
+    <div class="activation">
+        <div class="prior">
+            <div class="description">فعال سازی اتوماتیک بار ثبت شده است</div>
+            بار پیشین: <strong>{{ cargo.prior.title }}</strong>
+        </div>
+        <button mat-flat-button type="button" color="warn" (click)="delete()">لغو فعال سازی اتوماتیک</button>
+    </div>
+    }
+</page-card>
+
+@if (loading) {
+<ngx-helper-loader></ngx-helper-loader>
+} @else {
+<div class="page-seperator"></div>
+<page-card [title]="'فعال سازی اتوماتیک بار'" [icon]="'done_all'" [padding]="'1rem 1rem 2rem 1rem'">
+    <div class="comment">
+        فعال سازی اتوماتیک بار فقط در صورتی انجام می‌شود که وضعیت بار به صورت آتی در سیستم ثبت شده باشد. برای ثبت این گزینه
+        باید بار پیشین را مشخص کنید. در این حالت، در صورتی که با توجه به تنظیمات مرتبط با بار، پایان بارگیری بار پیشین به
+        صورت اتوماتیک ثبت شود، وضعیت این بار به صورت اتوماتیک به فعال تغییر داده می‌شود.
+        <br /><br />
+        در صورتی که پس از ثبت فعال سازی اتوماتیک بار، وضعیت بار توسط کاربران سیستم تغییر داده شود، تنظیمات فعال سازی لغو
+        می‌شود.
+        <br /><br />
+        حذف یا ثبت پایان بار پیشین توسط کاربران سیستم، باعت فعال سازی بار به صورت اتوماتیک نمی‌شود و فقط در صورتی فعال سازی
+        اتوماتیک انجام می‌شود که پایان بارگیری بار پیشین به صورت اتوماتیک در سیستم ثبت شود.
+    </div>
+
+    <div class="page-seperator"></div>
+    @if (cargo.status !== 'FUTURE') {
+    <div class="page-comment">وضعیت بار باید به صورت آتی تعریف شده باشد.</div>
+    } @else {
+    <ngx-form-responsive [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form-responsive>
+    }
+</page-card>
+}

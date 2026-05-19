@@ -1,0 +1,27 @@
+<page-title [title]="title"></page-title>
+
+@if (!loading) {
+<page-section>
+    <page-section-column [sticky]="true">
+        <page-block [blocks]="blocks" [column]="2"></page-block>
+        <div class="center">در صورت عدم انتخاب هیچ گزینه‌ای، دسترسی کاربر لغو می‌شود.</div>
+        @if (actions.length !== 0) {
+        <div class="actions">
+            @for (action of actions; track $index) {
+            <div class="action">
+                <div class="access">{{ accessInfo[action].title }}:</div>
+                <ul class="access">
+                    @for (a of accessInfo[action].actions; track $index) {
+                    <li>{{ a }}</li>
+                    }
+                </ul>
+            </div>
+            }
+        </div>
+        }
+    </page-section-column>
+    <page-section-column [flex]="2">
+        <ngx-form-responsive [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form-responsive>
+    </page-section-column>
+</page-section>
+}

@@ -1,0 +1,22 @@
+@if (cargo.type === 'SITE') {
+<page-title [title]="title"></page-title>
+
+<page-section>
+    <page-section-column [sticky]="true">
+        <page-card [title]="cargo.title" [description]="loadCargoInfo[cargo.type].title" [icon]="'terrain'" [padding]="'0'">
+            <page-block [blocks]="blocks[0]" [column]="2" [border]="false"></page-block>
+            <!-- CARGO DRAFT -->
+            @if (blocks[1].length === 2) {
+            <page-block [blocks]="blocks[1]" [column]="2" [border]="false"></page-block>
+            }
+            <!-- GROUP DRAFT -->
+            @if (blocks[2].length === 2) {
+            <page-block [blocks]="blocks[2]" [column]="2" [border]="false"></page-block>
+            }
+        </page-card>
+    </page-section-column>
+    <page-section-column [flex]="3">
+        <list [list]="list" [loading]="loading" [data]="groups"></list>
+    </page-section-column>
+</page-section>
+}

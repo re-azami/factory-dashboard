@@ -1,0 +1,16 @@
+@if (!draft.weight.empty && !draft.weight.full) {
+<div class="page-comment">با توجه به مشخص نشدن اطلاعات وزنی حواله، امکان ویرایش اطلاعات وجود ندارد.</div>
+} @else {
+<div class="description">
+    <!-- NO EMPTY WEIGHT -->
+    @if (!draft.weight.empty) { با توجه به مشخص نبودن وزن خالی، امکان ایجاد تغییر در این گزینه وجود ندارد. }
+
+    <!-- NO FULL WEIGHT -->
+    @if (!draft.weight.full) { با توجه به مشخص نبودن وزن پر، امکان ایجاد تغییر در این گزینه وجود ندارد. }
+
+    <!-- HAS WEIGHT -->
+    @if (draft.weight.empty && draft.weight.full) { با توجه به مشخص بودن وزن خالی و پر، با تغییر این موارد، وزن خالص بار در
+    حواله به صورت اتوماتیک محاسبه و ذخیره می‌شود. }
+</div>
+<ngx-form [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form>
+}

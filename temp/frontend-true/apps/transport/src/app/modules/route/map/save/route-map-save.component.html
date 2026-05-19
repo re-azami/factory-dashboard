@@ -1,0 +1,152 @@
+<content>
+    <div class="menu">
+        <div class="buttons">
+            <button
+                mat-button
+                type="button"
+                color="primary"
+                [disabled]="!origin || !destination || path.length === 0"
+                (click)="createRoute()"
+            >
+                <mat-icon>save</mat-icon>
+            </button>
+            <div class="seperator"></div>
+            <button mat-button type="button" color="warn" [routerLink]="['/route']">
+                <mat-icon>cancel</mat-icon>
+            </button>
+        </div>
+
+        <div class="header">
+            <div class="title">{{ station.title }}</div>
+        </div>
+        <div class="counts">
+            <div class="count">
+                <div class="title">ایستگاه</div>
+                <div class="value">{{ station.count.center | number }}</div>
+            </div>
+            <div class="count">
+                <div class="title">مکان</div>
+                <div class="value">{{ station.count.location | number }}</div>
+            </div>
+            <div class="count">
+                <div class="title">مسافر</div>
+                <div class="value">{{ station.count.passenger | number }}</div>
+            </div>
+        </div>
+
+        <div class="header">
+            <div class="title">مسیر</div>
+        </div>
+        <!-- ORIGIN -->
+        <div class="boundary">
+            <div class="type">
+                <div class="title">مبدا</div>
+                <button mat-button type="button" color="primary" (click)="setOriginEsmiran()">
+                    <mat-icon>factory</mat-icon>
+                </button>
+                <button mat-button type="button" color="primary" (click)="setOriginStation()">
+                    <mat-icon>group_work</mat-icon>
+                </button>
+                <button mat-button type="button" color="primary" (click)="setOriginCoordinates()">
+                    <mat-icon>location_on</mat-icon>
+                </button>
+            </div>
+            @if (origin) { @if (origin.center !== undefined) {
+            <!-- CENTER -->
+            <div class="center" [ngStyle]="{ color: centers[origin.center].color }">ایستگاه {{ origin.center + 1 }}</div>
+            } @else if (origin.esmiran) {
+            <!-- ESMIRAN -->
+            <div class="center">سایت اسمیران</div>
+            } @else {
+            <!-- COORDINATES -->
+            <div class="coordinates">
+                <div class="coordinate en">{{ +origin.latitude.toFixed(7) }}</div>
+                <div class="coordinate en">{{ +origin.longitude.toFixed(7) }}</div>
+            </div>
+            } } @else {
+            <div class="not-specified">مشخص نشده است</div>
+            }
+        </div>
+        <!-- CENTER -->
+        <div class="paths" cdkDropList (cdkDropListDropped)="drop($event)">
+            @for (item of path; track $index) {
+            <div
+                class="path path-drag-box"
+                cdkDrag
+                [cdkDragDisabled]="path.length < 2"
+                cdkDragLockAxis="y"
+                cdkDragBoundary=".paths"
+            >
+                <div class="type">
+                    @if (path.length > 1) {
+                    <div class="drag">
+                        <mat-icon color="primary">drag_indicator</mat-icon>
+                    </div>
+                    }
+                    <div class="title" [class.single]="path.length === 1">ایستگاه {{ item.index + 1 }}</div>
+                    <button mat-button type="button" color="warn" (click)="deleteCenter($index)">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </div>
+                <div class="counts">
+                    <div class="count">
+                        <div class="title">مکان</div>
+                        <div class="value">{{ item.location | number }}</div>
+                    </div>
+                    <div class="count">
+                        <div class="title">مسافر</div>
+                        <div class="value">{{ item.passenger | number }}</div>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+        <!-- CREATE CENTER -->
+        <button mat-stroked-button type="button" color="primary" class="add" (click)="addCenter()">
+            <div class="add">
+                <mat-icon>add</mat-icon>
+                <div class="title">اضافه کردن ایستگاه</div>
+            </div>
+        </button>
+        <!-- DESTIMATION -->
+        <div class="boundary">
+            <div class="type">
+                <div class="title">مقصد</div>
+                <button mat-button type="button" color="primary" (click)="setDestinationEsmiran()">
+                    <mat-icon>factory</mat-icon>
+                </button>
+                <button mat-button type="button" color="primary" (click)="setDestinationStation()">
+                    <mat-icon>group_work</mat-icon>
+                </button>
+                <button mat-button type="button" color="primary" (click)="setDestinationCoordinates()">
+                    <mat-icon>location_on</mat-icon>
+                </button>
+            </div>
+            @if (destination) { @if (destination.center !== undefined) {
+            <!-- CENTER -->
+            <div class="center" [ngStyle]="{ color: centers[destination.center].color }">
+                ایستگاه {{ destination.center + 1 }}
+            </div>
+            } @else if (destination.esmiran) {
+            <!-- ESMIRAN -->
+            <div class="center">سایت اسمیران</div>
+            } @else {
+            <!-- COORDINATES -->
+            <div class="coordinates">
+                <div class="coordinate en">{{ +destination.latitude.toFixed(7) }}</div>
+                <div class="coordinate en">{{ +destination.longitude.toFixed(7) }}</div>
+            </div>
+            } } @else {
+            <div class="not-specified">مشخص نشده است</div>
+            }
+        </div>
+    </div>
+
+    <div id="map" class="map"></div>
+
+    <tooltip-center
+        [index]="selectedCenter?.index"
+        [center]="selectedCenter?.center"
+        [location]="selectedCenter?.location"
+    ></tooltip-center>
+</content>

@@ -1,0 +1,31 @@
+<header>
+    <div class="title">تاریخ‌های برگزاری</div>
+    <button mat-button type="button" color="primary" (click)="create()">
+        <mat-icon [fontIcon]="'add'"></mat-icon>
+    </button>
+</header>
+
+@if(dates.length === 0) {
+<div class="empty">تاریخی مشخص نشده است.</div>
+} @else { @for (date of dates; track $index) {
+<div class="item">
+    <div class="date">{{ date.date | ngxHelperJalali : { format: 'd N Y' } }}</div>
+    <div class="hour">{{ date.start }} - {{ date.end }}</div>
+    <div class="location">{{ educationDateInfo[date.type].title }} / {{ date.location.title }}</div>
+    <div class="buttons">
+        <button mat-button type="button" color="primary" (click)="update($index)">
+            <mat-icon [fontIcon]="'edit'"></mat-icon>
+        </button>
+        <button mat-button type="button" color="warn" (click)="delete($index)">
+            <mat-icon [fontIcon]="'delete'"></mat-icon>
+        </button>
+    </div>
+</div>
+}
+
+<div class="duration">
+    <div>مدت برگزاری: {{ (duration | ngxHelperDuration).slice(0, -3) }}</div>
+    <div>تئوری: {{ (theoretical | ngxHelperDuration).slice(0, -3) }}</div>
+    <div>عملی: {{ (practical | ngxHelperDuration).slice(0, -3) }}</div>
+</div>
+}

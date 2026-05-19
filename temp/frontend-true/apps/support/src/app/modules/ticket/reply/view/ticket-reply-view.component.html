@@ -1,0 +1,10 @@
+<div class="icon">
+    <mat-icon color="primary">{{ ticket.replies[reply].from === 'USER' ? 'account_circle' : 'support_agent' }}</mat-icon>
+    <div class="from">{{ ticket.replies[reply].from === 'USER' ? 'کاربر' : 'پشتیبانی' }}</div>
+</div>
+
+<content>
+    <div class="date">{{ ticket.replies[reply].date | ngxHelperJalali : { format: 'W، d N Y H:I' } }}</div>
+    <div class="content" [innerHTML]="ticket.replies[reply].reply | ngxHelperMultiLine"></div>
+    <ticket-attachment-view [attachments]="ticket.replies[reply].attachments"></ticket-attachment-view>
+</content>

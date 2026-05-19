@@ -1,0 +1,71 @@
+:host {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: calc(100vh - var(--headerHeight) - 2rem);
+
+    content {
+        display: block;
+        width: 400px;
+        max-width: calc(100vw - 4rem);
+        border: 1px solid var(--borderColor);
+        border-radius: 4px;
+
+        .title {
+            background-color: var(--backgroundColor);
+            border-radius: 4px 4px 0 0;
+            padding: 1rem;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--primaryColor);
+        }
+
+        ngx-form {
+            display: block;
+            padding: 1rem;
+        }
+
+        .description {
+            font-size: 11px;
+            text-align: justify;
+            padding: 0 1rem 1rem 1rem;
+            color: var(--primaryColor);
+            background-color: var(--backgroundColor);
+        }
+
+        .resend {
+            display: flex;
+            align-items: center;
+            column-gap: 5rem;
+
+            padding: 0 1rem 1rem 1rem;
+            color: var(--primaryColor);
+            background-color: var(--backgroundColor);
+
+            .mobile {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+
+                .mobile-title {
+                    font-weight: 500;
+                    font-size: 13px;
+                    color: var(--primaryColor);
+                }
+
+                .mobile-number {
+                    font-size: 12px;
+                    font-weight: 500;
+                }
+            }
+
+            button {
+                height: 50px;
+                font-size: 11px;
+            }
+        }
+    }
+}

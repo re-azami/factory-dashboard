@@ -1,0 +1,61 @@
+div.study {
+    display: flex;
+    align-items: flex-start;
+
+    padding: 0.75rem 0 0.75rem 1rem;
+    border-top: 1px solid var(--borderColor);
+
+    .remaining {
+        width: 100px;
+        text-align: center;
+        padding-top: 0.25rem;
+
+        .value {
+            font-weight: 600;
+        }
+
+        .unit {
+            line-height: 5px;
+            color: var(--grayColor);
+        }
+
+        .done {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--grayColor);
+        }
+    }
+
+    .info {
+        flex: 1;
+
+        .course {
+            cursor: pointer;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .educator {
+            font-size: 12px;
+        }
+
+        .date-time {
+            display: flex;
+            align-items: center;
+
+            font-size: 12px;
+
+            .dates {
+                flex: 1;
+            }
+        }
+    }
+}
+
+.study:first-child {
+    border-top-width: 0;
+}
+
+.page-chart {
+    height: 225px;
+}

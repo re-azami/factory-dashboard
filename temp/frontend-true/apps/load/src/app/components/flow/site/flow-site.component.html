@@ -1,0 +1,35 @@
+@switch (action) {
+
+<!-- PLATE -->
+@case ('PLATE') {
+<ngx-form [ngxForm]="ngxPlateForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form>
+}
+
+<!-- WEIGHT -->
+@case ('WEIGHT') {
+<!-- EMPTY WEIGHT CHANGED -->
+@if (emptyChanged && !!truck.weight?.weight) {
+<div class="empty">
+    <div class="weight">
+        <div class="title">توزین ناوگان</div>
+        <div class="value">{{ truck.weight?.weight | number }}</div>
+    </div>
+    <div class="comment">با توجه به تغییر وزن خالی، مقدار توزین ناوگان نیز در سیستم تغییر داده خواهد شد.</div>
+</div>
+}
+
+<div class="truck">
+    <ngx-helper-plate [plate]="truck.plate.split('-')"></ngx-helper-plate>
+    <div class="data">
+        <div class="title">مالک:</div>
+        <div class="value">{{ truck.owner.name }}</div>
+    </div>
+    <div class="data">
+        <div class="title">راننده:</div>
+        <div class="value">{{ truck.driver.name.first }} {{ truck.driver.name.last }}</div>
+    </div>
+</div>
+<div class="page-seperator"></div>
+
+<ngx-form [ngxForm]="ngxWeightForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form>
+} }

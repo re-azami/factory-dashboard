@@ -43,13 +43,6 @@ _(empty)_
 
 ### UI — Theme + PWA
 
-#### UI-001d — Retire Streamlit frontend
-- [ ] Remove `frontend/` service from docker-compose and stop building/publishing its image
-- [ ] Delete `frontend/` Python code and `frontend/tests/`
-- [ ] Drop Streamlit-specific Playwright tests in `tests/e2e/` (replaced by SPA-targeted ones)
-- [ ] Update CLAUDE.md (Common Commands, Architecture sections) to reflect Angular SPA
-- _Depends on:_ UI-001c
-
 #### UI-001e — Render Markdown in chat assistant messages
 - [ ] Decide library: `ngx-markdown` vs hand-rolled (ask before adding the dep, per the no-silent-dep-omissions rule)
 - [ ] Render `**bold**`, `*italic*`, headings, lists, inline `code`, fenced ` ``` ` blocks, and GFM pipe tables (the agent uses pipe tables in its replies — see the «۱۱ روز در سال ۱۴۰۴…» reply that motivated this task)
@@ -64,7 +57,6 @@ _(empty)_
 - [ ] `manifest.json` (name, icons, theme color, start URL)
 - [ ] Service worker (offline shell, cache strategy)
 - [ ] Install prompt
-- [ ] Feasibility note if staying on Streamlit (may need custom component or proxy)
 - _Depends on:_ UI-001
 
 #### UI-003 — Mobile-responsive layout pass
@@ -220,6 +212,29 @@ _(empty)_
 ---
 
 ## Backlog
+
+### OPS — Production server (DigitalOcean droplet)
+
+#### OPS-001 — Rsync `data/raw/` to the server
+- [ ] From laptop: `rsync -avz --exclude='_redundant/' data/raw/ factory@165.227.231.224:~/factory-dashboard/data/raw/`
+- [ ] Excludes `_redundant/` (1405.xlsx — see `memory/project_redundant_1405.md`)
+- [ ] Verify file count and total size match laptop after rsync
+- [ ] On server: `ls -la ~/factory-dashboard/data/raw/factory/` returns expected workbooks
+
+#### OPS-002 — Re-run `/ingest` on the server for each Excel file
+- [ ] After OPS-001, hit `POST /ingest?source=factory` from the server for every workbook in `data/raw/factory/`
+- [ ] Verify `production_shift`, `downtime`, `daily_report`, `raw_sheet_cells` row counts match laptop DB
+- [ ] Smoke-test agent: `POST /chat` with a Persian question that exercises the data
+
+#### OPS-003 — Pre-embed downtime on laptop, push to server (Phase 2)
+- [ ] On laptop (GPU): `POST /ingest/enrich` once Phase 2 lands → populates `downtime.embedding`
+- [ ] Dump: `docker compose exec db pg_dump -U factory -d factory > backup.sql`
+- [ ] Push: `scp backup.sql factory@165.227.231.224:~/`
+- [ ] Restore on server: `docker compose exec -T db psql -U factory -d factory < ~/backup.sql`
+- [ ] Avoids running CPU-only bulk embedding on the droplet
+- _Depends on:_ Phase 2 work landing first
+
+---
 
 ### TEST — Playwright integration testing
 
@@ -480,6 +495,13 @@ Seed list (extend as needed; target ≥ 20):
 ---
 
 ## Done
+
+#### UI-001d — Retire Streamlit frontend _(2026-05-19)_
+- [x] Remove `frontend/` service from docker-compose and stop building/publishing its image
+- [x] Delete `frontend/` Python code and `frontend/tests/`
+- [x] Drop Streamlit-specific Playwright tests in `tests/e2e/` (replaced by SPA-targeted ones)
+- [x] Update CLAUDE.md (Common Commands, Architecture sections) to reflect Angular SPA
+- _Depends on:_ UI-001c
 
 #### UI-001c — Port Query History page to Angular SPA _(2026-05-19)_
 - [x] Build History route in the new Angular SPA

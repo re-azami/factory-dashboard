@@ -1,0 +1,7 @@
+<ngx-form [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)">
+    @if (showWarning) {
+    <div class="warning">
+        با توجه به اینکه فقط یک مکان در {{ title }} ثبت شده است. در صورت انتقال، {{ title }} از لیست ایستگاه‌ها حذف می‌شود.
+    </div>
+    }
+</ngx-form>

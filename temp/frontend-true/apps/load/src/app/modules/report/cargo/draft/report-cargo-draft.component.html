@@ -1,0 +1,45 @@
+<report-cargo-view [cargo]="info.cargo" [draft]="info.draft" [action]="'REPORT'"></report-cargo-view>
+
+@if (info.draft.count) {
+<!-- CALENDAR -->
+<div class="page-seperator"></div>
+<page-section>
+    <page-section-column>
+        <div class="page-section">گزارش حواله‌ها</div>
+    </page-section-column>
+    <page-section-column [width]="400">
+        <ngx-helper-calendar
+            [route]="['/report', 'cargo', info.cargo.id]"
+            [types]="['MONTH', 'WEEK', 'YEAR', 'PERIOD']"
+            [minDate]="info.draft.first"
+            [maxDate]="info.draft.last"
+            [height]="44"
+            (changed)="setDate($event)"
+        ></ngx-helper-calendar>
+    </page-section-column>
+</page-section>
+
+@if (!loading) { @if (report.count === 0) {
+<div class="page-comment np-report">حواله‌ای در بازه زمانی مشخص شده ثبت نشده است.</div>
+} @else {
+<div class="page-seperator"></div>
+<page-section>
+    <page-section-column>
+        <page-block [blocks]="reportBlock"></page-block>
+        <draft-report-table [transporters]="report.transporters" [owners]="report.owners"></draft-report-table>
+    </page-section-column>
+    <page-section-column [sticky]="true" [width]="400">
+        <draft-report-export
+            [description]="info.cargo.title"
+            [loading]="formLoading"
+            [from]="from"
+            [to]="to"
+            [cargo]="info.cargo.id"
+            [transporters]="report.transporters"
+            [owners]="report.owners"
+        ></draft-report-export>
+    </page-section-column>
+</page-section>
+} } } @else {
+<div class="page-comment">حواله‌ای برای این بار ثبت نشده است.</div>
+}

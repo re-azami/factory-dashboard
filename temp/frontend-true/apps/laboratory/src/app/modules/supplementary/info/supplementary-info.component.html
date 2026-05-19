@@ -1,0 +1,64 @@
+<page-title [title]="title"></page-title>
+
+<!-- LOADING -->
+@if (loading) { <ngx-helper-loader></ngx-helper-loader> }
+
+<!-- EMPTY -->
+@if (!loading && tests.length === 0) {
+<div class="page-comment">نتیجه آزمایش ثبت نشده است.</div>
+}
+
+<!-- TAB -->
+@if (!loading && tests.length !== 0) {
+<page-tab [activeTab]="activeTab" (activeTabChanged)="setActiveTab($event)">
+    @for (test of tests; track $index) {
+    <page-tab-content [title]="'آزمایش ' + ($index + 1).toString()">
+        <div class="date">
+            <page-block [blocks]="dateBlocks" [column]="dateBlocks.length"></page-block>
+            <!-- ACTIONS -->
+            @if (roleAccess) {
+            <div class="buttons">
+                <button mat-stroked-button type="button" color="primary" (click)="update($index)">
+                    <mat-icon>edit</mat-icon>
+                    <span>ویرایش</span>
+                </button>
+                <button mat-stroked-button type="button" color="warn" (click)="delete($index)">
+                    <mat-icon>delete</mat-icon>
+                    <span>حذف</span>
+                </button>
+            </div>
+            }
+        </div>
+        <div class="page-seperator"></div>
+
+        <div class="page-section">خوراک</div>
+        <div class="page-seperator"></div>
+        <page-section>
+            <page-section-column>
+                <page-block [blocks]="feedBlocks[0]" [column]="feedBlocks[0].length"></page-block>
+            </page-section-column>
+            <page-section-column>
+                <page-block [blocks]="feedBlocks[1]" [column]="feedBlocks[1].length"></page-block>
+            </page-section-column>
+        </page-section>
+
+        <div class="page-seperator"></div>
+        <page-block [blocks]="gaussBlocks" [column]="gaussBlocks.length"></page-block>
+
+        <div class="page-seperator"></div>
+        <page-section>
+            <page-section-column>
+                <div class="page-section">محصول</div>
+                <div class="page-seperator"></div>
+                <page-block [blocks]="productBlocks" [column]="productBlocks.length"></page-block>
+            </page-section-column>
+            <page-section-column>
+                <div class="page-section">باطله</div>
+                <div class="page-seperator"></div>
+                <page-block [blocks]="tailBlocks" [column]="tailBlocks.length"></page-block>
+            </page-section-column>
+        </page-section>
+    </page-tab-content>
+    }
+</page-tab>
+}

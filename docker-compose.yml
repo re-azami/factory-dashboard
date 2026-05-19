@@ -27,13 +27,9 @@ services:
       HF_HUB_ENABLE_HF_TRANSFER: "0"
     ports:
       - "8001:8001"
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
+    # GPU is opt-in via docker-compose.gpu.yml — see CLAUDE.md "GPU vs CPU hosts".
+    # On CPU-only hosts (e.g. the DO droplet) the base file alone runs BGE-M3
+    # on CPU; on laptops with NVIDIA, COMPOSE_FILE in .env layers the override.
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8001/health || exit 1"]
       interval: 10s
@@ -58,19 +54,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
-  frontend:
-    build: ./frontend
-    environment:
-      BACKEND_URL: http://backend:8000
-    ports:
-      - "8501:8501"
-    depends_on:
-      - backend
-    restart: unless-stopped
-
-  # Angular SPA — runs alongside the Streamlit frontend during the migration.
-  # Streamlit is on 8501, this is on 4200. Both hit the same backend; CORS
-  # whitelists both via FRONTEND_ORIGIN.
+  # Angular SPA — the project's frontend.
   frontend-spa:
     build: ./frontend-spa
     ports:

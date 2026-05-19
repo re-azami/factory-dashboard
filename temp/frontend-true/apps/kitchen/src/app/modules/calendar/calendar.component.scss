@@ -1,0 +1,79 @@
+.calendar {
+    max-width: 100%;
+    overflow: auto;
+    position: relative;
+    overflow-y: hidden;
+
+    table {
+        border: 1px solid var(--borderColor);
+        border-right-width: 0;
+
+        tr {
+            th {
+                padding: 1rem;
+                background-color: var(--backgroundColor);
+            }
+
+            th.date {
+                width: 150px;
+                min-width: 150px;
+                border-right: 1px solid var(--borderColor);
+            }
+
+            td {
+                padding: 1rem;
+                border-top: 1px solid var(--borderColor);
+                border-right: 1px solid var(--borderColor);
+            }
+
+            td.date {
+                div.week {
+                    font-weight: 500;
+                }
+
+                div.date {
+                    font-size: 12px;
+                }
+            }
+
+            td.meal {
+                padding-left: 0;
+
+                .meal-info {
+                    display: flex;
+                    align-items: center;
+                    column-gap: 1rem;
+
+                    div.meal {
+                        flex: 1;
+
+                        div.recipe {
+                            white-space: nowrap;
+                        }
+
+                        div.recipe.isLinked {
+                            cursor: pointer;
+                        }
+
+                        div.serving {
+                            font-size: 12px;
+                        }
+                    }
+                }
+            }
+
+            td.empty {
+                padding-left: 1rem;
+                text-align: center;
+            }
+
+            th.frozen,
+            td.frozen {
+                position: sticky;
+                right: 0;
+                z-index: 10;
+                background-color: var(--backgroundColor);
+            }
+        }
+    }
+}

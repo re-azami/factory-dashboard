@@ -1,0 +1,18 @@
+.data {
+    display: flex;
+    flex-direction: row-reverse;
+    column-gap: 1rem;
+    margin-bottom: 1rem;
+
+    .item {
+        flex: 1;
+        padding: 0.75rem 0;
+        text-align: center;
+        border-radius: 4px;
+        border: 1px solid var(--borderColor);
+    }
+
+    .size {
+        background-color: var(--backgroundColor);
+    }
+}

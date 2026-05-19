@@ -1,0 +1,71 @@
+<page-title [title]="title"></page-title>
+
+@if (!loading) {
+<!-- EMPTY -->
+@if (total === 0) {
+<div class="page-comment">پرسنل ثبت نشده است.</div>
+} @else {
+<page-section>
+    <page-section-column>
+        <page-card [title]="'کل پرسنل'" [padding]="'0'">
+            <div class="member">
+                <div class="count">
+                    <div class="title">تعداد</div>
+                    <div class="value">{{ total | number }}</div>
+                </div>
+                <div class="status">
+                    @for (status of personnelStatusList; track $index) {
+                    <div class="item">
+                        <div
+                            class="color"
+                            [ngStyle]="{ 'background-color': 'var(--' + personnelStatusInfo[status].color + 'Color)' }"
+                        ></div>
+                        <div class="title">{{ personnelStatusInfo[status].title }}:</div>
+                        <div class="title">{{ getStatusCount(status) | number }}</div>
+                        <div class="percent">{{ getStatusPercent(status) | number }}%</div>
+                    </div>
+                    }
+                </div>
+                <div class="chart" echarts [options]="statusChart"></div>
+            </div>
+        </page-card>
+    </page-section-column>
+    <page-section-column>
+        <page-card [title]="'پرسنل فعال'" [padding]="'0'">
+            @if (count === 0) {
+            <div class="page-comment">پرسنل فعال ثبت نشده است.</div>
+            } @else {
+            <div class="member">
+                <div class="count">
+                    <div class="title">تعداد</div>
+                    <div class="value">{{ count | number }}</div>
+                </div>
+                <div class="gender">
+                    @for (gender of personnelGenderList; track $index) {
+                    <div class="item">
+                        <div class="color" [ngStyle]="{ 'background-color': personnelGenderInfo[gender].color }"></div>
+                        <div class="title">{{ personnelGenderInfo[gender].title }}:</div>
+                        <div class="title">{{ getGenderCount(gender) | number }}</div>
+                        <div class="percent">{{ getGenderPercent(gender) | number }}%</div>
+                    </div>
+                    }
+                </div>
+                <div class="chart" echarts [options]="genderChart"></div>
+            </div>
+            }
+        </page-card>
+    </page-section-column>
+</page-section>
+
+@if (count !== 0) {
+<div class="page-seperator"></div>
+<page-section>
+    @for (item of data; track $index) {
+    <page-section-column>
+        <page-card [title]="item.title" [padding]="'0'">
+            <div class="page-chart" echarts [options]="item.chart"></div>
+        </page-card>
+    </page-section-column>
+    }
+</page-section>
+} } }

@@ -1,0 +1,38 @@
+:host {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: calc(100vh - var(--headerHeight) - 2rem);
+
+    content {
+        display: block;
+        width: 400px;
+        max-width: calc(100vw - 4rem);
+        border: 1px solid var(--borderColor);
+        border-radius: 4px;
+
+        .title {
+            background-color: var(--backgroundColor);
+            border-radius: 4px 4px 0 0;
+            padding: 1rem;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--primaryColor);
+        }
+
+        ngx-form {
+            display: block;
+            padding: 1rem;
+        }
+
+        .retrieval {
+            cursor: pointer;
+            padding: 1rem;
+            margin-top: 2rem;
+            text-align: center;
+            color: var(--primaryColor);
+            border-top: 1px solid var(--borderColor);
+        }
+    }
+}

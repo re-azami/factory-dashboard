@@ -1,0 +1,7 @@
+<content>
+    <div class="title">ورود به عضویت</div>
+    <ngx-form [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form>
+    @if (retrieval) {
+    <div class="retrieval" [routerLink]="['/retrieval']">کلمه عبور را فراموش کرده‌اید؟</div>
+    }
+</content>

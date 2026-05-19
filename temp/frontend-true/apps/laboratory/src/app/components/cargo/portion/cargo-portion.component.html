@@ -1,0 +1,21 @@
+<div class="cargo en">{{ title }}</div>
+
+<table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+    <tr>
+        <th>بار</th>
+        <th class="info">طرف حساب</th>
+        <th class="info">محموله</th>
+        <th class="center">نسبت</th>
+    </tr>
+    @for (portion of portions; track $index) {
+    <tr>
+        <td>
+            {{ portion.title }}
+            <div class="type">{{ loadCargoInfo[portion.type].title }}</div>
+        </td>
+        <td class="info">{{ portion.party ? portion.party.title : '' }}</td>
+        <td class="info">{{ portion.shipment ? portion.shipment.title : '' }}</td>
+        <td class="center en">{{ portion.proportion }}</td>
+    </tr>
+    }
+</table>

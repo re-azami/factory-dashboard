@@ -1,0 +1,9 @@
+<ngx-helper-value [values]="values" [border]="false"></ngx-helper-value>
+
+<div class="buttons">
+    @for (type of exportTypeList; track $index) {
+    <button mat-flat-button type="button" color="primary" (click)="export(type)">
+        {{ exportTypeInfo[type].title }}
+    </button>
+    }
+</div>

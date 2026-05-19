@@ -1,0 +1,307 @@
+@if (loading) { <ngx-helper-loader></ngx-helper-loader> } @else {
+
+<!-- RESULTS -->
+@if (lines[1].length === 0 && lines[2].length === 0) {
+<div class="page-comment">نتیجه آزمایش ثبت نشده است.</div>
+} @else {
+<!-- GROUP VIEW -->
+@if (view === 'GROUP') {
+<div class="options">
+    @for (line of laboratoryLineList; track $index) {
+    <!-- CHECK LINE -->
+    @if (lines[line].length !== 0) {
+    <div class="option">
+        <div class="title">{{ laboratoryLineInfo[line].title }}</div>
+        <div class="checkbox">
+            @for (item of lines[line]; track $index) {
+            <mat-checkbox
+                color="primary"
+                [checked]="visibleGroups.includes(getGroup(line, $index))"
+                (change)="updateGroup(getGroup(line, $index), $event.checked)"
+            >
+                {{ getTime(item) }}
+            </mat-checkbox>
+            }
+            <!-- AVERAGE -->
+            @if (lines[line].length > 1) {
+            <mat-checkbox
+                color="primary"
+                [checked]="visibleGroups.includes(getGroup(line, 'AVERAGE'))"
+                (change)="updateGroup(getGroup(line, 'AVERAGE'), $event.checked)"
+                >روزانه</mat-checkbox
+            >
+            }
+        </div>
+    </div>
+    } }
+    <!-- CARGO -->
+    <div class="option">
+        <div class="title">سایر موارد</div>
+        <div class="checkbox">
+            <mat-checkbox
+                color="primary"
+                [checked]="visibleGroups.includes('CALCULATION')"
+                (change)="updateGroup('CALCULATION', $event.checked)"
+            >
+                محاسبات
+            </mat-checkbox>
+            <mat-checkbox
+                color="primary"
+                [checked]="visibleGroups.includes('CARGO')"
+                (change)="updateGroup('CARGO', $event.checked)"
+            >
+                مشخصات بارها
+            </mat-checkbox>
+        </div>
+    </div>
+</div>
+
+<!-- GROUPS -->
+@for (line of laboratoryLineList; track $index) {
+<!-- LINES -->
+@for (item of lines[line]; track $index) {
+<!-- LINE ITEM -->
+@if (visibleGroups.includes(getGroup(line, $index))) {
+<div class="page-seperator"></div>
+<page-card
+    [icon]="laboratoryLineInfo[line].icon"
+    [title]="laboratoryLineInfo[line].title + ' &nbsp; &nbsp; ' + getTime(item)"
+    [description]="item.cargo ? 'بار: ' + item.cargo.title : ''"
+    [padding]="'0'"
+>
+    <div class="table">
+        <table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+            <tr>
+                <th class="frozen"></th>
+                <th>تناژ</th>
+                @for (result of laboratoryResultList; track $index) {
+                <th>{{ laboratoryResultInfo[result].title }}</th>
+                }
+            </tr>
+            @for (test of laboratoryKhatkaList; track $index) {
+            <tr>
+                <td class="frozen group-location">{{ laboratoryKhatkaInfo[test].title }}</td>
+                <td>
+                    <!-- FEED TONNAGE -->
+                    @if (test === 'FEED') { {{ (item.tonnage ? item.tonnage.feed : null) | number }} }
+                    <!-- CONCENTRATE TONNAGE -->
+                    @if (test === 'CONCENTRATE') { {{ (item.tonnage ? item.tonnage.product : null) | number }} }
+                </td>
+                @for (result of laboratoryResultList; track $index) {
+                <td [class.click]="!!getResult(item, test, result)" (click)="showResult(item, test, result)">
+                    {{ getResult(item, test, result) }}
+                </td>
+                }
+            </tr>
+            }
+        </table>
+    </div>
+</page-card>
+} }
+<!-- LINE AVERAGE -->
+@if (visibleGroups.includes(getGroup(line, 'AVERAGE'))) {
+<div class="page-seperator"></div>
+<page-card [icon]="laboratoryLineInfo[line].icon" [title]="'متوسط روزانه ' + laboratoryLineInfo[line].title" [padding]="'0'">
+    <div class="table">
+        <table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+            <tr>
+                <th class="frozen"></th>
+                <th>تناژ</th>
+                @for (result of laboratoryResultList; track $index) {
+                <th>{{ laboratoryResultInfo[result].title }}</th>
+                }
+            </tr>
+            @for (test of laboratoryKhatkaList; track $index) {
+            <tr>
+                <td class="frozen group-location">{{ laboratoryKhatkaInfo[test].title }}</td>
+                <td>
+                    <!-- FEED TONNAGE -->
+                    @if (test === 'FEED') { {{ getTonnage(line, 'FEED') | number }} }
+                    <!-- CONCENTRATE TONNAGE -->
+                    @if (test === 'CONCENTRATE') { {{ getTonnage(line, 'CONCENTRATE') | number }} }
+                </td>
+                @for (result of laboratoryResultList; track $index) {
+                <td>
+                    {{ getAverage(line, test, result) }}
+                </td>
+                }
+            </tr>
+            }
+        </table>
+    </div></page-card
+>
+} } }
+
+<!-- FULL VIEW -->
+@if (view === 'FULL') {
+<div class="table">
+    <table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+        <tr>
+            <th class="frozen test" [rowSpan]="2">آزمایش</th>
+            <th class="frozen location" [rowSpan]="2">مکان</th>
+            <!-- LINE 1 -->
+            @if (lines[1].length > 0) {
+            <th [colSpan]="lines[1].length">{{ laboratoryLineInfo[1].title }}</th>
+            }
+            <!-- LINE 2 -->
+            @if (lines[2].length > 0) {
+            <th [colSpan]="lines[2].length">{{ laboratoryLineInfo[2].title }}</th>
+            }
+        </tr>
+        <tr>
+            <!-- LINE 1 -->
+            @for (item of lines[1]; track $index) {
+            <th class="time">
+                {{ getTime(item) }}
+                <div
+                    [class.en]="!!item.cargo && item.cargo.portions.length > 0"
+                    [dir]="!!item.cargo && item.cargo.portions.length > 0 ? 'ltr' : 'rtl'"
+                >
+                    {{ item.cargo?.title }}
+                </div>
+            </th>
+            }
+            <!-- LINE 2 -->
+            @for (item of lines[2]; track $index) {
+            <th class="time">
+                {{ getTime(item) }}
+                <div
+                    [class.en]="!!item.cargo && item.cargo.portions.length > 0"
+                    [dir]="!!item.cargo && item.cargo.portions.length > 0 ? 'ltr' : 'rtl'"
+                >
+                    {{ item.cargo?.title }}
+                </div>
+            </th>
+            }
+        </tr>
+
+        <!-- RESULTS -->
+        @for (result of laboratoryResultList; track $index; let rIndex = $index) {
+        <!-- TESTS -->
+        @for (test of laboratoryKhatkaList; track $index; let tIndex = $index) {
+        <tr>
+            @if (tIndex === 0) {
+            <td class="frozen test" [rowSpan]="laboratoryKhatkaList.length">{{ laboratoryResultInfo[result].title }}</td>
+            }
+            <td class="frozen location" [class.odd]="(rIndex * laboratoryKhatkaList.length + tIndex) % 2 === 1">
+                {{ laboratoryKhatkaInfo[test].title }}
+            </td>
+            <!-- LINE 1 -->
+            @for (item of lines[1]; track $index) {
+            <td
+                [class.odd]="(rIndex * laboratoryKhatkaList.length + tIndex) % 2 === 1"
+                [class.click]="!!getResult(item, test, result)"
+                (click)="showResult(item, test, result)"
+            >
+                {{ getResult(item, test, result) }}
+            </td>
+            }
+            <!-- LINE 1 -->
+            @for (item of lines[2]; track $index) {
+            <td
+                [class.odd]="(rIndex * laboratoryKhatkaList.length + tIndex) % 2 === 1"
+                [class.click]="!!getResult(item, test, result)"
+                (click)="showResult(item, test, result)"
+            >
+                {{ getResult(item, test, result) }}
+            </td>
+            }
+        </tr>
+
+        } }
+    </table>
+</div>
+}
+
+<!-- CALCULATION -->
+@if (view === 'FULL' || (view === 'GROUP' && visibleGroups.includes('CALCULATION'))) {
+<div class="page-seperator"></div>
+<page-card [title]="'محاسبات'" [icon]="'calculate'" [padding]="'0'">
+    <div class="table">
+        <table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+            <tr>
+                <th class="frozen" [colSpan]="2">خط</th>
+                <th>تناژ خوراک</th>
+                <th>تناژ تولید</th>
+                <th>بازدهی جدایش</th>
+                <th>ریکاوری عیاری (راندمان)</th>
+                <th>ریکاوری وزنی خشک</th>
+            </tr>
+            <!-- LINE 1 -->
+            @for (khatka of lines[1]; track $index) {
+            <tr>
+                @if ($index === 0) {
+                <td class="frozen test" [rowSpan]="lines[1].length">{{ laboratoryLineInfo[khatka.line].title }}</td>
+                }
+                <td class="frozen location time">{{ getTime(khatka) }}</td>
+                <td>{{ khatka.tonnage.feed | number }}</td>
+                <td>{{ khatka.tonnage.product | number }}</td>
+                <td>{{ getSeparation(khatka) | number }}</td>
+                <td>{{ getEfficiency(khatka) | number }}</td>
+                <td>{{ getWeight(khatka) | number }}</td>
+            </tr>
+            }
+            <!-- LINE 2 -->
+            @for (khatka of lines[2]; track $index) {
+            <tr>
+                @if ($index === 0) {
+                <td class="frozen test" [rowSpan]="lines[2].length">{{ laboratoryLineInfo[khatka.line].title }}</td>
+                }
+                <td class="frozen location time">{{ getTime(khatka) }}</td>
+                <td>{{ khatka.tonnage.feed | number }}</td>
+                <td>{{ khatka.tonnage.product | number }}</td>
+                <td>{{ getSeparation(khatka) | number }}</td>
+                <td>{{ getEfficiency(khatka) | number }}</td>
+                <td>{{ getWeight(khatka) | number }}</td>
+            </tr>
+            }
+            <!-- FOOTER -->
+            @for (item of footer; track $index) {
+            <tr>
+                <th class="frozen" [class.top]="$index === 0" [colSpan]="2">{{ item[0] || '' }}</th>
+                <th [class.top]="$index === 0">{{ (item[1] | number) || '' }}</th>
+                <th [class.top]="$index === 0">{{ (item[2] | number) || '' }}</th>
+                <th [class.top]="$index === 0">{{ item[3] || '' }}</th>
+                <th [class.top]="$index === 0">{{ (item[4] | number) || '' }}</th>
+                <th [class.top]="$index === 0">{{ (item[5] | number) || '' }}</th>
+            </tr>
+            }
+        </table>
+    </div>
+</page-card>
+}
+
+<!-- LOADS -->
+@if (view === 'FULL' || (view === 'GROUP' && visibleGroups.includes('CARGO'))) {
+<div class="page-seperator"></div>
+<page-card [title]="'مشخصات بارها'" [icon]="'filter_hdr'" [padding]="'0'">
+    <div class="table">
+        <table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+            <tr>
+                <th class="title">بار</th>
+                <th class="title">نوع بار</th>
+                <th class="title">طرف حساب</th>
+                <th class="title">محموله</th>
+            </tr>
+            @for (cargo of cargos; track $index) {
+            <tr>
+                <td class="title" [class.en]="cargo.portions.length > 0" [dir]="cargo.portions.length > 0 ? 'ltr' : 'rtl'">
+                    {{ cargo.title }}
+                </td>
+                <td class="title">{{ cargo.type }}</td>
+                <td class="title">{{ cargo.party }}</td>
+                <td class="title">{{ cargo.shipment }}</td>
+            </tr>
+            <!-- PORTIONS -->
+            @for (portion of cargo.portions; track $index) {
+            <tr>
+                <td class="portion title">{{ portion.title }}</td>
+                <td class="portion title">{{ loadCargoInfo[portion.type].title }}</td>
+                <td class="portion title">{{ portion.party?.title || '' }}</td>
+                <td class="portion title">{{ portion.shipment?.title || '' }}</td>
+            </tr>
+            } }
+        </table>
+    </div>
+</page-card>
+} } }

@@ -1,0 +1,31 @@
+<!-- WITH COLOR -->
+@if (action.color) {
+<button mat-flat-button class="trigger" [color]="action.color" [matMenuTriggerFor]="menu">
+    @if (size.isMobile) { <mat-icon>{{ action.icon }}</mat-icon> } @else { {{ action.title }} }
+</button>
+}
+
+<!-- WITHOUT COLOR -->
+@if (!action.color) {
+<button mat-stroked-button class="trigger" [color]="'primary'" [matMenuTriggerFor]="menu">
+    @if (size.isMobile) { <mat-icon>{{ action.icon }}</mat-icon> } @else { {{ action.title }} }
+</button>
+}
+
+<!-- MENU -->
+<mat-menu #menu="matMenu" [xPosition]="'before'">
+    @for (item of menuItems; track $index) {
+    <!-- DIVIDER -->
+    @if (item === 'DIVIDER') { <mat-divider></mat-divider> }
+    <!-- MENU ITEM -->
+    @else {
+    <button mat-menu-item (click)="click(item.id)" [disabled]="item.isDeactive">
+        <div class="menu-item">
+            <div class="title">{{ item.title }}</div>
+            @if (item.description) {
+            <div class="description">{{ item.description }}</div>
+            }
+        </div>
+    </button>
+    } }
+</mat-menu>

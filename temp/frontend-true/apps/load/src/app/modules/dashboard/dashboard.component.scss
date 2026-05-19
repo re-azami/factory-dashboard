@@ -1,0 +1,204 @@
+.type-active {
+    margin-top: 1rem;
+
+    table {
+        border-radius: 4px;
+
+        tr {
+            th {
+                border-radius: 4px 4px 0 0;
+                padding: 0.75rem 1rem;
+                background-color: var(--backgroundColor);
+            }
+
+            th.title {
+                text-align: right;
+            }
+
+            td {
+                padding: 0 1rem;
+                line-height: 38px;
+                border-top: 1px solid var(--borderColor);
+            }
+
+            td.color {
+                width: 2rem;
+                padding: 0 1rem 0 0;
+
+                div.color {
+                    width: 1rem;
+                    height: 1rem;
+                    margin: 0 auto;
+                    border-radius: 25%;
+                }
+            }
+
+            td.title {
+                font-size: 13px;
+            }
+
+            td.count,
+            td.weight {
+                text-align: center;
+                font-size: 13px;
+            }
+
+            td.help {
+                width: 36px;
+                padding: 0;
+
+                button {
+                    width: 36px;
+                    min-width: auto;
+                }
+            }
+        }
+    }
+
+    ngx-helper-value {
+        display: block;
+        border-left: 1px solid var(--borderColor);
+
+        ::ng-deep .title {
+            font-weight: normal !important;
+        }
+
+        ::ng-deep .value-description {
+            top: -9px;
+            padding-bottom: 0;
+            font-size: 11px;
+            opacity: 0.5;
+        }
+    }
+
+    .active-total {
+        font-weight: 500;
+
+        padding: 1.5rem 0 0.5rem 0;
+        text-align: center;
+    }
+
+    .page-chart {
+        height: 255px !important;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .type-active {
+        .active-total {
+            display: none;
+        }
+
+        .page-chart {
+            height: 200px !important;
+            border-top: 1px solid var(--borderColor);
+        }
+    }
+}
+
+.cargos {
+    margin-top: 1rem;
+    max-width: 100%;
+    overflow: auto;
+    border-radius: 4px;
+    position: relative;
+
+    table {
+        border-radius: 4px;
+        border-bottom: 1px solid var(--borderColor);
+
+        tr {
+            th {
+                padding: 0.75rem 1rem;
+                background-color: var(--backgroundColor);
+            }
+
+            th.title {
+                text-align: right;
+                white-space: nowrap;
+            }
+
+            th.top {
+                border-top: 1px solid var(--borderColor);
+            }
+
+            th:first-child,
+            td:first-child {
+                border-right: 1px solid var(--borderColor);
+            }
+
+            th:last-child,
+            td:last-child,
+            th.left {
+                border-left: 1px solid var(--borderColor);
+            }
+
+            th.sub {
+                font-weight: normal;
+                padding-top: 0;
+                font-size: 12px;
+                border-right-width: 0;
+            }
+
+            th.total {
+                padding: 1rem 0;
+                border-top: 1px solid var(--borderColor);
+            }
+
+            td {
+                padding: 0.75rem 1rem;
+                border-top: 1px solid var(--borderColor);
+            }
+
+            td.title {
+                font-size: 13px;
+                white-space: nowrap;
+
+                .type {
+                    font-size: 12px;
+                    opacity: 0.5;
+                }
+            }
+
+            td.value {
+                text-align: center;
+            }
+
+            td.remaining {
+                direction: ltr;
+            }
+
+            td.daily {
+                background-color: rgba(0, 0, 0, 0.03);
+            }
+
+            th.frozen,
+            td.frozen {
+                position: sticky;
+                right: 0;
+                z-index: 1;
+                background-color: var(--backgroundColor);
+                border-left: 1px solid var(--borderColor);
+            }
+
+            td.frozen {
+                background-color: var(--whiteColor);
+            }
+
+            td.seperator {
+                height: 0.5rem;
+                border-width: 0;
+                border-top: 1px solid var(--borderColor);
+            }
+        }
+    }
+}
+
+.chart {
+    margin-top: 1rem;
+    border-radius: 4px;
+
+    .page-chart {
+        height: 275px !important;
+    }
+}

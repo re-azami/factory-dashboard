@@ -1,0 +1,28 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.5rem;
+
+    .user {
+        display: flex;
+        align-items: center;
+        column-gap: 1rem;
+
+        border-radius: 4px;
+        border: 1px solid var(--borderColor);
+        padding: 0.75rem 1rem;
+
+        .name {
+            flex: 1;
+        }
+
+        .view {
+            font-size: 12px;
+        }
+
+        .no-view {
+            opacity: 0.75;
+            font-style: italic;
+        }
+    }
+}

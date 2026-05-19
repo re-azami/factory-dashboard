@@ -1,0 +1,148 @@
+<page-title [title]="title"></page-title>
+
+<page-card [title]="crusher.time.begin | ngxHelperJalali" [icon]="'calendar_month'" [padding]="'0'" [buttons]="buttons">
+    <page-section>
+        <page-section-column [flex]="1">
+            <page-block [blocks]="blocks[0]" [column]="2" [border]="false"></page-block>
+        </page-section-column>
+        <page-section-column [flex]="2">
+            <page-block [blocks]="blocks[1]" [column]="5" [border]="false"></page-block>
+        </page-section-column>
+    </page-section>
+    <page-section>
+        <page-section-column>
+            <page-block [blocks]="blocks[2]" [column]="2" [border]="false"></page-block>
+        </page-section-column>
+        <page-section-column>
+            <page-block [blocks]="blocks[3]" [column]="2" [border]="false"></page-block>
+        </page-section-column>
+    </page-section>
+    <!-- PORTIONS -->
+    @if (crusher.cargo && crusher.cargo.portions.length > 0) {
+    <div class="portions">
+        <table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+            <tr>
+                <th>بار</th>
+                <th class="info">طرف حساب</th>
+                <th class="info">محموله</th>
+                <th class="center">نسبت</th>
+            </tr>
+            @for (item of crusher.cargo.portions; track $index) {
+            <tr>
+                <td>
+                    {{ item.title }}
+                    <div class="type">{{ loadCargoInfo[item.type].title }}</div>
+                </td>
+                <td class="info">{{ item.party?.title || '' }}</td>
+                <td class="info">{{ item.shipment?.title || '' }}</td>
+                <td class="center en">{{ item.proportion }}</td>
+            </tr>
+            }
+        </table>
+    </div>
+    }
+</page-card>
+
+<div class="page-seperator"></div>
+<page-section>
+    <page-section-column [width]="300">
+        <standard [(standard)]="standard"></standard>
+    </page-section-column>
+    <page-section-column>
+        <page-card [title]="'نتایج آزمایش'" [icon]="'biotech'" [padding]="'0'">
+            <div class="tests">
+                <table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+                    <tr>
+                        <th class="frozen"></th>
+                        <th [width]="'15%'">{{ laboratoryResultInfo['FE'].title }}</th>
+                        <th [width]="'15%'">{{ laboratoryResultInfo['FEO'].title }}</th>
+                        <th [width]="'15%'">{{ laboratoryResultInfo['GRIND'].title }}</th>
+                        <th [width]="'15%'">{{ laboratoryResultInfo['MOISTURE'].title }}</th>
+                        <th [width]="'15%'">{{ laboratoryResultInfo['SULPHUR'].title }}</th>
+                    </tr>
+                    @for (item of laboratoryCrusherList; track $index) {
+                    <tr>
+                        <td class="test frozen">
+                            {{ laboratoryCrusherInfo[item].title }}
+                            @if (laboratoryCrusherInfo[item].separator) {
+                            <div class="separator">سپراتور سنگ شکن</div>
+                            }
+                        </td>
+                        <!-- FE -->
+                        <td (click)="tests[item]?.fe ? null : setFe(item)" [class.deactive]="isDisabled(item, 'FE')" #testFe>
+                            @if (tests[item]?.fe) {
+                            {{ tests[item]?.fe?.result | number }}
+                            <ngx-helper-menu
+                                [menu]="getMenu(item, 'FE')"
+                                [tigger]="testFe"
+                                [xPosition]="'before'"
+                            ></ngx-helper-menu>
+                            } @else { &nbsp; }
+                        </td>
+                        <!-- FEO -->
+                        <td
+                            (click)="tests[item]?.feo ? null : setFeO(item)"
+                            [class.deactive]="isDisabled(item, 'FEO')"
+                            #testFeO
+                        >
+                            @if (tests[item]?.feo) {
+                            {{ tests[item]?.feo?.result | number }}
+                            <ngx-helper-menu
+                                [menu]="getMenu(item, 'FEO')"
+                                [tigger]="testFeO"
+                                [xPosition]="'before'"
+                            ></ngx-helper-menu>
+                            } @else { &nbsp; }
+                        </td>
+                        <!-- GRIND -->
+                        <td
+                            (click)="tests[item]?.grind ? null : setGrind(item)"
+                            [class.deactive]="isDisabled(item, 'GRIND')"
+                            #testGrind
+                        >
+                            @if (tests[item]?.grind) {
+                            {{ tests[item]?.grind?.result | number }}
+                            <ngx-helper-menu
+                                [menu]="getMenu(item, 'GRIND')"
+                                [tigger]="testGrind"
+                                [xPosition]="'before'"
+                            ></ngx-helper-menu>
+                            } @else { &nbsp; }
+                        </td>
+                        <!-- MOISTURE -->
+                        <td
+                            (click)="tests[item]?.moisture ? null : setMoisture(item)"
+                            [class.deactive]="isDisabled(item, 'MOISTURE')"
+                            #testMoisture
+                        >
+                            @if (tests[item]?.moisture) {
+                            {{ tests[item]?.moisture?.result | number }}
+                            <ngx-helper-menu
+                                [menu]="getMenu(item, 'MOISTURE')"
+                                [tigger]="testMoisture"
+                                [xPosition]="'before'"
+                            ></ngx-helper-menu>
+                            } @else { &nbsp; }
+                        </td>
+                        <!-- SULPHUR -->
+                        <td
+                            (click)="tests[item]?.sulphur ? null : setSulphur(item)"
+                            [class.deactive]="isDisabled(item, 'SULPHUR')"
+                            #testSulphur
+                        >
+                            @if (tests[item]?.sulphur) {
+                            {{ tests[item]?.sulphur?.result | number }}
+                            <ngx-helper-menu
+                                [menu]="getMenu(item, 'SULPHUR')"
+                                [tigger]="testSulphur"
+                                [xPosition]="'before'"
+                            ></ngx-helper-menu>
+                            } @else { &nbsp; }
+                        </td>
+                    </tr>
+                    }
+                </table>
+            </div>
+        </page-card>
+    </page-section-column>
+</page-section>

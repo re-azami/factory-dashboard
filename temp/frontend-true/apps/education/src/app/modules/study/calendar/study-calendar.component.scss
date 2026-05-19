@@ -1,0 +1,41 @@
+.location {
+    display: flex;
+    align-items: flex-start;
+    column-gap: 1rem;
+
+    padding: 1rem;
+    border-top: 1px solid var(--borderColor);
+
+    .title {
+        width: 75px;
+        font-weight: 500;
+    }
+
+    .periods {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        row-gap: 0.5rem;
+
+        .period {
+            display: flex;
+            align-items: center;
+
+            font-size: 12px;
+
+            .course {
+                flex: 1;
+                width: 0;
+            }
+
+            .time {
+                width: 35px;
+                font-weight: 500;
+            }
+        }
+    }
+}
+
+.location:first-child {
+    border-top-width: 0;
+}

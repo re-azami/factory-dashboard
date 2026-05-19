@@ -1,0 +1,49 @@
+<page-card [title]="'لیست بارها'" [icon]="'terrain'" [buttons]="buttons" [padding]="'0'">
+    @if (portions.length === 0) {
+    <div class="page-comment">بار انتخاب نشده است.</div>
+    } @else {
+    <table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+        <tr>
+            <th>بار</th>
+            <th class="info">طرف حساب</th>
+            <th class="info">محموله</th>
+            <th class="center">نسبت</th>
+            <th class="center"></th>
+        </tr>
+        @for (item of portions; track $index) {
+        <tr>
+            <td>
+                {{ item.title }}
+                <div class="type">{{ loadCargoInfo[item.type].title }}</div>
+            </td>
+            <td class="info">{{ item.party ? item.party.title : '' }}</td>
+            <td class="info">{{ item.shipment ? item.shipment.title : '' }}</td>
+            <td>
+                <div class="proportion">
+                    <button mat-button type="button" color="primary" (click)="changeProportion(item, 1)">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                    <div class="en">
+                        {{ item.proportion }}
+                    </div>
+                    <button
+                        mat-button
+                        type="button"
+                        color="primary"
+                        (click)="changeProportion(item, -1)"
+                        [disabled]="item.proportion < 2"
+                    >
+                        <mat-icon>remove</mat-icon>
+                    </button>
+                </div>
+            </td>
+            <td class="delete">
+                <button mat-button type="button" color="warn" (click)="deletePortion(item)">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </td>
+        </tr>
+        }
+    </table>
+    }
+</page-card>

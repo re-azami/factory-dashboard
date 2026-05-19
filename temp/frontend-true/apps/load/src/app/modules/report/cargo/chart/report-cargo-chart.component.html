@@ -1,0 +1,14 @@
+<report-cargo-view [cargo]="info.cargo" [draft]="info.draft" [action]="'CHART'"></report-cargo-view>
+
+@if (months.length === 0) {
+<div class="page-comment">حواله‌ای برای این بار ثبت نشده است.</div>
+} @else {
+<div class="page-seperator"></div>
+<page-card [title]="'نمودار ماهانه حواله‌ها'" [icon]="'assessment'" [padding]="'0'" [option]="option">
+    <page-block [blocks]="blocks" [column]="3" [border]="false"></page-block>
+    <!-- CHART -->
+    @if (!loading) {
+    <div echarts class="page-chart" [options]="chart"></div>
+    }
+</page-card>
+}

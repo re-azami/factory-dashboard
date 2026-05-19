@@ -1,0 +1,16 @@
+<div class="pages">
+    @for (page of loadPrintPageList; track $index) {
+    <div class="page" (click)="select(page)">{{ loadPrintPageInfo[page].title }}</div>
+    }
+</div>
+
+<div class="save">
+    <mat-checkbox color="primary" (change)="save = saveInput.checked" #saveInput>
+        <div class="title">انتخاب اندازه‌ی صفحه به صورت پیش‌فرض</div>
+    </mat-checkbox>
+    <div class="comment" (click)="saveInput.checked = !saveInput.checked; save = saveInput.checked">
+        پس از انتخاب اندازه صفحه پیش‌فرض، با استفاده از صفحه تنظیمات پرینت می‌تواند گزینه انتخاب شده را تغییر دهید.
+    </div>
+</div>
+
+<button mat-stroked-button type="button" color="primary" class="cancel" (click)="cancel()">انصراف</button>

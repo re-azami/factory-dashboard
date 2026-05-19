@@ -1,0 +1,20 @@
+<page-section>
+    <page-section-column>
+        <page-block [blocks]="blocks[0]" [column]="1"> </page-block>
+    </page-section-column>
+    <page-section-column>
+        <page-block [blocks]="blocks[1]" [column]="1"> </page-block>
+    </page-section-column>
+</page-section>
+
+<div class="page-seperator"></div>
+
+<page-card
+    [title]="'نمودار ماهانه حواله‌ها'"
+    [icon]="'receipt_long'"
+    [padding]="'0.5rem 0'"
+    [option]="option"
+    [description]="description"
+>
+    <div echarts class="page-chart" [options]="chart"></div>
+</page-card>

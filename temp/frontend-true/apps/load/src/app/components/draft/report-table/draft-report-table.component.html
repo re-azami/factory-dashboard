@@ -1,0 +1,91 @@
+@if (parties.length > 0 || shipments.length > 0 || transporters.length > 0 || cargos.length > 0 || owners.length > 0) {
+<div class="page-seperator"></div>
+<table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0" class="page-box-shadow">
+    <!-- PARTY -->
+    @if (parties.length > 0) {
+    <tr class="header">
+        <th class="header" colspan="2">طرف حساب</th>
+        <th>حواله</th>
+        <th>وزن</th>
+    </tr>
+    @for (item of parties; track $index) {
+    <tr>
+        <td colspan="2">{{ item.title }}</td>
+        <td class="value">{{ item.count | number }}</td>
+        <td class="value">{{ item.weight | number }}</td>
+    </tr>
+    } }
+    <!-- SHIPMENT -->
+    @if (shipments.length > 0) {
+    <tr class="header">
+        <th class="header" colspan="2">محموله</th>
+        <th>حواله</th>
+        <th>وزن</th>
+    </tr>
+    @for (item of shipments; track $index) {
+    <tr>
+        <td colspan="2">{{ item.title }}</td>
+        <td class="value">{{ item.count | number }}</td>
+        <td class="value">{{ item.weight | number }}</td>
+    </tr>
+    } }
+    <!-- TRANSPORTER -->
+    @if (transporters.length > 0) {
+    <tr class="header">
+        <th class="header" colspan="2">باربری</th>
+        <th>حواله</th>
+        <th>وزن</th>
+    </tr>
+    @for (item of transporters; track $index) {
+    <tr>
+        <td colspan="2">{{ item.title }}</td>
+        <td class="value">{{ item.count | number }}</td>
+        <td class="value">{{ item.weight | number }}</td>
+    </tr>
+    } }
+    <!-- TYPE -->
+    @if (cargos.length > 0) {
+    <tr class="header">
+        <th class="header" colspan="2">نوع بار</th>
+        <th>حواله</th>
+        <th>وزن</th>
+    </tr>
+    @for (item of loadCargoList; track $index) { @if (types[item].count !== 0) {
+    <tr>
+        <td colspan="2">{{ loadCargoInfo[item].title }}</td>
+        <td class="value">{{ types[item].count | number }}</td>
+        <td class="value">{{ types[item].weight | number }}</td>
+    </tr>
+    } } }
+    <!-- CARGO -->
+    @if (cargos.length > 0) {
+    <tr class="header">
+        <th class="header">بار</th>
+        <th class="type">نوع بار</th>
+        <th>حواله</th>
+        <th>وزن</th>
+    </tr>
+    @for (item of cargos; track $index) {
+    <tr>
+        <td>{{ item.title }}</td>
+        <td>{{ loadCargoInfo[item.type].title }}</td>
+        <td class="value">{{ item.count | number }}</td>
+        <td class="value">{{ item.weight | number }}</td>
+    </tr>
+    } }
+    <!-- OWNER -->
+    @if (owners.length > 0) {
+    <tr class="header">
+        <th class="header" colspan="2">مالک</th>
+        <th>حواله</th>
+        <th>وزن</th>
+    </tr>
+    @for (item of owners; track $index) {
+    <tr>
+        <td colspan="2">{{ item.name }}</td>
+        <td class="value">{{ item.count | number }}</td>
+        <td class="value">{{ item.weight | number }}</td>
+    </tr>
+    } }
+</table>
+}

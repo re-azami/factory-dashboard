@@ -1,0 +1,32 @@
+@if (loading) {
+<ngx-helper-loader></ngx-helper-loader>
+} @else {
+<page-section>
+    @for (item of data; track $index) {
+    <page-section-column>
+        <page-card [title]="item.title" [icon]="item.icon" [padding]="'0'">
+            <div class="table">
+                <table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+                    <tr>
+                        <th class="test frozen">آزمایش</th>
+                        <th>تعداد</th>
+                        <th>حداقل</th>
+                        <th>حداکثر</th>
+                        <th>متوسط</th>
+                    </tr>
+                    @for (test of item.tests; track $index) {
+                    <tr>
+                        <td class="test frozen">{{ test.title }}</td>
+                        <td>{{ test.count | number }}</td>
+                        <td>{{ test.count ? (test.minimum | number) : '' }}</td>
+                        <td>{{ test.count ? (test.maximum | number) : '' }}</td>
+                        <td>{{ test.count ? (test.average | number) : '' }}</td>
+                    </tr>
+                    }
+                </table>
+            </div>
+        </page-card>
+    </page-section-column>
+    }
+</page-section>
+}

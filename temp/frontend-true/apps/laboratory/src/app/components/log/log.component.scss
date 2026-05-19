@@ -1,0 +1,32 @@
+.logs {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+
+    .log {
+        flex: 1;
+        color: var(--primaryColor);
+        font-weight: 600;
+    }
+
+    .date {
+        font-size: 12px;
+    }
+
+    .user {
+        display: flex;
+        align-items: center;
+        column-gap: 0.5rem;
+        font-size: 12px;
+
+        .name {
+            flex: 1;
+        }
+    }
+
+    .description {
+        font-size: 12px;
+        text-align: justify;
+        margin-top: 0.5rem;
+    }
+}

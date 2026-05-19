@@ -1,0 +1,20 @@
+<page-title [title]="title"></page-title>
+
+<page-section>
+    <page-section-column [sticky]="true">
+        <page-card [title]="cargo.title" [description]="loadCargoInfo[cargo.type].title" [icon]="'terrain'" [padding]="'0'">
+            <page-block [blocks]="blocks" [column]="2" [border]="false"></page-block>
+            <div class="comment">
+                در صورت ثبت ناوگان در لیست ناوگان اختصاصی یک بار، در حالتی که بار مورد نظر به صورت فعال در سیستم ثبت شده
+                باشد، برای ناوگان مورد نظر فقط امکان ثبت حواله برای آن بار وجود خواهد داشت. اما در صورت حذف یا غیرفعال شدن
+                بار، امکان ثبت حواله برای سایر بارها برای ناوگان فعال می‌شود. در صورتی که ناوگان، به عنوان ناوگان اختصاصی
+                برای بیشتر از یک بار فعال در سیستم ثبت شده باشد، امکان انتخاب بار در هنگام ثبت حواله وجود دارد.
+            </div>
+        </page-card>
+    </page-section-column>
+    <page-section-column [flex]="3">
+        @if (!loading) {
+        <list [list]="list" [loading]="loading" [data]="trucks"></list>
+        }
+    </page-section-column>
+</page-section>

@@ -1,0 +1,126 @@
+.portions {
+    table {
+        border-top: 1px solid var(--borderColor);
+
+        tr {
+            th {
+                text-align: right;
+                padding: 1.25rem 1rem;
+                color: var(--primaryColor);
+                background-color: var(--backgroundColor);
+            }
+
+            td {
+                text-align: right;
+                padding: 0.75rem 1rem;
+                border-top: 1px solid var(--borderColor);
+                border-left: 1px solid var(--borderColor);
+
+                .type {
+                    font-size: 12px;
+                    color: var(--grayColor);
+                }
+            }
+
+            th.center,
+            td.center {
+                text-align: center;
+            }
+
+            td.center {
+                font-size: 15px;
+            }
+
+            td:last-child {
+                border-left-width: 0;
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .portions {
+        table {
+            tr {
+                th.info,
+                td.info {
+                    display: none;
+                }
+            }
+        }
+    }
+}
+
+.result {
+    ::ng-deep page-card header {
+        position: sticky;
+        top: calc(var(--headerHeight) + var(--pageTitleHeight) + 1rem);
+        z-index: 3;
+        background-color: var(--whiteColor);
+        border-top: 1px solid var(--borderColor);
+        height: 50px;
+    }
+
+    .table {
+        max-width: 100%;
+        overflow: auto;
+        position: relative;
+        overflow-y: hidden;
+
+        table {
+            tr {
+                th {
+                    padding: 1.25rem 1rem;
+                    color: var(--primaryColor);
+                    background-color: var(--backgroundColor);
+                }
+
+                td {
+                    text-align: center;
+                    padding: 0.75rem 1rem;
+                    border-top: 1px solid var(--borderColor);
+                    border-left: 1px solid var(--borderColor);
+
+                    .time {
+                        font-size: 12px;
+                        color: var(--grayColor);
+                    }
+                }
+
+                td:last-child {
+                    border-left-width: 0;
+                }
+
+                th.title,
+                td.title {
+                    text-align: justify;
+                }
+
+                th.frozen,
+                th.frozen-date,
+                td.frozen,
+                td.frozen-date {
+                    position: sticky;
+                    right: 0;
+                    z-index: 1;
+                    background-color: var(--backgroundColor);
+                }
+
+                td.frozen,
+                td.frozen-date {
+                    background-color: var(--whiteColor);
+                }
+
+                th.frozen,
+                td.frozen {
+                    min-width: 75px;
+                }
+
+                th.frozen-date,
+                td.frozen-date {
+                    right: 75px;
+                }
+            }
+        }
+    }
+}

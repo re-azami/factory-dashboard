@@ -1,0 +1,71 @@
+.member {
+    display: flex;
+    align-items: center;
+
+    .count {
+        width: 100px;
+        text-align: center;
+
+        .title {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--grayColor);
+        }
+
+        .value {
+            font-size: 15px;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            color: var(--primaryColor);
+        }
+    }
+
+    .status,
+    .gender {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        row-gap: 0.5rem;
+
+        .item {
+            display: flex;
+            align-items: center;
+            font-size: 11px;
+            column-gap: 0.5rem;
+
+            .color {
+                width: 10px;
+                height: 10px;
+                border-radius: 2px;
+            }
+
+            .title {
+                width: 50px;
+            }
+
+            .value {
+                font-weight: 500;
+            }
+
+            .percent {
+                flex: 1;
+                font-size: 10px;
+                text-align: left;
+                padding-left: 1rem;
+            }
+        }
+    }
+
+    .status {
+        padding: 1rem 0;
+    }
+
+    .chart {
+        width: 70px;
+        height: 125px;
+    }
+}
+
+.page-chart {
+    height: 225px;
+}

@@ -1,0 +1,145 @@
+@if (!loading) {
+<page-card
+    [title]="'نتایج روزانه'"
+    [icon]="'biotech'"
+    [padding]="'0'"
+    [buttons]="data[current] ? buttons : []"
+    [menu]="data[current] ? menu : []"
+    [menuTitle]="'دانلود'"
+    [menuIcon]="'download'"
+>
+    <page-section>
+        <page-section-column [width]="400">
+            <div class="calendar" [class.left-border]="!data[current]">
+                <div class="header">
+                    <div class="title">{{ calendar.title }}</div>
+                    <button mat-icon-button type="button" color="primary" (click)="setMonth(-1)">
+                        <mat-icon [fontIcon]="'chevron_right'"></mat-icon>
+                    </button>
+                    <button
+                        mat-icon-button
+                        type="button"
+                        color="primary"
+                        (click)="setMonth(1)"
+                        [disabled]="month >= today.substring(0, 7)"
+                    >
+                        <mat-icon [fontIcon]="'chevron_left'"></mat-icon>
+                    </button>
+                </div>
+                <div class="days">
+                    @for (day of days; track $index) {
+                    <div class="day">{{ day }}</div>
+                    }
+                </div>
+                @for (week of calendar.weeks; track $index) {
+                <div class="week">
+                    @for (date of week; track $index) {
+                    <div
+                        class="date"
+                        [class.disabled]="date.month !== month || date.date > today"
+                        [class.current]="date.date === current"
+                        (click)="setDate(date.date)"
+                    >
+                        <div class="date-day">{{ date.day }}</div>
+                        @if (date.month === month && !!data[date.date]) {
+                        <div class="date-testing"></div>
+                        }
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+        </page-section-column>
+        <page-section-column>
+            <div class="content" [class.no-border]="!data[current]">
+                <div class="current">{{ date | ngxHelperJalali }}</div>
+                @if (!data[current]) {
+                <div class="page-comment">آزمایش ثبت نشده است</div>
+                } @else {
+                <div class="tests">
+                    <div class="test">
+                        <div class="title">
+                            <div class="data">
+                                <div class="color" [style.background-color]="'#0068b3'"></div>
+                                <div>سنگ شکن</div>
+                            </div>
+                        </div>
+                        <div class="value">{{ data[current].tests.crusher | number }}</div>
+                    </div>
+                    <div class="test">
+                        <div class="title">
+                            <div class="data">
+                                <div class="color" [style.background-color]="'rgb(18, 140, 126)'"></div>
+                                <div>ختکا</div>
+                            </div>
+                        </div>
+                        <div class="value">{{ data[current].tests.khatka | number }}</div>
+                    </div>
+                    <div class="test">
+                        <div class="title">بلین</div>
+                        <div class="value">{{ data[current].tests.blaine | number }}</div>
+                    </div>
+                    <div class="test">
+                        <div class="title">دیویس تیوب</div>
+                        <div class="value">{{ data[current].tests.davis | number }}</div>
+                    </div>
+                    <div class="test">
+                        <div class="title">درصد جامد</div>
+                        <div class="value">{{ data[current].tests.solid | number }}</div>
+                    </div>
+                </div>
+                <div class="results">
+                    <div class="result">
+                        <div class="title">
+                            <div class="data">
+                                <div class="color" [style.background-color]="'#ff6600'"></div>
+                                <div>{{ laboratoryResultInfo['FE'].title }}</div>
+                            </div>
+                        </div>
+                        <div class="value">{{ data[current].results.fe | number }}</div>
+                    </div>
+                    <div class="result">
+                        <div class="title">
+                            <div class="data">
+                                <div class="color" [style.background-color]="'#ff9933'"></div>
+                                <div>{{ laboratoryResultInfo['FEO'].title }}</div>
+                            </div>
+                        </div>
+                        <div class="value">{{ data[current].results.feo | number }}</div>
+                    </div>
+                    <div class="result">
+                        <div class="title">
+                            <div class="data">
+                                <div class="color" [style.background-color]="'#0068b3'"></div>
+                                <div>{{ laboratoryResultInfo['GRIND'].title }}</div>
+                            </div>
+                        </div>
+                        <div class="value">{{ data[current].results.grind | number }}</div>
+                    </div>
+                    <div class="result">
+                        <div class="title">
+                            <div class="data">
+                                <div class="color" [style.background-color]="'#33aaff'"></div>
+                                <div>{{ laboratoryResultInfo['MOISTURE'].title }}</div>
+                            </div>
+                        </div>
+                        <div class="value">{{ data[current].results.moisture | number }}</div>
+                    </div>
+                    <div class="result">
+                        <div class="title">
+                            <div class="data">
+                                <div class="color" [style.background-color]="'#1da756'"></div>
+                                <div>{{ laboratoryResultInfo['SULPHUR'].title }}</div>
+                            </div>
+                        </div>
+                        <div class="value">{{ data[current].results.sulphur | number }}</div>
+                    </div>
+                </div>
+                }
+
+                <div echarts class="page-chart" [options]="chart"></div>
+            </div>
+        </page-section-column>
+    </page-section>
+</page-card>
+}

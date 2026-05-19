@@ -1,0 +1,20 @@
+@if (loading) {
+<ngx-helper-loader></ngx-helper-loader>
+} @else {
+<div id="map" class="map"></div>
+
+<div class="group">
+    <div class="title page-overflow">{{ group.title }}</div>
+    <button mat-button type="button" [routerLink]="['/location', this.group.id]">
+        <mat-icon color="primary">cancel</mat-icon>
+    </button>
+</div>
+<div class="search">
+    <input type="text" (keyup.enter)="setQuery(searchQuery.value)" (blur)="setQuery(searchQuery.value)" #searchQuery />
+    <button mat-button type="button" (click)="setQuery(searchQuery.value)">
+        <mat-icon color="primary">search</mat-icon>
+    </button>
+</div>
+
+<tooltip-location [location]="location" [group]="group" [buttons]="true"></tooltip-location>
+}

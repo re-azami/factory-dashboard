@@ -1,0 +1,120 @@
+@if (sizes.length === 0) {
+<ngx-form [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form>
+} @else {
+<!-- MOBILE -->
+@if (isMobile) {
+<ngx-form [ngxForm]="ngxFormMobile" (ngxChange)="ngxChange($event)" (ngxSubmit)="ngxSubmit($event)">
+    <div class="data">
+        <div class="item">
+            <div class="title">
+                مجموع
+                <div class="en">R(g)</div>
+            </div>
+            <div class="value en">{{ totalRG !== undefined ? +totalRG.toFixed(2) : '&nbsp;' }}</div>
+        </div>
+        <div class="item">
+            <div class="title">
+                مجموع
+                <div class="en">R(%)</div>
+            </div>
+            <div class="value en">{{ totalRP !== undefined ? +totalRP.toFixed(2) : '&nbsp;' }}</div>
+        </div>
+    </div>
+    <div class="data">
+        <div class="item result">
+            <div class="title">
+                {{ laboratoryResultInfo['GRIND'].title }}
+                <div class="en">(K80)</div>
+            </div>
+            @if (error) {
+            <div class="error">{{ error }}</div>
+            } @else {
+            <div class="value en">{{ result !== undefined ? (result | number) : '&nbsp;' }}</div>
+            }
+        </div>
+    </div>
+</ngx-form>
+} @else {
+<!-- DESKTOP -->
+<div class="row">
+    <div class="title en">Size:</div>
+    @for (size of sizes; track $index) {
+    <div class="cell size en">{{ size }}</div>
+    }
+    <!-- TOTAL -->
+    @if (total) {
+    <div class="cell total">مجموع</div>
+    <div class="cell total">ته الک</div>
+    <div class="cell total">تفاوت</div>
+    }
+</div>
+
+<ngx-form [ngxForm]="ngxForm" (ngxChange)="ngxChange($event)" (ngxSubmit)="ngxSubmit($event)" class="calculate">
+    <div class="form-title en">R(g):</div>
+
+    <div class="row" style="padding: 0">
+        <div class="title en">R(%):</div>
+        @for (size of sizes; track $index) {
+        <div class="cell en">{{ RP[$index] !== null ? +(RP[$index] || 0).toFixed(2) : '&nbsp;' }}</div>
+        }
+        <!-- TOTAL -->
+        @if (total) {
+        <div class="cell empty"></div>
+        <div class="cell empty"></div>
+        <div class="cell empty"></div>
+        }
+    </div>
+    <div class="row" style="padding: 0">
+        <div class="title en">C. P(%):</div>
+        @for (size of sizes; track $index) {
+        <div class="cell en">{{ CP[$index] !== null ? +(CP[$index] || 0).toFixed(2) : '&nbsp;' }}</div>
+        }
+        <!-- TOTAL -->
+        @if (total) {
+        <div class="cell empty"></div>
+        <div class="cell empty"></div>
+        <div class="cell empty"></div>
+        }
+    </div>
+    <div class="row">
+        <div class="title en">Result:</div>
+        @for (size of sizes; track $index) {
+        <div class="cell en">{{ final[$index] !== null ? +(final[$index] || 0).toFixed(2) : '&nbsp;' }}</div>
+        }
+        <!-- TOTAL -->
+        @if (total) {
+        <div class="cell empty"></div>
+        <div class="cell empty"></div>
+        <div class="cell empty"></div>
+        }
+    </div>
+
+    <div class="data">
+        <div class="item">
+            <div class="title">
+                مجموع
+                <div class="en">R(g)</div>
+            </div>
+            <div class="value en">{{ totalRG !== undefined ? +totalRG.toFixed(2) : '&nbsp;' }}</div>
+        </div>
+        <div class="item">
+            <div class="title">
+                مجموع
+                <div class="en">R(%)</div>
+            </div>
+            <div class="value en">{{ totalRP !== undefined ? +totalRP.toFixed(2) : '&nbsp;' }}</div>
+        </div>
+        <div class="item result">
+            <div class="title">
+                {{ laboratoryResultInfo['GRIND'].title }}
+                <div class="en">(K80)</div>
+            </div>
+            @if (error) {
+            <div class="error">{{ error }}</div>
+            } @else {
+            <div class="value en">{{ result !== undefined ? (result | number) : '&nbsp;' }}</div>
+            }
+        </div>
+    </div>
+</ngx-form>
+} }

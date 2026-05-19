@@ -1,0 +1,38 @@
+<!-- APP -->
+@if (title && icon) {
+<div class="app">
+    <div class="background">{{ applicationEnglish }}</div>
+    <mat-icon color="primary">{{ icon }}</mat-icon>
+    <div class="title">{{ title }}</div>
+</div>
+}
+
+<!-- VERSIONS -->
+@if (frontend && backend) {
+<div class="versions">
+    <div class="version">
+        <div class="title en" [class.updated]="frontend.apiVersion !== backend.apiVersion">API:</div>
+        <div class="value en">
+            <div class="en" [class.previous]="frontend.apiVersion !== backend.apiVersion">{{ frontend.apiVersion }}</div>
+            @if (frontend.apiVersion !== backend.apiVersion) {
+            <div class="updated en">{{ backend.apiVersion }}</div>
+            }
+        </div>
+    </div>
+    <div class="version">
+        <div class="title en" [class.updated]="frontend.appVersion !== backend.appVersion">APP:</div>
+        <div class="value en">
+            <div class="en" [class.previous]="frontend.appVersion !== backend.appVersion">{{ frontend.appVersion }}</div>
+            @if (frontend.appVersion !== backend.appVersion) {
+            <div class="updated en">{{ backend.appVersion }}</div>
+            }
+        </div>
+    </div>
+</div>
+
+@if (frontend.build && backend.build) {
+<div class="builds">
+    <div class="build en">{{ frontend.build }}</div>
+    <div class="build en">{{ backend.build }}</div>
+</div>
+} }

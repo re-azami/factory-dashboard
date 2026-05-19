@@ -1,0 +1,25 @@
+@if (retrieval) {
+<content>
+    <div class="title">بازیابی کلمه عبور</div>
+    @if (action === 'REQUEST') {
+    <ngx-form [ngxForm]="ngxFormRequest" (ngxSubmit)="ngxSubmitRequest($event)"></ngx-form>
+    } @else {
+    <div class="description">
+        کد تایید درخواست بازیابی کلمه عبور برای شما ارسال شده است. پس از دریافت کد می‌توانید با استفاده از فرم زیر کلمه عبور
+        را تغییر دهید.
+    </div>
+    <div class="resend">
+        <div class="mobile">
+            <div class="mobile-title">موبایل</div>
+            <div class="mobile-number en ltr">{{ mobile | ngxHelperMobile }}</div>
+        </div>
+        <button mat-flat-button type="button" color="primary" [disabled]="!canResend || timeout > 0" (click)="resend()">
+            @if (canResend && timeout > 0) {
+            <div class="counter">{{ timeout | number }}</div>
+            } ارسال مجدد
+        </button>
+    </div>
+    <ngx-form [ngxForm]="ngxFormConfirm" (ngxSubmit)="ngxSubmitConfirm($event)"></ngx-form>
+    }
+</content>
+}

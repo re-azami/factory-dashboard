@@ -1,0 +1,30 @@
+@if (titles.length > 0) {
+<div class="titles page-sticky">
+    @for (title of titles; track $index) {
+    <div class="title" [class.active]="$index === activeTab" (click)="setActiveIndex($index)">
+        <div class="page-overflow">{{ title }}</div>
+        @if ($index === activeTab) {
+        <mat-icon>keyboard_double_arrow_left</mat-icon>
+        }
+    </div>
+    }
+</div>
+<content>
+    <header class="page-sticky">
+        <div class="header">
+            <div>{{ tabs.get(activeTab)?.title || '' }}</div>
+            <button mat-button type="button" [matMenuTriggerFor]="menu">
+                <mat-icon [color]="'primary'">more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" [xPosition]="'before'">
+                @for (title of titles; track $index) {
+                <button mat-menu-item type="button" (click)="setActiveIndex($index)" [disabled]="$index === activeTab">
+                    {{ title }}
+                </button>
+                }
+            </mat-menu>
+        </div>
+    </header>
+    <ng-content></ng-content>
+</content>
+}

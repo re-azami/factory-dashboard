@@ -1,0 +1,51 @@
+<page-title [title]="title" (calendarChanged)="setDate($event)"></page-title>
+
+@if (!loading) {
+<!-- EMPTY -->
+@if (report.count === 0) {
+<div class="page-comment">حواله‌ای در دوره زمانی مورد نظر ثبت نشده است.</div>
+} @else {
+<page-section>
+    <page-section-column>
+        <page-block [blocks]="totalBlock"></page-block>
+
+        <div class="page-seperator"></div>
+        <page-section>
+            @for (item of data; track $index) {
+            <page-section-column>
+                <page-card [title]="item.title" [padding]="'0'" [icon]="item.icon">
+                    <div class="data">
+                        <div class="title">تعداد حواله</div>
+                        <div class="value">{{ item.count | number }}</div>
+                    </div>
+                    <div class="data">
+                        <div class="title">وزن حواله‌ها</div>
+                        <div class="value">{{ item.weight | number }}</div>
+                    </div>
+                </page-card>
+            </page-section-column>
+            }
+        </page-section>
+
+        <draft-report-table
+            [parties]="report.parties"
+            [shipments]="report.shipments"
+            [transporters]="report.transporters"
+            [cargos]="report.cargos"
+            [owners]="report.owners"
+        ></draft-report-table>
+    </page-section-column>
+    <page-section-column [sticky]="true" [width]="400">
+        <draft-report-export
+            [loading]="formLoading"
+            [from]="from"
+            [to]="to"
+            [parties]="report.parties"
+            [shipments]="report.shipments"
+            [transporters]="report.transporters"
+            [cargos]="report.cargos"
+            [owners]="report.owners"
+        ></draft-report-export>
+    </page-section-column>
+</page-section>
+} }

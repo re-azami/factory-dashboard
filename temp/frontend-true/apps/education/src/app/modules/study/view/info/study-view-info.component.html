@@ -1,0 +1,104 @@
+<page-section>
+    <page-section-column>
+        <page-card [title]="study.course.title" [icon]="'school'" [padding]="'0'" [buttons]="buttons">
+            <div class="item">
+                <div class="title">کد شناسایی</div>
+                <div class="value en">{{ study.code }}</div>
+            </div>
+            <div class="item">
+                <div class="title">نوع دوره</div>
+                <div class="value">{{ educationStudyInfo[study.course.type].title }}</div>
+            </div>
+            <div class="item">
+                <div class="title">برگزارکننده</div>
+                <div class="value">{{ study.educator.title }} ({{ educationEducatorinfo[study.educator.type].title }})</div>
+            </div>
+            <div class="item">
+                <div class="title">تاریخ ثبت</div>
+                <div class="value">{{ study.date | ngxHelperJalali }}</div>
+            </div>
+            <div class="item">
+                <div class="title">درخواست دهنده</div>
+                <div class="value" [class.empty]="!study.applicant">
+                    @if (study.applicant) { {{ study.applicant.title }} } @else { مشخص نشده است }
+                </div>
+            </div>
+            <div class="item">
+                <div class="title">واحدهای مرتبط</div>
+                <div class="value">
+                    @for (item of study.department; track $index) {
+                    {{ item.title + ($index !== study.department.length - 1 ? '، ' : '') }}
+                    } @empty { همه واحدها }
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="title">شرکت‌کننده‌</div>
+                <div class="value">{{ study.participant.count | number }} از {{ study.participant.maximum }}</div>
+            </div>
+            <div class="item">
+                <div class="title">آزمون</div>
+                <div class="value">
+                    @for (item of study.exam; track $index) {
+                    {{ educationExamInfo[item].title + ($index !== study.exam.length - 1 ? '، ' : '') }}
+                    } @empty { ندارد }
+                </div>
+            </div>
+            <div class="item">
+                <div class="title">گواهینامه</div>
+                <div class="value">{{ study.certificate ? 'دارد' : 'ندارد' }}</div>
+            </div>
+            <!-- DESCRIPTION -->
+            @if (study.description) {
+            <div class="description" [innerHTML]="study.description | ngxHelperMultiLine"></div>
+            }
+        </page-card>
+    </page-section-column>
+    <page-section-column>
+        <page-card [title]="'تاریخ‌های برگزاری'" [icon]="'calendar_month'" [padding]="'0'">
+            @for (date of study.dates; track $index) {
+            <div class="date">
+                <div class="time">
+                    <div class="title">{{ date.date | ngxHelperJalali }}</div>
+                    <div class="period">{{ date.start }} - {{ date.end }}</div>
+                </div>
+                <div class="data">
+                    <div class="location">{{ date.location.title }}</div>
+                    <div class="type">{{ educationDateInfo[date.type].title }}</div>
+                </div>
+                <div class="duration">{{ date.duration | ngxHelperDuration }}</div>
+            </div>
+            }
+            <div class="duration-sum">
+                @for (item of educationDateList; track $index) {
+                <div class="duration-sum-item">
+                    <div class="title">{{ educationDateInfo[item].title }}:</div>
+                    <div class="value">{{ durations[item] | ngxHelperDuration }}</div>
+                </div>
+                }
+            </div>
+        </page-card>
+
+        <div class="page-seperator"></div>
+        <page-card
+            [title]="'هزینه'"
+            [description]="study.expense.paid ? 'پرداخت شده' : 'پرداخت نشده'"
+            [icon]="'attach_money'"
+        >
+            <div class="expenses">
+                <div class="expense">
+                    <div class="title">برگزاری</div>
+                    <div class="value">{{ study.expense.educator | ngxHelperPrice }}</div>
+                </div>
+                <div class="expense">
+                    <div class="title">سایر</div>
+                    <div class="value">{{ study.expense.extra | ngxHelperPrice }}</div>
+                </div>
+                <div class="expense">
+                    <div class="title">مجموع</div>
+                    <div class="value">{{ study.expense.total | ngxHelperPrice }}</div>
+                </div>
+            </div>
+        </page-card>
+    </page-section-column>
+</page-section>

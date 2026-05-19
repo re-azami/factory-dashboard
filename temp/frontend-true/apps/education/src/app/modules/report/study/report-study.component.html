@@ -1,0 +1,62 @@
+<page-title [title]="title" (calendarChanged)="setDate($event)"></page-title>
+
+@if (!loading) {
+<!-- NO STUDY  -->
+@if (report.study === 0) {
+<div class="page-comment">برگزاری دوره ثبت نشده است.</div>
+} @else {
+<!-- REPORT -->
+<page-section>
+    <page-section-column [sticky]="true">
+        <page-block [blocks]="blocks[0]" [column]="1"></page-block>
+        <div class="page-seperator"></div>
+        <page-block [blocks]="blocks[1]" [column]="3"></page-block>
+        <div class="page-seperator"></div>
+        <page-block [blocks]="blocks[2]" [column]="3"></page-block>
+
+        <div class="page-seperator"></div>
+        <div class="export">
+            @for (type of exportTypeList; track $index) {
+            <button mat-stroked-button type="button" color="primary" (click)="export(type)">
+                {{ exportTypeInfo[type].title }}
+            </button>
+            }
+        </div>
+    </page-section-column>
+    <page-section-column [flex]="1.5">
+        <mat-tab-group mat-stretch-tabs [animationDuration]="0">
+            <mat-tab label="دوره">
+                @for (course of report.courses; track $index) {
+                <div class="item">
+                    <div class="title">{{ course.title }}</div>
+                    <div class="study">{{ course.study | number }} دوره</div>
+                    <ngx-helper-menu [menu]="getMenu({ course: course.id })" [icon]="'download'"></ngx-helper-menu>
+                </div>
+                }
+            </mat-tab>
+            <mat-tab label="موسسه">
+                @if (report.institutes.length === 0) {
+                <div class="page-comment">برگزاری دوره توسط موسسه ثبت نشده است.</div>
+                } @else { @for (institute of report.institutes; track $index) {
+                <div class="item">
+                    <div class="title">{{ institute.title }}</div>
+                    <div class="study">{{ institute.study | number }} دوره</div>
+                    <ngx-helper-menu [menu]="getMenu({ institute: institute.id })" [icon]="'download'"></ngx-helper-menu>
+                </div>
+                } }
+            </mat-tab>
+            <mat-tab label="مدرس">
+                @if (report.mentors.length === 0) {
+                <div class="page-comment">برگزاری دوره توسط مدرس ثبت نشده است.</div>
+                } @else { @for (mentor of report.mentors; track $index) {
+                <div class="item">
+                    <div class="title">{{ mentor.title }}</div>
+                    <div class="study">{{ mentor.study | number }} دوره</div>
+                    <ngx-helper-menu [menu]="getMenu({ mentor: mentor.id })" [icon]="'download'"></ngx-helper-menu>
+                </div>
+                } }
+            </mat-tab>
+        </mat-tab-group>
+    </page-section-column>
+</page-section>
+} }

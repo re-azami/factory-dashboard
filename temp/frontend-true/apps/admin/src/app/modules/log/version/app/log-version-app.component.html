@@ -1,0 +1,12 @@
+@if (loading) {
+<ngx-helper-loader></ngx-helper-loader>
+} @else {
+<!-- NO VERSION -->
+@if (!log.version) {
+<div class="page-comment">اطلاعاتی در ارتباط با نسخه‌های سرویس ثبت نشده است.</div>
+} @else {
+<page-block [blocks]="blocks" [column]="3"></page-block>
+
+<div class="page-seperator"></div>
+<list [list]="list" [loading]="loading" [data]="log.users"></list>
+} }

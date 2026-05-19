@@ -1,0 +1,153 @@
+<page-title [title]="title"></page-title>
+
+<page-tab [activeTab]="activeTab" (activeTabChanged)="activeTab = $event">
+    <page-tab-content [title]="'مشخصات بار'" [active]="activeTab === 0">
+        @if (activeTab === 0) {
+        <page-section>
+            <page-section-column>
+                <page-block [blocks]="cargoData" [column]="2"> </page-block>
+            </page-section-column>
+            <page-section-column>
+                <page-block [blocks]="draftData" [column]="2"> </page-block>
+            </page-section-column>
+        </page-section>
+
+        <!-- INITIAL -->
+        @if (cargo.initial) {
+        <div class="page-seperator"></div>
+        <div class="initial page-box-shadow">
+            تعداد {{ cargo.initial.count | number }} حواله با مجموع وزنی {{ cargo.initial.weight | number }} کیلو به عنوان
+            مقادیر اولیه برای این بار در سیستم ثبت شده و در محاسبه باقیمانده بار در نظر گرفته می‌شود.
+        </div>
+        }
+
+        <div class="page-seperator"></div>
+        <page-section>
+            <page-section-column>
+                <page-card [title]="'سایر مشخصات'" [icon]="'info'" [padding]="'0'">
+                    <ngx-helper-value [values]="otherValues" [border]="true"></ngx-helper-value>
+                </page-card>
+            </page-section-column>
+            <page-section-column>
+                <page-card [title]="'هزینه حمل'" [icon]="'paid'" [padding]="'0'">
+                    <ngx-helper-value [values]="paymentValues" [border]="true"></ngx-helper-value>
+                </page-card>
+
+                @if (cargo.letter) {
+                <div class="page-seperator"></div>
+                <button mat-stroked-button type="button" color="primary" class="letter page-box-shadow" (click)="letter()">
+                    <mat-icon>download</mat-icon>
+                    <div class="letter-title">دانلود نامه ترخیص</div>
+                </button>
+                }
+            </page-section-column>
+        </page-section>
+
+        <!-- TRANSPORTER -->
+        @if (cargo.transporter) {
+        <div class="page-seperator"></div>
+        <page-card [title]="'باربری‌های مرتبط'" [icon]="'commute'" [padding]="'0'">
+            <div class="transporter">
+                <div class="required">
+                    انتخاب باربری
+                    <div class="status" [ngClass]="[cargo.transporter.required ? 'color-warn' : '']">
+                        {{ cargo.transporter.required ? 'الزامی است' : 'اختیاری است' }}
+                    </div>
+                </div>
+                <div class="transporters">
+                    @for (item of cargo.transporter.transporters; track $index) {
+                    <div class="transporter-item">{{ item.title }}</div>
+                    }
+                </div>
+            </div>
+        </page-card>
+        }
+
+        <!-- ACTIVATION -->
+        @if (cargo.prior) {
+        <div class="page-seperator"></div>
+        <page-card [title]="'فعال سازی اتوماتیک'" [icon]="'done_all'">
+            <div class="activation">
+                <div class="prior">
+                    <div class="title">بار پیشین</div>
+                    <div class="value">{{ cargo.prior.title }}</div>
+                </div>
+                <div class="description">
+                    فعال سازی اتوماتیک بار ثبت شده است و پس از ثبت پایان بارگیری برای بار
+                    <strong>{{ cargo.prior.title }}</strong>
+                    ، این بار به صورت اتوماتیک فعال می‌شود.
+                </div>
+            </div>
+        </page-card>
+        }
+
+        <!-- DESCRIPTION -->
+        @if (cargo.description) {
+        <div class="page-seperator"></div>
+        <page-card [title]="'توضیحات'">
+            <div class="description" [innerHTML]="cargo.description | ngxHelperMultiLine"></div>
+        </page-card>
+        }
+
+        <!-- DRAFT -->
+        @if (!draftLoading && draftReport.draft.count > 0 && draftReport.draft.first && draftReport.draft.last) {
+        <div class="page-seperator"></div>
+        <draft-monthly-chart
+            [first]="draftReport.draft.first"
+            [last]="draftReport.draft.last"
+            [data]="draftReport.daily"
+        ></draft-monthly-chart>
+        } }
+    </page-tab-content>
+    <page-tab-content [title]="'ویرایش مشخصات'" [active]="activeTab === 1">
+        @if (activeTab === 1) {
+        <cargo-update
+            [cargo]="cargo"
+            [parties]="parties"
+            [shipments]="shipments"
+            [transporters]="transporters"
+            (updated)="setCargo($event)"
+            (canceled)="activeTab = 0"
+        ></cargo-update>
+        }
+    </page-tab-content>
+    <page-tab-content [title]="'ویرایش مشخصات حمل'">
+        @if (activeTab === 2) {
+        <cargo-update-payment [cargo]="cargo" (updated)="setCargo($event)" (canceled)="activeTab = 0"></cargo-update-payment>
+        }
+    </page-tab-content>
+    <page-tab-content [title]="'تنظیمات اختصاصی بار'">
+        @if (activeTab === 3 && setting ) {
+        <cargo-setting
+            [cargo]="cargo"
+            [setting]="setting"
+            (updated)="setCargo($event)"
+            (canceled)="activeTab = 0"
+        ></cargo-setting>
+        }
+    </page-tab-content>
+    <page-tab-content [title]="'مراحل فرایند بار'">
+        @if (activeTab === 4 && setting) {
+        <div class="steps">
+            @for (step of loadCargoInfo[cargo.type].steps; track $index) {
+            <div class="step">
+                <div class="title">{{ step.title }}</div>
+                <div class="status">
+                    {{ getStep(step.id, cargo.setting || setting).status === 'ACTIVE' ? 'فعال' : 'غیرفعال' }}
+                </div>
+            </div>
+            }
+        </div>
+        }
+    </page-tab-content>
+    <page-tab-content [title]="'پایان اتوماتیک بار'">
+        @if (activeTab === 5) {
+        <cargo-deactivation [cargo]="cargo" (updated)="setCargo($event)" (canceled)="activeTab = 0"></cargo-deactivation>
+        }
+    </page-tab-content>
+    <page-tab-content [title]="'فعال سازی اتوماتیک بار'">
+        @if (activeTab === 6) {
+        <cargo-activation [cargo]="cargo" (updated)="setCargo($event)" (canceled)="activeTab = 0"></cargo-activation>
+        }
+    </page-tab-content>
+</page-tab>

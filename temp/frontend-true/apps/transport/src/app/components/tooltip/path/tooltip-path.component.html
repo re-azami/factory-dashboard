@@ -1,0 +1,37 @@
+@if (path.index !== undefined && path.path && center.index !== undefined && center.center) {
+<ngx-helper-box
+    [title]="'مسیر ' + (path.index + 1).toString() + ' :: ایستگاه ' + (center.index + 1).toString()"
+    [padding]="0"
+    [@box]
+>
+    <div class="box">
+        <div class="data">
+            <div class="title">زمان ایستگاه:</div>
+            <div class="value">{{ center.center.time.center | ngxHelperDuration }}</div>
+        </div>
+        @if (center.index !== 0) {
+        <div class="data">
+            <div class="title">زمان مسیر:</div>
+            <div class="value">{{ center.center.time.total | ngxHelperDuration }}</div>
+        </div>
+        <div class="data">
+            <div class="title">مسافر قبلی:</div>
+            <div class="value">{{ center.center.passenger.total - center.center.passenger.center | number }} نفر</div>
+        </div>
+        }
+
+        <div class="passengers">
+            @for (location of center.center.locations; track $index) { @for (passenger of location.passengers; track $index)
+            {
+            <div class="passenger">
+                <mat-icon color="primary">{{ transportPassengerInfo[passenger.type].icon }}</mat-icon>
+                @if (passenger.code) {
+                <div class="code en">{{ passenger.code }}</div>
+                }
+                <div class="name">{{ passenger.name }}</div>
+            </div>
+            } }
+        </div>
+    </div>
+</ngx-helper-box>
+}

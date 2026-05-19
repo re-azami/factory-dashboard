@@ -1,0 +1,85 @@
+:host {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 10000;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.notification {
+    position: relative;
+
+    overflow: hidden;
+    border-radius: 4px;
+    border: 1px solid #fff;
+    width: calc(100vw - 2rem);
+    max-width: calc(400px - 2rem);
+    background-color: #fff;
+    box-shadow: 0 2px 5px 0px #555;
+
+    .background {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+
+        opacity: 0.1;
+        border-radius: 4px;
+    }
+
+    header {
+        position: relative;
+
+        display: flex;
+        align-items: center;
+        column-gap: 0.5rem;
+
+        .title {
+            flex: 1;
+
+            position: relative;
+            padding: 1.5rem 1rem;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        mat-icon {
+            position: relative;
+
+            line-height: 24px;
+            font-size: 24px !important;
+            margin-left: 1rem !important;
+        }
+    }
+
+    content {
+        position: relative;
+
+        display: block;
+        line-height: 1.75;
+        text-align: justify;
+        padding: 1rem 1rem 2rem 1rem;
+    }
+
+    .button {
+        position: relative;
+        cursor: pointer;
+        padding: 1.25rem 0;
+
+        .label {
+            position: relative;
+
+            font-size: 11px;
+            font-weight: 600;
+            text-align: center;
+        }
+    }
+}

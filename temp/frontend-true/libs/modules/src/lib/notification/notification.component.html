@@ -1,0 +1,16 @@
+@if (notification) {
+<div class="notification" [style.borderColor]="notification.color" [@notification]>
+    <div class="background" [style.backgroundColor]="notification.color"></div>
+    <header>
+        <div class="background" [style.backgroundColor]="notification.color"></div>
+        <div class="background" [style.backgroundColor]="notification.color"></div>
+        <div class="title">{{ notification.title }}</div>
+        <mat-icon [fontIcon]="notification.icon"></mat-icon>
+    </header>
+    <content [innerHTML]="getContent()"></content>
+    <div class="button" (click)="close()">
+        <div class="background" [style.backgroundColor]="notification.color"></div>
+        <div class="label">متوجه شدم</div>
+    </div>
+</div>
+}

@@ -1,0 +1,20 @@
+# GPU override — layered on top of docker-compose.yml on hosts that have an
+# NVIDIA GPU + nvidia-container-toolkit. The base compose file is CPU-friendly
+# by default so the same stack runs unchanged on the DigitalOcean droplet.
+#
+# Activate by setting COMPOSE_FILE in your local .env (laptop only):
+#   COMPOSE_FILE=docker-compose.yml:docker-compose.gpu.yml
+# Then `docker compose up -d` will request the GPU for the embeddings service.
+#
+# On the server: leave COMPOSE_FILE unset. BGE-M3 falls back to CPU (acceptable
+# for single-query embedding; ~0.3–1.5 s per Persian sentence).
+
+services:
+  embeddings:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

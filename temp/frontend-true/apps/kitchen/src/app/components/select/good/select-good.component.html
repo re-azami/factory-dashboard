@@ -1,0 +1,37 @@
+@if (loading) { <ngx-helper-loader></ngx-helper-loader> }
+
+<!-- EMPTY -->
+@if (!loading && goods.length === 0) {
+<div class="empty">کالای فعال ثبت نشده است.</div>
+}
+
+<!-- LIST -->
+@if (!loading && goods.length !== 0) {
+<div class="filter">
+    @if (!good) {
+    <div class="filter-good">
+        <div class="title" #goodTrigger>{{ goodFilter ? kitchenGoodInfo[goodFilter].title : 'نوع کالا' }}</div>
+        <ngx-helper-menu [menu]="goodMenu" [tigger]="goodTrigger"></ngx-helper-menu>
+    </div>
+    }
+    <div class="filter-search">
+        <input type="text" (keyup.enter)="setQuery(searchQuery.value)" (input)="setQuery(searchQuery.value)" #searchQuery />
+        <button mat-button type="button" (click)="setQuery(searchQuery.value)">
+            <mat-icon color="primary">search</mat-icon>
+        </button>
+    </div>
+</div>
+
+<!-- GOODS LIST -->
+<div class="goods">
+    @for (good of filtered; track $index) {
+    <div class="good" (click)="select(good)">
+        <div class="title">{{ good.title }}</div>
+        <div class="group">{{ good.group?.title || '' }}</div>
+        <div class="type">{{ kitchenGoodInfo[good.good].title }}</div>
+    </div>
+    } @empty {
+    <div class="empty">کالای فعال با مشخصات داده شده ثبت نشده است.</div>
+    }
+</div>
+}

@@ -1,0 +1,20 @@
+<div class="item">
+    <div class="title">مکان:</div>
+    <div class="value">مکان {{ index + 1 }}</div>
+</div>
+<div class="item">
+    <div class="title">مسافرها:</div>
+    <div class="value">
+        <ul>
+            @for (passenger of locations[index].passengers; track $index) {
+            <li>{{ passenger.name }}</li>
+            }
+        </ul>
+    </div>
+</div>
+
+<div class="data">
+    <div class="counts">{{ index + 1 | number }} از {{ total | number }}</div>
+    <div class="progress">{{ +progress.toFixed(2) }}%</div>
+</div>
+<mat-progress-bar [value]="progress"></mat-progress-bar>

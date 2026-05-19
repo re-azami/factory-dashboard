@@ -1,0 +1,59 @@
+<page-title [title]="title"></page-title>
+
+@if (!loading) {
+<page-section>
+    <page-section-column [sticky]="true">
+        <page-card [title]="institute.title" [icon]="'business'" [padding]="'0'">
+            <div class="data">
+                <div class="title">مدیرعامل:</div>
+                <div class="value" [class.empty]="!institute.ceo.name">
+                    @if (institute.ceo.name) {
+                    <div class="name">{{ institute.ceo.name }}</div>
+                    <div class="mobile en">{{ institute.ceo.mobile | ngxHelperMobile }}</div>
+                    } @else { مشخص نشده است }
+                </div>
+            </div>
+            <div class="data">
+                <div class="title">معرف:</div>
+                <div class="value" [class.empty]="!institute.introducer.name">
+                    @if (institute.introducer.name) {
+                    <div class="name">{{ institute.introducer.name }}</div>
+                    <div class="mobile en">{{ institute.introducer.mobile | ngxHelperMobile }}</div>
+                    } @else { مشخص نشده است }
+                </div>
+            </div>
+            <div class="data">
+                <div class="title">تاریخ ثبت:</div>
+                <div class="value">{{ institute.date | ngxHelperJalali }}</div>
+            </div>
+        </page-card>
+
+        @if (institute.study !== 0) {
+        <div class="page-seperator"></div>
+        <page-block [blocks]="blocks[0]" [column]="1"></page-block>
+        <div class="page-seperator"></div>
+        <page-block [blocks]="blocks[1]" [column]="3"></page-block>
+        <div class="page-seperator"></div>
+        <page-block [blocks]="blocks[2]" [column]="3"></page-block>
+        <div class="page-seperator"></div>
+        <page-block [blocks]="blocks[3]" [column]="2"></page-block>
+
+        <div class="page-seperator"></div>
+        <div class="export">
+            @for (type of exportTypeList; track $index) {
+            <button mat-stroked-button type="button" color="primary" (click)="export(type)">
+                {{ exportTypeInfo[type].title }}
+            </button>
+            }
+        </div>
+        }
+    </page-section-column>
+    <page-section-column [flex]="1.5">
+        @if (institute.study === 0) {
+        <div class="page-comment">برگزاری دوره ثبت نشده است.</div>
+        } @else {
+        <list [list]="list" [loading]="loading" [data]="studies"></list>
+        }
+    </page-section-column>
+</page-section>
+}

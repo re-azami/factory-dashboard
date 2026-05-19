@@ -1,0 +1,40 @@
+@if (loading) {
+<ngx-helper-loader></ngx-helper-loader>
+} @else {
+<!-- DESCRIPTION -->
+@if (loadCargoInfo[type].description) {
+<div class="description" [innerHTML]="loadCargoInfo[type].description || '' | ngxHelperMultiLine"></div>
+}
+
+<!-- INFO -->
+<div class="info">
+    <div class="color page-box-shadow">
+        <div class="background" [style.background-color]="loadCargoInfo[type].color"></div>
+        <div class="title" [style.color]="loadCargoInfo[type].color">رنگ اصلی</div>
+    </div>
+    <div class="letter page-box-shadow">
+        <div class="title">حرف اختصاصی شماره حواله</div>
+        <div class="value en">{{ loadCargoInfo[type].key }}</div>
+    </div>
+</div>
+
+<!-- STEPS -->
+<table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0" class="page-box-shadow">
+    <tr>
+        <th class="title">مرحله</th>
+        <th class="title">فرایند</th>
+        <th>وضعیت</th>
+    </tr>
+    @for (item of loadCargoInfo[type].steps; track $index) {
+    <tr>
+        <td>{{ item.title }}</td>
+        <td class="flow">{{ loadFlowInfo[item.flow].title }}</td>
+        <td class="status">
+            <mat-icon [color]="getStep(item.id, setting).status === 'DEACTIVE' ? 'warn' : 'primary'">{{
+                getStep(item.id, setting).status === 'DEACTIVE' ? 'close' : 'done_all'
+            }}</mat-icon>
+        </td>
+    </tr>
+    }
+</table>
+}

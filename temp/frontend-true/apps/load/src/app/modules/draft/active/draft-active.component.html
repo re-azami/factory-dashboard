@@ -1,0 +1,4 @@
+@if (!loading) {
+<page-title [title]="title" (paramChanged)="filterList($event)"></page-title>
+<list [list]="list" [loading]="false" [data]="filtered"></list>
+}

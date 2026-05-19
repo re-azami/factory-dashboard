@@ -1,0 +1,44 @@
+.cargo {
+    .cargo-title {
+        padding-right: 2.5rem;
+    }
+
+    .info {
+        display: flex;
+        align-items: center;
+
+        margin-top: 1rem;
+
+        .item {
+            flex: 1;
+            text-align: center;
+
+            padding: 0.75rem 0;
+
+            .title {
+                font-size: 12px;
+            }
+
+            .value {
+                margin-top: 0.75rem;
+                font-weight: 500;
+            }
+
+            .empty {
+                font-weight: 400;
+                font-size: 11px;
+                font-style: italic;
+            }
+        }
+    }
+}
+
+ul {
+    margin-right: 1rem;
+
+    li {
+        text-align: justify;
+        font-size: 13px;
+        margin-bottom: 1rem;
+    }
+}

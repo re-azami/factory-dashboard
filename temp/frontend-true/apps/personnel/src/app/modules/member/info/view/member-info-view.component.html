@@ -1,0 +1,107 @@
+<page-section>
+    <page-section-column>
+        <page-card [title]="member.name.first + ' ' + member.name.last" [icon]="'account_circle'" [padding]="'0'">
+            <page-block [blocks]="blocks" [column]="3" [border]="false"></page-block>
+        </page-card>
+
+        <div class="page-seperator"></div>
+        <page-card [title]="'اطلاعات پرسنلی'" [icon]="'badge'" [padding]="'0'">
+            <div class="data">
+                <div class="item">
+                    <div class="title">وضعیت استخدام:</div>
+                    <div class="value">{{ personnelStatusInfo[member.employement.status].title }}</div>
+                </div>
+                <div class="item">
+                    <div class="title">تاریخ استخدام:</div>
+                    <div class="value">{{ member.employement.date | ngxHelperJalali }}</div>
+                </div>
+                <div class="item">
+                    <div class="title">مدت استخدام:</div>
+                    <div class="value">{{ member.employement.month | ngxHelperMonth }}</div>
+                </div>
+                <div class="item">
+                    <div class="title">موبایل:</div>
+                    <div class="value en">{{ member.mobile | ngxHelperMobile }}</div>
+                </div>
+                <div class="item">
+                    <div class="title">کد ملی:</div>
+                    <div class="value en">{{ member.nationalCode }}</div>
+                </div>
+                <div class="item">
+                    <div class="title">آخرین مدرک تحصیلی:</div>
+                    <div class="value">{{ member.education.title }}</div>
+                </div>
+                <div class="item">
+                    <div class="title">رشته تحصیلی:</div>
+                    <div class="value" [class.empty]="!member.fieldOfStudy">
+                        @if (member.fieldOfStudy) { {{ member.fieldOfStudy }} } @else { مشخص نشده است }
+                    </div>
+                </div>
+            </div>
+        </page-card>
+    </page-section-column>
+    <page-section-column>
+        <page-card [title]="'اطلاعات شخصی'" [icon]="'account_box'" [padding]="'0'">
+            <div class="data">
+                <div class="item">
+                    <div class="title">جنسیت:</div>
+                    <div class="value">{{ personnelGenderInfo[member.gender].title }}</div>
+                </div>
+                <div class="item">
+                    <div class="title">تاریخ تولد:</div>
+                    <div class="value" [class.empty]="!member.birthDate">
+                        @if (member.birthDate) { {{ member.birthDate | ngxHelperJalali }} } @else { مشخص نشده است }
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="title">سن:</div>
+                    <div class="value" [class.empty]="!member.age">
+                        @if (member.age) { {{ member.age }} } @else { مشخص نشده است }
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="title">نام پدر:</div>
+                    <div class="value" [class.empty]="!member.father">
+                        @if (member.father) { {{ member.father }} } @else { مشخص نشده است }
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="title">شماره شناسنامه:</div>
+                    <div class="value" [class.empty]="!member.birthCertificate">
+                        @if (member.birthCertificate) { {{ member.birthCertificate }} } @else { مشخص نشده است }
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="title">محل صدور شناسنامه:</div>
+                    <div class="value" [class.empty]="!member.birthCertificateIssue">
+                        @if (member.birthCertificateIssue) { {{ member.birthCertificateIssue }} } @else { مشخص نشده است }
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="title">محل سکونت فعلی:</div>
+                    <div class="value" [class.empty]="!member.residence">
+                        @if (member.residence) { {{ member.residence }} } @else { مشخص نشده است }
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="title">وضعیت تاهل:</div>
+                    <div class="value" [class.empty]="!member.marital">
+                        @if (member.marital) { {{ personnelMaritalInfo[member.marital].title }} } @else { مشخص نشده است }
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="title">تعداد فرزند:</div>
+                    <div class="value" [class.empty]="!member.children">
+                        @if (member.children) { {{ member.children }} } @else { مشخص نشده است }
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="title">تعداد فرزند زیر ۱۸ سال:</div>
+                    <div class="value" [class.empty]="!member.children18">
+                        @if (member.children18) { {{ member.children18 }} } @else { مشخص نشده است }
+                    </div>
+                </div>
+            </div>
+        </page-card>
+    </page-section-column>
+</page-section>

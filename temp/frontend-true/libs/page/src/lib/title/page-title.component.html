@@ -1,0 +1,98 @@
+<header>
+    <div class="header">
+        <div class="content">
+            <div class="title">{{ title.title }}</div>
+            @if (title.description) {
+            <div class="description">{{ title.description }}</div>
+            }
+        </div>
+
+        <!-- TOOLBAR DESKTOP VIEW -->
+        @if (title.toolbar && !size.isMobile ) {
+        <!-- PARAMS -->
+        @if (title.toolbar.params !== undefined || page) {
+        <ngx-helper-param
+            [route]="title.toolbar.route"
+            [page]="page || 1"
+            [params]="title.toolbar.params || []"
+            [width]="toolbarSize.paramsWidth"
+            [height]="toolbarSize.height"
+            (changed)="emitParamChanged($event)"
+            (pageChange)="setPage($event)"
+        ></ngx-helper-param>
+        }
+        <!-- CALENDAR -->
+        @if (title.toolbar.calendar !== undefined) {
+        <ngx-helper-calendar
+            [route]="title.toolbar.route"
+            [types]="title.toolbar.calendar.types"
+            [minDate]="title.toolbar.calendar.minDate"
+            [maxDate]="title.toolbar.calendar.maxDate"
+            [width]="toolbarSize.calendarWidth"
+            [height]="toolbarSize.height"
+            (changed)="emitCalendarChanged($event)"
+        ></ngx-helper-calendar>
+        } }
+
+        <!-- ACTIONS -->
+        @if (actions.length > 0) {
+        <div class="actions">
+            @for (action of actions; track $index) {
+
+            <!-- MENU -->
+            @if (action.type === 'MENU') {
+            <page-title-menu [action]="action" [size]="size"></page-title-menu>
+            }
+
+            <!-- BUTTON -->
+            @else {
+
+            <!-- WITH COLOR -->
+            @if (action.color) {
+            <button mat-flat-button [color]="action.color" (click)="click(action.action)">
+                @if (size.isMobile) { <mat-icon>{{ action.icon }}</mat-icon> } @else { {{ action.title }} }
+            </button>
+            }
+
+            <!-- WITHOUT COLOR -->
+            @if (!action.color) {
+            <button mat-stroked-button [color]="'primary'" (click)="click(action.action)">
+                @if (size.isMobile) { <mat-icon>{{ action.icon }}</mat-icon> } @else { {{ action.title }} }
+            </button>
+            } } }
+        </div>
+        }
+    </div>
+
+    <!-- TOOLBAR MOBILE VIEW -->
+    @if (title.toolbar && size.isMobile ) {
+    <div class="params-mobile">
+        <!-- PARAMS -->
+        @if (title.toolbar.params !== undefined || page) {
+        <ngx-helper-param
+            [route]="title.toolbar.route"
+            [page]="page || 1"
+            [params]="title.toolbar.params || []"
+            [width]="toolbarSize.paramsWidth"
+            [height]="toolbarSize.height"
+            (changed)="emitParamChanged($event)"
+            (pageChange)="setPage($event)"
+        ></ngx-helper-param>
+        }
+        <!-- CALENDAR -->
+        @if (title.toolbar.calendar !== undefined) {
+        <ngx-helper-calendar
+            [route]="title.toolbar.route"
+            [types]="title.toolbar.calendar.types"
+            [minDate]="title.toolbar.calendar.minDate"
+            [maxDate]="title.toolbar.calendar.maxDate"
+            [width]="toolbarSize.calendarWidth"
+            [height]="toolbarSize.height"
+            (changed)="emitCalendarChanged($event)"
+        ></ngx-helper-calendar>
+        }
+    </div>
+    }
+</header>
+
+<div class="seperator"></div>

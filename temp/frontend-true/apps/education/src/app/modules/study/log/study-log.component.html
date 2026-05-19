@@ -1,0 +1,49 @@
+@if (loading) {
+<ngx-helper-loader></ngx-helper-loader>
+} @else {
+<div class="logs">
+    @for (log of logs; track $index) {
+    <ngx-helper-list [id]="'ID'" [data]="log">
+        <ng-container ngx-helper-list-icon>
+            <mat-icon [ngClass]="['color-' + educationLogInfo[log.log].color]">
+                {{ educationLogInfo[log.log].icon }}
+            </mat-icon>
+        </ng-container>
+        <ng-container ngx-helper-list-data>
+            <div class="log">{{ educationLogInfo[log.log].title }}</div>
+            <div class="date">{{ log.date | ngxHelperJalali : { format: 'DATE' } }}</div>
+        </ng-container>
+        <ng-container ngx-helper-list-extra>
+            <div class="user">
+                <div [ngClass]="{ name: true, automatic: !log.user }">
+                    {{ log.user ? log.user.name : 'تغییر اتوماتیک' }}
+                </div>
+                <div class="date">{{ log.date | ngxHelperJalali : { format: 'H:I' } }}</div>
+            </div>
+            <!-- CHANGES -->
+            @if ( log.log === 'COURSE' || log.log === 'EDUCATOR'||log.log === 'EXPENSE' ) {
+            <div class="change">
+                @for (index of [0, 1]; track $index) { @if (!$first) {
+                <mat-icon class="flex-center">keyboard_double_arrow_left</mat-icon>
+                }
+                <div>
+                    @switch (log.log) {
+                    <!-- COURSE -->
+                    @case ('COURSE') { {{ log.info[index] }} }
+                    <!-- EDUCATOR -->
+                    @case ('EDUCATOR') { {{ log.info[index] }} }
+                    <!-- EXPENSE -->
+                    @case ('EXPENSE') { {{ log.info[index] | ngxHelperPrice : { currency: 'تومان' } }} } }
+                </div>
+                }
+            </div>
+            }
+            <!-- DESCRIPTION -->
+            @if (log.description) {
+            <div class="description" [innerHTML]="log.description | ngxHelperMultiLine"></div>
+            }
+        </ng-container>
+    </ngx-helper-list>
+    }
+</div>
+}

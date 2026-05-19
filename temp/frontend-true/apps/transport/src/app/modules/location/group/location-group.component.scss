@@ -1,0 +1,22 @@
+.data {
+    display: flex;
+    align-items: center;
+
+    padding: 0 1rem 1rem 1rem;
+
+    .title {
+        flex: 1;
+    }
+}
+
+.buttons {
+    display: flex;
+    align-items: center;
+
+    border-radius: 0 0 4px 4px;
+    background-color: var(--backgroundColor);
+
+    button {
+        flex-grow: 1;
+    }
+}

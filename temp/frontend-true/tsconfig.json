@@ -1,0 +1,46 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "baseUrl": "./",
+        "outDir": "./dist/out-tsc",
+        "forceConsistentCasingInFileNames": true,
+        "esModuleInterop": true,
+        "strict": true,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "sourceMap": true,
+        "declaration": false,
+        "experimentalDecorators": true,
+        "moduleResolution": "bundler",
+        "importHelpers": true,
+        "target": "ES2022",
+        "module": "ES2022",
+        "useDefineForClassFields": false,
+        "paths": {
+            "apis": ["./dist/apis"],
+            "@lib/apis": ["libs/apis/src/public-api"],
+            "list": ["./dist/list"],
+            "@lib/list": ["libs/list/src/public-api"],
+            "modules": ["./dist/modules"],
+            "@lib/modules": ["libs/modules/src/public-api"],
+            "page": ["./dist/page"],
+            "@lib/page": ["libs/page/src/public-api"],
+            "providers": ["./dist/providers"],
+            "@lib/providers": ["libs/providers/src/public-api"],
+            "shared": ["./dist/shared"],
+            "@lib/shared": ["libs/shared/src/public-api"],
+            "ticket": ["./dist/ticket"],
+            "@lib/ticket": ["libs/ticket/src/public-api"]
+        },
+        "skipLibCheck": true
+    },
+    "angularCompilerOptions": {
+        "enableI18nLegacyMessageIdFormat": false,
+        "strictInjectionParameters": true,
+        "strictInputAccessModifiers": true,
+        "strictTemplates": true
+    }
+}

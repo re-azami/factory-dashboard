@@ -1,0 +1,87 @@
+<page-title [title]="title"></page-title>
+
+@if (!loading) {
+<!-- EMPTY -->
+@if (active.length === 0 && future.length === 0) {
+<div class="page-comment">بار فعال ثبت نشده است.</div>
+} @else {
+<!-- REPORT -->
+<div class="report">
+    <table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+        <!-- ACTIVE -->
+        @if (active.length > 0) {
+        <tr class="header">
+            <th class="title frozen">بار فعال</th>
+            <th class="title">طرف حساب</th>
+            <th class="title">محموله</th>
+            <th class="title">ناوگان</th>
+            <th>تعداد حواله</th>
+            <th>وزن حواله‌ها</th>
+            <th>وزن بار</th>
+            <th>باقیمانده</th>
+            <th>نامه ترخیص</th>
+        </tr>
+        @for (item of active; track $index) {
+        <tr class="log">
+            <td class="title frozen">
+                {{ item.cargo.title }}
+                <div class="type">{{ loadCargoInfo[item.cargo.type].title }}</div>
+            </td>
+            <td class="title">{{ item.cargo.party ? item.cargo.party.title : '' }}</td>
+            <td class="title">{{ item.cargo.shipment ? item.cargo.shipment.title : '' }}</td>
+            <td class="title">
+                {{ item.cargo.truck === 'ON' ? 'ثبت شده' : item.cargo.truck === 'OFF' ? 'ثبت نشده' : 'همه موارد' }}
+            </td>
+            <td>{{ item.draft.count | number }}</td>
+            <td>{{ item.draft.weight | number }}</td>
+            <td>{{ item.cargo.tonnage ? (item.cargo.tonnage * 1000 | number) : '' }}</td>
+            <td [class.color-warn]="item.draft.remaining < 0" [dir]="'ltr'">{{ item.draft.remaining | number }}</td>
+            @if (item.cargo.letter) {
+            <td class="download"><button mat-button type="button" color="primary" (click)="letter(item)">دانلود</button></td>
+            } @else {
+            <td></td>
+            }
+        </tr>
+        } }
+
+        <!-- SEPERATOR -->
+        @if (active.length > 0 && future.length > 0) {
+        <tr class="seperator">
+            <td [colSpan]="9"></td>
+        </tr>
+        }
+
+        <!-- FUTURE -->
+        @if (future.length > 0) {
+        <tr class="header">
+            <th class="title frozen">بار آتی</th>
+            <th class="title">طرف حساب</th>
+            <th class="title">محموله</th>
+            <th class="title" [colSpan]="3">ناوگان</th>
+            <th>وزن بار</th>
+            <th>باقیمانده</th>
+            <th>نامه ترخیص</th>
+        </tr>
+        @for (item of future; track $index) {
+        <tr class="log">
+            <td class="title frozen">
+                {{ item.cargo.title }}
+                <div class="type">{{ loadCargoInfo[item.cargo.type].title }}</div>
+            </td>
+            <td class="title">{{ item.cargo.party ? item.cargo.party.title : '' }}</td>
+            <td class="title">{{ item.cargo.shipment ? item.cargo.shipment.title : '' }}</td>
+            <td class="title" [colSpan]="3">
+                {{ item.cargo.truck === 'ON' ? 'ثبت شده' : item.cargo.truck === 'OFF' ? 'ثبت نشده' : 'همه موارد' }}
+            </td>
+            <td>{{ item.cargo.tonnage ? (item.cargo.tonnage * 1000 | number) : '' }}</td>
+            <td>{{ item.draft.remaining | number }}</td>
+            @if (item.cargo.letter) {
+            <td class="download"><button mat-button type="button" color="primary" (click)="letter(item)">دانلود</button></td>
+            } @else {
+            <td></td>
+            }
+        </tr>
+        } }
+    </table>
+</div>
+} }

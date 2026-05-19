@@ -1,0 +1,36 @@
+@if (loading) { <ngx-helper-loader></ngx-helper-loader> }
+
+<!-- EMPTY -->
+@if (!loading && recipes.length === 0) {
+<div class="empty">غذای فعال ثبت نشده است.</div>
+}
+
+<!-- LIST -->
+@if (!loading && recipes.length !== 0) {
+<div class="filter">
+    @if (!meal) {
+    <div class="filter-meal">
+        <div class="title" #mealTrigger>{{ mealFilter ? kitchenMealInfo[mealFilter].title : 'وعده غذایی' }}</div>
+        <ngx-helper-menu [menu]="mealMenu" [tigger]="mealTrigger"></ngx-helper-menu>
+    </div>
+    }
+    <div class="filter-search">
+        <input type="text" (keyup.enter)="setQuery(searchQuery.value)" (input)="setQuery(searchQuery.value)" #searchQuery />
+        <button mat-button type="button" (click)="setQuery(searchQuery.value)">
+            <mat-icon color="primary">search</mat-icon>
+        </button>
+    </div>
+</div>
+
+<!-- RECIPESS LIST -->
+<div class="recipes">
+    @for (recipe of filtered; track $index) {
+    <div class="recipe" (click)="select(recipe)">
+        <div class="title">{{ recipe.title }}</div>
+        <div class="meal">{{ getMeals(recipe.meals) }}</div>
+    </div>
+    } @empty {
+    <div class="empty">غذای فعال با مشخصات داده شده ثبت نشده است.</div>
+    }
+</div>
+}

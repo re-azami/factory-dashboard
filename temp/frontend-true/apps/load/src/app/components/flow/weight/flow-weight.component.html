@@ -1,0 +1,63 @@
+@switch (action) {
+
+<!-- PLATE -->
+@case ('PLATE') {
+<ngx-form [ngxForm]="ngxPlateForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form>
+}
+
+<!-- WEIGHT -->
+@case ('WEIGHT') {
+<div class="truck">
+    <ngx-helper-plate [plate]="truck.plate.split('-')"></ngx-helper-plate>
+    <div class="data">
+        <div class="title">مالک:</div>
+        <div class="value">{{ truck.owner.name }}</div>
+    </div>
+    <div class="data">
+        <div class="title">راننده:</div>
+        <div class="value">{{ truck.driver.name.first }} {{ truck.driver.name.last }}</div>
+    </div>
+</div>
+<div class="page-seperator"></div>
+
+<!-- DRAFT -->
+@if (draft) {
+<div class="draft">
+    <div class="header">حواله فعال</div>
+    <div class="content">
+        <div class="data">
+            <div class="title">بار:</div>
+            <div class="value">{{ draft.cargo.title }}</div>
+        </div>
+        <div class="data">
+            <div class="title">طرف حساب:</div>
+            <div class="value">{{ draft.cargo.party ? draft.cargo.party.title : '' }}</div>
+        </div>
+    </div>
+
+    <div class="weight">
+        <div class="item">
+            <div class="title">وزن خالص</div>
+            <div class="value" [class.empty]="!draft.weight.net">
+                {{ draft.weight.net ? (draft.weight.net | number) : 'مشخص نشده است' }}
+            </div>
+        </div>
+        <div class="item">
+            <div class="title">وزن پر</div>
+            <div class="value" [class.empty]="!draft.weight.full">
+                {{ draft.weight.full ? (draft.weight.full | number) : 'مشخص نشده است' }}
+            </div>
+        </div>
+        <div class="item">
+            <div class="title">وزن خالی</div>
+            <div class="value" [class.empty]="!draft.weight.empty">
+                {{ draft.weight.empty ? (draft.weight.empty | number) : 'مشخص نشده است' }}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="page-seperator"></div>
+}
+
+<ngx-form [ngxForm]="ngxWeightForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form>
+} }

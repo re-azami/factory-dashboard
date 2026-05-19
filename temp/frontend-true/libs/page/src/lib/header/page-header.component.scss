@@ -1,0 +1,184 @@
+:host {
+    display: flex;
+    align-items: center;
+
+    width: var(--pageWidth);
+    height: var(--headerHeight);
+    max-width: 100vw;
+    margin: 0 auto;
+    position: relative;
+
+    .title {
+        display: flex;
+        align-items: center;
+        column-gap: 0.75rem;
+
+        height: var(--headerHeight);
+        position: relative;
+        padding: 0 1.5rem;
+        color: var(--whiteColor);
+
+        ngx-helper-menu {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            visibility: hidden;
+        }
+
+        .header-background {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .company {
+            color: var(--whiteColor);
+            font-size: 22px;
+            font-weight: 500;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .app {
+            font-weight: 500;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        img {
+            cursor: pointer;
+            position: relative;
+        }
+    }
+
+    .menu {
+        display: flex;
+        align-items: center;
+        column-gap: 1rem;
+
+        margin-right: 1rem;
+        overflow: hidden;
+
+        button {
+            padding: 0;
+            height: var(--headerHeight);
+
+            .menu-button {
+                display: flex;
+                align-items: center;
+                column-gap: 0.75rem;
+
+                padding: 1rem;
+                color: var(--whiteColor);
+                height: calc(var(--headerHeight) - 1rem);
+                border-bottom: 2px solid transparent;
+
+                .menu-button-selected {
+                    color: var(--accentColor);
+                }
+            }
+
+            .menu-button:hover {
+                border-bottom-color: var(--whiteColor);
+            }
+
+            .menu-button-opened {
+                border-bottom-color: var(--whiteColor);
+            }
+        }
+    }
+
+    .seperator {
+        flex: 1;
+    }
+
+    .icons {
+        display: flex;
+        align-items: center;
+        column-gap: 0.5rem;
+
+        padding-left: 1rem;
+
+        button {
+            padding: 8px !important;
+
+            mat-icon {
+                color: var(--whiteColor);
+                font-size: 22px !important;
+            }
+        }
+    }
+
+    .signout {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 2;
+
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        column-gap: 1rem;
+        background-color: var(--primaryColor);
+        padding-left: 1rem;
+        overflow: hidden;
+
+        .message {
+            padding-right: 1rem;
+            color: var(--whiteColor);
+        }
+
+        .timer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--whiteColor);
+            border: 2px solid var(--whiteColor);
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+        }
+
+        button {
+            margin-right: 0.6rem;
+            padding: 8px !important;
+
+            mat-icon {
+                color: var(--whiteColor);
+                font-size: 22px !important;
+            }
+        }
+    }
+
+    mat-progress-bar {
+        position: fixed;
+        top: calc(var(--headerHeight) - 3px);
+        right: 0;
+        left: 0;
+    }
+}
+
+::ng-deep .mat-mdc-menu-content .user {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--backgroundColor);
+
+    .group {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--primaryColor);
+    }
+}
+
+::ng-deep .mat-mdc-menu-content .item {
+    display: flex;
+    align-items: center;
+    column-gap: 0.5rem;
+}

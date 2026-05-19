@@ -1,0 +1,47 @@
+<page-title [title]="title" (calendarChanged)="setDate($event)"></page-title>
+
+@if (date) {
+<page-tab [activeTab]="activeTab" (activeTabChanged)="activeTab = $event; tabChanged()">
+    <!-- CRUSHER -->
+    @if (tabs.CRUSHER >= 0) {
+    <page-tab-content [title]="'سنگ شکن'" [active]="tabs.CRUSHER === activeTab">
+        @if (tabs.CRUSHER === activeTab) { <daily-crusher [date]="date" [view]="view"></daily-crusher> }
+    </page-tab-content>
+    }
+
+    <!-- KHATKA -->
+    @if (tabs.KHATKA >= 0) {
+    <page-tab-content [title]="'ختکا'" [active]="tabs.KHATKA === activeTab">
+        @if (tabs.KHATKA === activeTab) { <daily-khatka [date]="date" [view]="view"></daily-khatka> }
+    </page-tab-content>
+    }
+
+    <!-- BLAINE -->
+    @if (tabs.BLAINE >= 0) {
+    <page-tab-content [title]="'بلین'" [active]="tabs.BLAINE === activeTab">
+        @if (tabs.BLAINE === activeTab) { <daily-blaine [date]="date"></daily-blaine> }
+    </page-tab-content>
+    }
+
+    <!-- DAVIS -->
+    @if (tabs.DAVIS >= 0) {
+    <page-tab-content [title]="'دیویس تیوب'" [active]="tabs.DAVIS === activeTab">
+        @if (tabs.DAVIS === activeTab) { <daily-davis [date]="date"></daily-davis> }
+    </page-tab-content>
+    }
+
+    <!-- SOLID -->
+    @if (tabs.SOLID >= 0) {
+    <page-tab-content [title]="'درصد جامد'" [active]="tabs.SOLID === activeTab">
+        @if (tabs.SOLID === activeTab) { <daily-solid [date]="date"></daily-solid> }
+    </page-tab-content>
+    }
+
+    <!-- LOAD -->
+    @if (tabs.LOAD >= 0) {
+    <page-tab-content [title]="'بارهای روزانه'" [active]="tabs.LOAD === activeTab">
+        @if (tabs.LOAD === activeTab) { <daily-load [date]="date"></daily-load> }
+    </page-tab-content>
+    }
+</page-tab>
+}

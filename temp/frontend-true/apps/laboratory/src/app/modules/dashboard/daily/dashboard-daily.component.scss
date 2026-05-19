@@ -1,0 +1,192 @@
+:host ::ng-deep page-section .columns {
+    row-gap: 0 !important;
+    column-gap: 0 !important;
+}
+
+.calendar {
+    .header {
+        display: flex;
+        align-items: center;
+
+        .title {
+            flex: 1;
+            font-weight: 500;
+            padding-right: 1rem;
+            color: var(--primaryColor);
+        }
+    }
+
+    .days {
+        display: flex;
+        background-color: var(--highlightColor);
+
+        .day {
+            flex: 1;
+            text-align: center;
+            font-weight: 500;
+            font-size: 12px;
+            padding: 1rem 0;
+            color: var(--primaryColor);
+            border-left: 1px solid var(--backgroundColor);
+            border-top: 1px solid var(--backgroundColor);
+        }
+
+        .day:last-child {
+            border-left-width: 0;
+        }
+    }
+
+    .week {
+        display: flex;
+
+        .date {
+            flex: 1;
+            padding: 1rem 0;
+            font-size: 12px;
+            text-align: center;
+            border-left: 1px solid var(--backgroundColor);
+            border-top: 1px solid var(--backgroundColor);
+            cursor: pointer;
+            position: relative;
+
+            .date-testing {
+                position: absolute;
+                left: 1px;
+                bottom: 1px;
+
+                width: calc(100% - 2px);
+                height: 3px;
+                opacity: 0.4;
+                background-color: var(--primaryColor);
+            }
+        }
+
+        .date:last-child {
+            border-left-width: 0;
+        }
+
+        .current {
+            font-weight: 500;
+            color: var(--primaryColor);
+            background-color: var(--backgroundColor);
+            cursor: default;
+        }
+
+        .disabled {
+            color: var(--borderColor);
+            cursor: default;
+        }
+    }
+}
+
+.content {
+    border-right: 1px solid var(--borderColor);
+
+    .current {
+        line-height: 50px;
+        font-weight: 500;
+        text-align: center;
+        color: var(--primaryColor);
+    }
+
+    .page-comment {
+        margin: 0;
+        line-height: 176px;
+        height: 176px;
+    }
+
+    .tests {
+        display: flex;
+        align-items: center;
+
+        margin-top: 1rem;
+
+        .test {
+            flex: 1;
+            text-align: center;
+            padding: 1rem 0;
+
+            .title {
+                font-size: 12px;
+                font-weight: 500;
+
+                .data {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    column-gap: 0.5rem;
+
+                    .color {
+                        width: 10px;
+                        height: 10px;
+                        border-radius: 2px;
+                    }
+                }
+            }
+
+            .value {
+                margin-top: 0.5rem;
+                font-weight: 500;
+            }
+        }
+    }
+
+    .results {
+        display: flex;
+        align-items: center;
+
+        margin-top: 1rem;
+
+        .result {
+            flex: 1;
+            text-align: center;
+            padding: 1rem 0;
+
+            .title {
+                font-size: 12px;
+                font-weight: 500;
+
+                .data {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    column-gap: 0.5rem;
+
+                    .color {
+                        width: 10px;
+                        height: 10px;
+                        border-radius: 2px;
+                    }
+                }
+            }
+
+            .value {
+                margin-top: 0.5rem;
+                font-weight: 500;
+            }
+        }
+    }
+
+    .page-chart {
+        height: 150px;
+    }
+}
+
+.left-border {
+    border-left: 1px solid var(--borderColor);
+}
+
+.no-border {
+    border-right-width: 0;
+}
+
+@media only screen and (max-width: 600px) {
+    .calendar {
+        border-left-width: 0;
+        border-bottom: 1px solid var(--borderColor);
+    }
+
+    .content {
+        border-right-width: 0;
+    }
+}

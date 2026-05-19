@@ -1,0 +1,5 @@
+<page-title [title]="title"></page-title>
+
+<ngx-form-responsive [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)">
+    <education-time-table [locations]="data.locations" [dates]="dates"></education-time-table>
+</ngx-form-responsive>

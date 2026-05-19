@@ -1,0 +1,185 @@
+<page-title [title]="title"></page-title>
+
+<page-section>
+    <page-section-column>
+        <page-block [blocks]="draftData" [column]="2"></page-block>
+    </page-section-column>
+    <page-section-column>
+        <page-block [blocks]="weightData" [column]="3"></page-block>
+    </page-section-column>
+</page-section>
+
+<div class="page-seperator"></div>
+<page-block [blocks]="dateData" [column]="2"></page-block>
+
+<div class="page-seperator"></div>
+<page-card [title]="'بار'" [icon]="'terrain'" [padding]="'0'">
+    <div class="cargo">
+        <page-section>
+            <page-section-column [flex]="0.5">
+                <div class="cargo-info">
+                    <div class="title">{{ draft.cargo.title }}</div>
+                    <div class="type">{{ loadCargoInfo[draft.cargo.type].title }}</div>
+                </div>
+            </page-section-column>
+            <!-- PARTY - SHIPMENT - TRANSPORTER -->
+            @if (draft.cargo.party || draft.cargo.shipment || draft.transporter) {
+            <page-section-column>
+                <div class="cargo-data">
+                    <!-- PARTY -->
+                    @if (draft.cargo.party) {
+                    <div class="data">
+                        <div class="title">طرف حساب</div>
+                        <div class="value">{{ draft.cargo.party.title }}</div>
+                    </div>
+                    }
+                    <!-- SHIPMENT -->
+                    @if (draft.cargo.shipment) {
+                    <div class="data">
+                        <div class="title">محوله</div>
+                        <div class="value">{{ draft.cargo.shipment.title }}</div>
+                    </div>
+                    }
+                    <!-- TRANSPORTER -->
+                    @if (draft.transporter) {
+                    <div class="data">
+                        <div class="title">باربری</div>
+                        <div class="value">{{ draft.transporter.title }}</div>
+                    </div>
+                    }
+                </div>
+            </page-section-column>
+            }
+        </page-section>
+    </div>
+</page-card>
+
+<div class="page-seperator"></div>
+<page-card [title]="'ناوگان'" [icon]="'local_shipping'" [padding]="'0'">
+    <div class="truck">
+        <page-section>
+            <page-section-column [flex]="0.5">
+                <div class="plate">
+                    <ngx-helper-plate [plate]="draft.plate.split('-')" [height]="50"></ngx-helper-plate>
+                </div>
+            </page-section-column>
+            <page-section-column>
+                @if (draft.truck) {
+                <div class="truck-data">
+                    <div class="data">
+                        <div class="title">نوع ناوگان</div>
+                        <div class="value">{{ draft.truck.type }}</div>
+                    </div>
+                    <div class="data">
+                        <div class="title">مالک</div>
+                        <div class="value">{{ draft.truck.owner.name }}</div>
+                    </div>
+                    <div class="data">
+                        <div class="title">راننده</div>
+                        <div class="value">{{ draft.truck.driver.name }}</div>
+                    </div>
+                </div>
+                } @else {
+                <div class="no-truck">در سیستم ثبت نشده است.</div>
+                }
+            </page-section-column>
+        </page-section>
+    </div>
+</page-card>
+
+<!-- DRAFT TYPE DATA -->
+@if (draftBlock.length > 0) {
+<div class="page-seperator"></div>
+<page-card [title]="'سایر اطلاعات حواله'" [icon]="'assignment'" [padding]="'0'">
+    <page-block [blocks]="draftBlock" [column]="draftBlock.length" [border]="false"></page-block>
+</page-card>
+}
+
+<!-- PAYMENT -->
+@if (draft.payment) {
+<div class="page-seperator"></div>
+<page-section>
+    <page-section-column>
+        <page-block [blocks]="paymentData[0]" [column]="2"></page-block>
+    </page-section-column>
+    <page-section-column>
+        <page-block [blocks]="paymentData[1]" [column]="2"></page-block>
+    </page-section-column>
+</page-section>
+}
+
+<!-- ATTACHMENT -->
+@if (draft.attachments.length > 0) {
+<div class="page-seperator"></div>
+<div class="page-section">فایل‌های ضمیمه</div>
+<div class="attachments">
+    @for (item of draft.attachments; track $index) {
+    <div class="attachment">
+        <mat-icon class="icon">description</mat-icon>
+        <div class="data">
+            <div class="user-date">
+                {{ item.user.name }}<br />{{ item.create | ngxHelperJalali : { format: 'W، d N Y H:I' } }}
+            </div>
+            <div class="title page-overflow">{{ item.title }}</div>
+        </div>
+        <div class="size">
+            <div class="title">حجم فایل</div>
+            <div class="value">{{ item.file.size | ngxHelperFileSize }}</div>
+        </div>
+        <button mat-icon-button type="button" color="primary" (click)="fileDownload(item.id)">
+            <mat-icon>download</mat-icon>
+        </button>
+        <!-- DELETE -->
+        @if (checkDeleteAccess(item.id)) {
+        <button mat-icon-button type="button" color="warn" (click)="fileDelete(item.id)">
+            <mat-icon>delete</mat-icon>
+        </button>
+
+        }
+    </div>
+    }
+</div>
+}
+
+<!-- LOG -->
+@if (logAccess) {
+<div class="page-seperator"></div>
+<div class="page-section">گزارش تغییرات حواله</div>
+@if (logLoading) {
+<ngx-helper-loader></ngx-helper-loader>
+} @else {
+<div class="logs">
+    @for (item of logs; track $index) {
+    <div class="log">
+        <div class="step" [class.updated]="item.step === 'UPDATED'" [class.canceled]="item.step === 'CANCELED'">
+            {{ item.step === 'UPDATED' ? 'ویرایش حواله' : item.step === 'CANCELED' ? 'لغو حواله' : getStep(item.step) }}
+        </div>
+        <div class="data">
+            <div class="date">{{ item.date | ngxHelperJalali : { format: 'W، d N Y H:I' } }}</div>
+            <div class="user">{{ item.user ? item.user.name : 'سیستم' }}</div>
+            <!-- DESCRIPTION -->
+            @if (item.description) {
+            <div class="description" [innerHTML]="item.description | ngxHelperMultiLine"></div>
+            }
+            <!-- CHANGES -->
+            @if (item.changes.length > 0) {
+            <div class="changes">
+                @for (change of item.changes; track $index) {
+                <div class="change">
+                    <div class="change">
+                        <div class="title page-overflow">{{ change.title }}:</div>
+                        <div class="value" [class.empty]="change.initial === null">{{ change.initial || 'مشخص نشده' }}</div>
+                        <mat-icon>keyboard_double_arrow_left</mat-icon>
+                        <div class="value" [class.empty]="change.changed === null">{{ change.changed || 'مشخص نشده' }}</div>
+                    </div>
+                </div>
+                }
+            </div>
+            }
+        </div>
+    </div>
+    } @empty {
+    <div class="page-comment">گزارش تغییرات ثبت نشده است.</div>
+    }
+</div>
+} }

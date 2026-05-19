@@ -1,0 +1,18 @@
+<button mat-stroked-button color="primary" (click)="cancel()">انصراف‌</button>
+
+@if (error) {
+<div class="page-comment">{{ error }}</div>
+} @else {
+<!-- DEVICES -->
+@if (devices.length > 1) { <ngx-helper-param [params]="params" (changed)="setCamera($event)"></ngx-helper-param> }
+<zxing-scanner
+    [formats]="formats"
+    [device]="device"
+    (permissionResponse)="permissionResponse($event)"
+    (hasDevices)="hasDevices($event)"
+    (camerasNotFound)="camerasNotFound()"
+    (camerasFound)="camerasFound($event)"
+    (scanSuccess)="scanSuccess($event)"
+    [ngStyle]="{ display: error || devices.length === 0 ? 'none' : 'block' }"
+></zxing-scanner>
+}

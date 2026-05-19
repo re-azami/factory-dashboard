@@ -1,0 +1,47 @@
+<page-title [title]="title" (calendarChanged)="setDate($event)"></page-title>
+
+<!-- LOADING -->
+@if (loading) {
+    <ngx-helper-loader></ngx-helper-loader>
+}
+
+<!-- EMPTY -->
+@if (!loading && report.length === 0) {
+    <div class="page-comment">اطلاعاتی ثبت نشده است.</div>
+}
+
+<!-- REPORT -->
+@if (!loading && report.length > 0) {
+    <!-- LIST -->
+    @for (item of report; track $index) {
+        <div class="report">
+            <div class="cargo" [class.conflict]="item.hasConflict">
+                <div class="title">{{ item.title }}</div>
+                <div class="type">{{ loadCargoInfo[item.type].title }}</div>
+            </div>
+            <div class="data">
+                <div class="load">
+                    <div class="item">
+                        <div class="item-title">حواله</div>
+                        <div class="item-value">{{ item.load.count | number }}</div>
+                    </div>
+                    <div class="item">
+                        <div class="item-title">تناژ</div>
+                        <div class="item-value">{{ item.load.weight | number }}</div>
+                    </div>
+                </div>
+                <div class="seperator"></div>
+                <div class="laboratory">
+                    <div class="item">
+                        <div class="item-title">حواله</div>
+                        <div class="item-value">{{ item.laboratory.count | number }}</div>
+                    </div>
+                    <div class="item">
+                        <div class="item-title">تناژ</div>
+                        <div class="item-value">{{ item.laboratory.weight | number }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

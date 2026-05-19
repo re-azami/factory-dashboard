@@ -1,0 +1,20 @@
+.cargos {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.5rem;
+
+    .cargo {
+        border-radius: 4px;
+        border: 1px solid var(--borderColor);
+        padding: 0.75rem 1rem;
+
+        .title {
+            font-weight: 500;
+        }
+
+        .type {
+            font-size: 12px;
+            opacity: 0.5;
+        }
+    }
+}

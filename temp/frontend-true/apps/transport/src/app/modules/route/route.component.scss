@@ -1,0 +1,21 @@
+.key {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--primaryColor);
+}
+
+.counts {
+    display: flex;
+    padding-top: 0.75rem;
+
+    .count {
+        flex-grow: 1;
+        text-align: center;
+
+        .title {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--grayColor);
+        }
+    }
+}

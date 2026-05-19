@@ -1,0 +1,38 @@
+<header>
+    <div class="info">
+        <div class="data">
+            {{ kitchenMealInfo[serving.meal].title }}
+            {{ serving.date | ngxHelperJalali }}
+        </div>
+        <div class="recipe">{{ serving.recipe.title }}</div>
+    </div>
+    <div class="serving">سرو: {{ serving.serving | number }}</div>
+    <button mat-stroked-button type="button" color="primary" (click)="download()">
+        <mat-icon>qr_code</mat-icon>
+        <span>&nbsp; پرینت بارکد</span>
+    </button>
+</header>
+
+<!-- SERVING -->
+<div class="status">وضعیت سرو: {{ serving.isServed ? 'سرو شده' : 'ثبت نشده' }}</div>
+
+<div class="goods">
+    <!-- GOODS -->
+    @for (good of kitchenGoodList; track $index) {
+    <!-- CHECK GOODS -->
+    @if (goods[good].length > 0) {
+    <div class="header">
+        {{ kitchenGoodInfo[good].title }}
+        @if (good === 'INGREDIENT' && !serving.isServed) {
+        <div class="description">مقادیر به صورت پیشنهادی و با توجه به تعداد سرو مشخص شده است.</div>
+        }
+    </div>
+
+    <!-- GOODS LIST -->
+    @for (item of goods[good]; track $index) {
+    <div class="good" [class.first]="$index === 0">
+        <div class="title">{{ item.title }}</div>
+        <div class="amount">{{ item.amount }}</div>
+    </div>
+    } } }
+</div>

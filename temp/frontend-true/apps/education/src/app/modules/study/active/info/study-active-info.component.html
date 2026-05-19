@@ -1,0 +1,60 @@
+<page-title [title]="title"></page-title>
+
+<page-tab [activeTab]="activeTab" (activeTabChanged)="activeTab = $event">
+    <page-tab-content [title]="'مشخصات دوره'" [active]="activeTab === 0">
+        @if (activeTab === 0) { <study-view-info [study]="study" [buttons]="studyAccess ? buttons : []"></study-view-info> }
+    </page-tab-content>
+
+    @if (studyAccess) {
+    <!-- STUDY ACCESS -->
+    <page-tab-content [title]="'مدیریت شرکت‌کننده‌ها'">
+        @if (activeTab === 1) {
+        <study-active-participant [study]="study" (updated)="setStudy($event)"></study-active-participant>
+        }
+    </page-tab-content>
+    <page-tab-content [title]="'مدیریت هزینه‌ها'">
+        @if (activeTab === 2) {
+        <study-active-expense [study]="study" (updated)="setStudy($event)"></study-active-expense>
+        }
+    </page-tab-content>
+    <page-tab-content [title]="'ویرایش مشخصات'">
+        @if (activeTab === 3) {
+        <study-active-update
+            [study]="study"
+            (updated)="setStudy($event); activeTab = 0"
+            (canceled)="activeTab = 0"
+        ></study-active-update>
+        }
+    </page-tab-content>
+    <page-tab-content [title]="'تغییر دوره'">
+        @if (activeTab === 4) {
+        <study-active-course
+            [study]="study"
+            (updated)="setStudy($event); activeTab = 0"
+            (canceled)="activeTab = 0"
+        ></study-active-course>
+        }
+    </page-tab-content>
+    <page-tab-content [title]="'تغییر برگزار کننده'">
+        @if (activeTab === 5) {
+        <study-active-educator
+            [study]="study"
+            (updated)="setStudy($event); activeTab = 0"
+            (canceled)="activeTab = 0"
+        ></study-active-educator>
+        }
+    </page-tab-content>
+    <page-tab-content [title]="'پایان دوره'">
+        @if (activeTab === 6) {
+        <study-active-finish [study]="study"></study-active-finish>
+        }
+    </page-tab-content>
+    } @else {
+    <page-tab-content [title]="'لیست شرکت‌کننده‌ها'">
+        @if (activeTab === 1) { <study-view-participant [study]="study"></study-view-participant> }
+    </page-tab-content>
+    <page-tab-content [title]="'لیست هزینه‌ها'">
+        @if (activeTab === 2) { <study-view-expense [study]="study"></study-view-expense> }
+    </page-tab-content>
+    }
+</page-tab>

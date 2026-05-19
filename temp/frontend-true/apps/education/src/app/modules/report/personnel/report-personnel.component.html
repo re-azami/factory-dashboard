@@ -1,0 +1,28 @@
+<page-title [title]="title" (calendarChanged)="setDate($event)"></page-title>
+
+@if (!loading) {
+<!-- NO PARTICIPANT  -->
+@if (participants.length === 0) {
+<div class="page-comment">برگزاری دوره ثبت نشده است.</div>
+} @else {
+
+<page-section>
+    <page-section-column [sticky]="true">
+        <page-block [blocks]="blocks[0]" [column]="2"></page-block>
+        <div class="page-seperator"></div>
+        <page-block [blocks]="blocks[1]" [column]="3"></page-block>
+
+        <div class="page-seperator"></div>
+        <div class="export">
+            @for (type of exportTypeList; track $index) {
+            <button mat-stroked-button type="button" color="primary" (click)="export(type)">
+                {{ exportTypeInfo[type].title }}
+            </button>
+            }
+        </div>
+    </page-section-column>
+    <page-section-column [flex]="1.5">
+        <list [list]="list" [loading]="loading" [data]="participants"></list>
+    </page-section-column>
+</page-section>
+} }

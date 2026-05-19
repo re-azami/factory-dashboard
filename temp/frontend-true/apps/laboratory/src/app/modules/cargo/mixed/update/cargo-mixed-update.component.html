@@ -1,0 +1,25 @@
+<page-title [title]="title"></page-title>
+
+<page-section>
+    <page-section-column>
+        <page-card [title]="'بار مخلوط'" [icon]="'burst_mode'">
+            <div class="mixed">
+                بار مخلوط، از مجموع بیش از یک بار ثبت شده در سیستم ایجاد می‌شود. برای ثبت بار مخلوط، پس از مشخص کردن بارها،
+                باید نسبت هر بار، در بار مخلوط ایجاد شده مشخص شود. برای مثال در صورتی که بار مخلوط از دو بار
+                <span class="en">A</span> و <span class="en">B</span> ایجاد می‌شود و برای ایجاد بار، یک واحد از بار
+                <span class="en">A</span> با دو واحد از بار <span class="en">B</span> مخلوط می‌شود. نسبت بار
+                <span class="en">A</span> برابر با <span class="en">1</span> و نسبت بار <span class="en">B</span> برابر با
+                <span class="en">2</span> باید در نظر گرفته شود. <br />
+                نامگذاری بار مخلوط به صورت اتوماتیک و با توجه به بارهای انتخاب شده و نسبت هر بار انجام می‌شود.
+            </div>
+        </page-card>
+    </page-section-column>
+    <page-section-column [flex]="1.5">
+        <ngx-form-responsive [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)">
+            <cargo-mixed-portion
+                [portions]="portions"
+                (changed)="portions = $event.portions; setTitle($event.title)"
+            ></cargo-mixed-portion>
+        </ngx-form-responsive>
+    </page-section-column>
+</page-section>

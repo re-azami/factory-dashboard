@@ -1,0 +1,15 @@
+@if (parking) {
+<ngx-helper-box [title]="parking.title" [padding]="0" [@box]>
+    <div class="box">
+        <div class="vehicles">
+            @for (vehicle of parking.vehicles; track $index) {
+            <div class="vehicle">
+                <mat-icon color="primary">{{ transportVehicleInfo[vehicle.type].icon }}</mat-icon>
+                <div class="title">{{ vehicle.title }}</div>
+                <div class="capacity">{{ vehicle.capacity | number }} نفر</div>
+            </div>
+            }
+        </div>
+    </div>
+</ngx-helper-box>
+}

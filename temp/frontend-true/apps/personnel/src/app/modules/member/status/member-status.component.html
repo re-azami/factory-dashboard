@@ -1,0 +1,14 @@
+<page-card
+    [title]="member.name.first + ' ' + member.name.last"
+    [icon]="'account_circle'"
+    [padding]="'0'"
+    [buttons]="buttons"
+>
+    <page-section>
+        <page-section-column><page-block [blocks]="blocks[0]" [border]="false"></page-block></page-section-column>
+        <page-section-column><page-block [blocks]="blocks[1]" [border]="false"></page-block></page-section-column>
+    </page-section>
+</page-card>
+
+<div class="page-seperator"></div>
+<list [list]="list" [loading]="false" [data]="member.employement.logs"></list>

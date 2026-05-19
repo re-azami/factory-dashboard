@@ -1,0 +1,12 @@
+@if (!loading) {
+<page-title [title]="title" (paramChanged)="loadList($event)"></page-title>
+
+<page-section>
+    <page-section-column [width]="250" [sticky]="true">
+        <location-group [group]="group"></location-group>
+    </page-section-column>
+    <page-section-column>
+        <list [list]="list" [loading]="loading" [data]="filtered"></list>
+    </page-section-column>
+</page-section>
+}

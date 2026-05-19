@@ -1,0 +1,25 @@
+@if (loading) {
+<ngx-helper-loader></ngx-helper-loader>
+} @else {
+<div class="logs">
+    @for (log of logs; track $index) {
+    <ngx-helper-list [id]="'ID'" [data]="log">
+        <ng-container ngx-helper-list-icon>
+            <mat-icon [fontIcon]="logInfo[log.log].icon" [ngClass]="['color-' + logInfo[log.log].color]"></mat-icon>
+        </ng-container>
+        <ng-container ngx-helper-list-data>
+            <div class="log">{{ logInfo[log.log].title }}</div>
+            <div class="date">{{ log.date | ngxHelperJalali : { format: 'DATE' } }}</div>
+        </ng-container>
+        <ng-container ngx-helper-list-extra>
+            <div class="user">
+                <div class="name">{{ log.user.name }}</div>
+                <div class="date">{{ log.date | ngxHelperJalali : { format: 'H:I' } }}</div>
+            </div>
+        </ng-container>
+    </ngx-helper-list>
+    } @empty {
+    <div class="page-comment">گزارش ثبت نشده است.</div>
+    }
+</div>
+}

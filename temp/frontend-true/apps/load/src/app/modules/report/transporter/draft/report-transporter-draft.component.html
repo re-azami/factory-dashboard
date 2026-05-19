@@ -1,0 +1,72 @@
+<page-title [title]="title"></page-title>
+
+<page-card [title]="'مشخصات باربری'" [description]="info.transporter.title" [icon]="'commute'" [padding]="'2px'">
+    <page-section>
+        <page-section-column><page-block [blocks]="transporterBlock" [border]="false"></page-block></page-section-column>
+        <page-section-column><page-block [blocks]="draftBlock" [border]="false"></page-block></page-section-column>
+    </page-section>
+
+    <!-- DATES -->
+    @if (info.draft.count) {
+    <div class="page-seperator"></div>
+    <page-section>
+        <page-section-column>
+            <page-block [blocks]="datesBlock[0]" [column]="1" [border]="false"></page-block>
+        </page-section-column>
+        <page-section-column>
+            <page-block [blocks]="datesBlock[1]" [column]="1" [border]="false"></page-block>
+        </page-section-column>
+    </page-section>
+    }
+</page-card>
+
+@if (info.draft.count) {
+<!-- CALENDAR -->
+<div class="page-seperator"></div>
+<page-section>
+    <page-section-column>
+        <div class="page-section">گزارش حواله‌ها</div>
+    </page-section-column>
+    <page-section-column [width]="400">
+        <ngx-helper-calendar
+            [route]="['/report', 'transporter', info.transporter.id]"
+            [types]="['MONTH', 'WEEK', 'YEAR', 'PERIOD']"
+            [minDate]="info.draft.first"
+            [maxDate]="info.draft.last"
+            [height]="44"
+            (changed)="setDate($event)"
+        ></ngx-helper-calendar>
+    </page-section-column>
+</page-section>
+
+@if (!loading) { @if (report.count === 0) {
+<div class="page-comment">حواله‌ای در بازه زمانی مشخص شده ثبت نشده است.</div>
+} @else {
+<div class="page-seperator"></div>
+<page-section>
+    <page-section-column>
+        <page-block [blocks]="reportBlock"></page-block>
+        <draft-report-table
+            [parties]="report.parties"
+            [shipments]="report.shipments"
+            [cargos]="report.cargos"
+            [owners]="report.owners"
+        ></draft-report-table>
+    </page-section-column>
+    <page-section-column [sticky]="true" [width]="400">
+        <draft-report-export
+            [description]="info.transporter.title"
+            [loading]="formLoading"
+            [from]="from"
+            [to]="to"
+            [transporter]="info.transporter.id"
+            [parties]="report.parties"
+            [shipments]="report.shipments"
+            [cargos]="report.cargos"
+            [owners]="report.owners"
+        ></draft-report-export>
+    </page-section-column>
+</page-section>
+} } } @else {
+<div class="page-comment">حواله‌ای برای این باربری ثبت نشده است.</div>
+}

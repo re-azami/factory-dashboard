@@ -1,0 +1,12 @@
+@if (attachments.length > 0) {
+<div class="title" [ngStyle]="{ 'padding-left': padding, 'padding-right': padding }">فایل‌های ضمیمه</div>
+<div class="attachments" [ngStyle]="{ 'padding-left': padding, 'padding-right': padding }">
+    @for (attachment of attachments; track $index) {
+    <div class="attachment" (click)="download($index)">
+        <div class="size">{{ attachment.size | ngxHelperFileSize }}</div>
+        <div class="file en page-overflow">{{ attachment.file }}</div>
+        <mat-icon>download</mat-icon>
+    </div>
+    }
+</div>
+}

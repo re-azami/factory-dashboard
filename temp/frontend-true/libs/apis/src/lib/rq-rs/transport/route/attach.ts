@@ -1,0 +1,23 @@
+import { ITransportRouteDTO } from '../../../dtos';
+
+export interface ITransportRouteAttachRq {
+    readonly parking: string;
+    readonly vehicle: string;
+    readonly origin: {
+        readonly center: number | null;
+        readonly latitude: number;
+        readonly longitude: number;
+    };
+    readonly destination: {
+        readonly center: number | null;
+        readonly latitude: number;
+        readonly longitude: number;
+    };
+    readonly path: number[];
+    readonly config: {
+        readonly stop: number;
+        readonly percent: number;
+    };
+}
+
+export interface ITransportRouteAttachRs extends ITransportRouteDTO {}

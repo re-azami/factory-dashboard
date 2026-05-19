@@ -1,0 +1,79 @@
+<input type="file" style="display: none" [accept]="'text/csv'" (change)="upload($event)" #fileUpload />
+
+<page-title [title]="title"></page-title>
+
+<page-section>
+    <page-section-column [width]="350" [sticky]="true">
+        <page-card [title]="'ترتیب اطلاعات فایل'" [icon]="'description'" [padding]="'1rem 0 0 0'">
+            <div class="upload">
+                <div>طول جغرافیایی</div>
+                <div>عرض جغرافیایی</div>
+                <div>کد پرسنلی</div>
+                <div>نام و نام خانوادگی</div>
+                <div>نوع مسافر</div>
+                <button mat-button type="button" color="primary" (click)="fileUpload.value = ''; fileUpload.click()">
+                    انتخاب فایل
+                </button>
+            </div>
+        </page-card>
+
+        <!-- FORM -->
+        @if (!readError && !emptyError && !hasError && showForm) {
+        <div class="page-seperator"></div>
+        <page-card [title]="'آپلود لیست'" [icon]="'upload'">
+            <ngx-form [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form>
+        </page-card>
+        }
+    </page-section-column>
+    <page-section-column>
+        <!-- NO FILE -->
+        @if (!file) {
+        <div class="page-comment">فایل مشخص نشده است.</div>
+        } @else {
+        <!-- READ ERROR -->
+        @if (readError) {
+        <div class="page-comment">اشکال در خواندن محتوای فایل.</div>
+        }
+        <!-- EMPTY ERROR -->
+        @if (emptyError) {
+        <div class="page-comment">مکانی در فایل مشخص نشده است.</div>
+        }
+
+        <!-- PASSENGERS -->
+        @if (!readError && !emptyError) {
+        <div class="passengers">
+            @for (passenger of passengers; track $index) { @if (!hasError || passenger.errors.length !== 0) {
+            <div class="passenger">
+                <!-- LINE -->
+                @if (hasError) {
+                <div class="line en">{{ passenger.line + 1 | number }}</div>
+                }
+                <!-- PASSWNGERS -->
+                @if (passenger.errors.length !== 0) {
+                <!-- ERRORS -->
+                <div class="error">
+                    <div class="content en page-overflow">{{ passenger.content.split(',') | json }}</div>
+                    <ul>
+                        @for (error of passenger.errors; track $index) {
+                        <li>{{ error }}</li>
+                        }
+                    </ul>
+                </div>
+                }@else {
+                <!-- PASSENGERS -->
+                <div class="info">
+                    <mat-icon class="flex-center" color="primary">
+                        {{ transportPassengerInfo[passenger.type].icon }}
+                    </mat-icon>
+                    <div class="code en">{{ passenger.code }}</div>
+                    <div class="name page-overflow">{{ passenger.passenger }}</div>
+                    <div class="longitude en">{{ passenger.longitude }}</div>
+                    <div class="latitude en">{{ passenger.latitude }}</div>
+                </div>
+                }
+            </div>
+            } }
+        </div>
+        } }
+    </page-section-column>
+</page-section>

@@ -1,0 +1,26 @@
+<input type="file" style="display: none" (change)="upload($event)" #fileUpload />
+
+<header>
+    <div class="title">فایل‌های ضمیمه</div>
+    <button mat-icon-button type="button" color="primary" (click)="select()">
+        <mat-icon [fontIcon]="'add'"></mat-icon>
+    </button>
+</header>
+
+<div class="attachments">
+    @for (attachment of attachments; track $index) {
+    <div class="attachment">
+        <div class="size">{{ attachment.size | ngxHelperFileSize }}</div>
+        <div class="file en page-overflow">{{ attachment.file }}</div>
+        <mat-icon [fontIcon]="'delete'" color="warn" (click)="delete($index)"></mat-icon>
+        <!-- DELETE -->
+        @if (deleteIndex === $index) {
+        <div class="delete">
+            <div class="title">آیا می‌خواهید فایل ضمیمه را حذف کنید؟</div>
+            <div class="action color-warn" (click)="delete($index, true)">بلی</div>
+            <div class="action color-primary" (click)="deleteIndex = undefined">خیر</div>
+        </div>
+        }
+    </div>
+    }
+</div>

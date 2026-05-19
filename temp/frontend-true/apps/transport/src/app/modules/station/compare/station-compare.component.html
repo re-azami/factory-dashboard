@@ -1,0 +1,43 @@
+@if (loading) {
+<ngx-helper-loader></ngx-helper-loader>
+}
+
+<content>
+    @if (!loading) {
+    <div class="menu">
+        <div class="buttons">
+            <button mat-button type="button" color="primary" (click)="setColors()">
+                <mat-icon color="primary">palette</mat-icon>
+            </button>
+            <div class="seperator"></div>
+            <button mat-button type="button" color="primary" [routerLink]="['/station']">
+                <mat-icon color="warn">cancel</mat-icon>
+            </button>
+        </div>
+
+        <div class="header">
+            <div class="title">نمایش مشخصات</div>
+        </div>
+        <mat-select [(value)]="view" (valueChange)="setMap()">
+            <mat-option [value]="'STATION'">شماره ایستگاه</mat-option>
+            <mat-option [value]="'LOCATION'">تعداد مکان</mat-option>
+            <mat-option [value]="'PASSENGER'">تعداد مسافر</mat-option>
+        </mat-select>
+
+        <div class="header">
+            <div class="title">ایستگاه‌ها</div>
+        </div>
+        <div class="stations">
+            @for (station of stations; track $index) {
+            <div class="station" (click)="loadStation(station.id)">
+                <mat-icon color="primary">{{ station.show ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
+                <div class="title page-overflow">{{ station.title }}</div>
+                <div class="color" [ngStyle]="{ 'background-color': station.color }"></div>
+            </div>
+            }
+        </div>
+    </div>
+    }
+
+    <div id="map" class="map"></div>
+</content>

@@ -1,0 +1,92 @@
+.report {
+    max-width: 100%;
+    overflow: auto;
+    border-radius: 4px;
+    position: relative;
+
+    table {
+        border-top-width: 0 !important;
+        border-bottom: 1px solid var(--borderColor);
+
+        tr {
+            th {
+                padding: 1.25rem 1rem;
+            }
+
+            th.title {
+                text-align: right;
+                white-space: nowrap;
+            }
+
+            td {
+                text-align: center;
+                padding: 0.75rem 1rem;
+                border-top: 1px solid var(--borderColor);
+            }
+
+            td.title {
+                text-align: right;
+                white-space: nowrap;
+
+                .type {
+                    font-size: 12px;
+                    opacity: 0.5;
+                }
+            }
+
+            td.download {
+                padding: 0;
+
+                button {
+                    width: 100%;
+                    height: 57px;
+                }
+            }
+
+            th.frozen,
+            td.frozen {
+                position: sticky;
+                right: 0;
+                z-index: 1;
+                background-color: var(--backgroundColor);
+            }
+
+            td.frozen {
+                background-color: rgb(247, 247, 247);
+            }
+        }
+
+        tr.seperator {
+            height: 3rem;
+        }
+
+        tr.header {
+            background-color: var(--backgroundColor);
+            border-radius: 4px 4px 0 0;
+
+            th {
+                border-top: 1px solid var(--borderColor);
+            }
+
+            th:first-child {
+                border-radius: 0 4px 0 0;
+                border-right: 1px solid var(--borderColor);
+            }
+
+            th:last-child {
+                border-radius: 4px 0 0 0;
+                border-left: 1px solid var(--borderColor);
+            }
+        }
+
+        tr.log {
+            td:first-child {
+                border-right: 1px solid var(--borderColor);
+            }
+
+            td:last-child {
+                border-left: 1px solid var(--borderColor);
+            }
+        }
+    }
+}

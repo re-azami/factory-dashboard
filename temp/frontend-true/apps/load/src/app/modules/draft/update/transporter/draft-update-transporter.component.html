@@ -1,0 +1,57 @@
+@if (loading) {
+<ngx-helper-loader></ngx-helper-loader>
+} @else {
+<!-- NO TRANSPORTER -->
+@if (cargo && !cargo.transporter) {
+<div class="page-comment">با توجه به تنظیمات بار مرتبط با حواله، امکان ثبت باربری برای این حواله وجود ندارد.</div>
+} @else {
+<page-section>
+    <page-section-column>
+        <page-card [title]="'باربری ثبت شده'" [icon]="'commute'">
+            @if (draft.transporter) {
+            <div class="transporter">{{ draft.transporter.title }}</div>
+            } @else {
+            <div class="no-transporter">مشخص نشده است.</div>
+            }
+        </page-card>
+
+        <div class="page-seperator"></div>
+        <ul>
+            <!-- CARGO -->
+            @if (cargo) {
+            <li>لیست باربری‌های قابل انتخاب به عنوان باربری مرتبط با حواله در فرم نمایش داده شده است.</li>
+            }
+
+            <!-- REQUIRED -->
+            @if (cargo && cargo.transporter?.required) {
+            <li>مشخص کردن باربری مرتبط با حواله الزامی است.</li>
+            }
+
+            <!-- OPTIONAL -->
+            @if (cargo && !cargo.transporter?.required) {
+            <li>
+                مشخص کردن باربری مرتبط با حواله اختیاری است. همچنین با انتخاب گزینه خالی موجود در ابتدای لیست باربری‌ها
+                می‌توانید باربری مرتبط با حواله را حذف کنید.
+            </li>
+            }
+
+            <!-- NO CARGO -->
+            @if (!cargo) {
+            <li class="color-warn">
+                مشخصات بار مرتبط با حواله از سیستم حذف شده است. به همین دلیل باربری مرتبط با بار می‌تواند از تمام باربری‌های
+                فعال انتخاب شود. همچنین با انتخاب گزینه خالی موجود در ابتدای لیست باربری‌ها می‌توانید باربری مرتبط با حواله
+                را حذف کنید.
+            </li>
+            }
+
+            <!-- GENERAL -->
+            <li>
+                مشخص کردن توضیحات در هنگام ویرایش باربری الزامی است و این توضیحات در گزارش تغییرات حواله نمایش داده خواهد شد.
+            </li>
+        </ul>
+    </page-section-column>
+    <page-section-column>
+        <ngx-form [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form>
+    </page-section-column>
+</page-section>
+} }

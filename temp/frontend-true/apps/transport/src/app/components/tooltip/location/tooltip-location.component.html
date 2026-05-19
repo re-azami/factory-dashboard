@@ -1,0 +1,22 @@
+@if (location) {
+<ngx-helper-box [title]="location.title" [padding]="0" [@box]>
+    <div class="box">
+        <div class="passengers">
+            @for (passenger of location.passengers; track $index) {
+            <div class="passenger">
+                <mat-icon color="primary">{{ transportPassengerInfo[passenger.type].icon }}</mat-icon>
+                @if (passenger.code) {
+                <div class="code en">{{ passenger.code }}</div>
+                }
+                <div class="name">{{ passenger.name }}</div>
+            </div>
+            }
+        </div>
+    </div>
+    @if (buttons && group) {
+    <button mat-flat-button type="button" color="primary" [routerLink]="['/location', group.id, location.id, 'passenger']">
+        مدیریت مسافرها
+    </button>
+    }
+</ngx-helper-box>
+}

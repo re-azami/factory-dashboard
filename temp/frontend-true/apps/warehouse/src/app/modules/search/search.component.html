@@ -1,0 +1,20 @@
+<page-title [(page)]="page" [title]="title" (paramChanged)="loadList($event)"></page-title>
+
+@if (categories.length === 0) {
+<div class="page-comment">گروه ثبت نشده است.</div>
+} @else {
+<page-section>
+    <page-section-column [sticky]="true" [flex]="0.25">
+        <filter (filterChanged)="setFilter($event)"></filter>
+    </page-section-column>
+    <page-section-column>
+        <list
+            [list]="list"
+            [loading]="loading"
+            [data]="stocks"
+            [pagination]="pagination"
+            (pageChanged)="page = $event"
+        ></list>
+    </page-section-column>
+</page-section>
+}

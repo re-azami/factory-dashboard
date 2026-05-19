@@ -1,0 +1,58 @@
+<content>
+    <div class="menu">
+        @if (!loading) {
+        <header>
+            <div class="count">
+                <div class="title">مکان</div>
+                <div class="value">{{ count.location | number }}</div>
+            </div>
+            <div class="count">
+                <div class="title">پرسنل</div>
+                <div class="value">{{ count.personnel | number }}</div>
+            </div>
+            <div class="seperator"></div>
+            <button
+                mat-button
+                type="button"
+                color="primary"
+                [disabled]="locations.length === 0"
+                (click)="downloadLocations()"
+            >
+                <mat-icon [fontIcon]="'download'"></mat-icon>
+            </button>
+        </header>
+
+        <div class="params">
+            <ngx-helper-param [route]="['/location']" [params]="params" (changed)="setList($event)"></ngx-helper-param>
+        </div>
+
+        <div class="list">
+            @for (member of list; track $index) {
+            <div class="member">
+                <mat-icon
+                    [fontIcon]="
+                        member.location && member.location.status !== 'PERSONNEL'
+                            ? personnelLocationInfo[member.location.status].icon
+                            : personnelGenderInfo[member.gender].icon
+                    "
+                    [ngStyle]="{ color: member.location ? 'var(--primaryColor)' : 'var(--borderColor)' }"
+                ></mat-icon>
+                <div class="code en" [class.link]="member.location" (click)="member.location ? selectMember(member) : null">
+                    {{ member.code }}
+                </div>
+                <div class="name" [class.link]="member.location" (click)="member.location ? selectMember(member) : null">
+                    {{ member.name.first }} {{ member.name.last }}
+                </div>
+                <ngx-helper-menu [menu]="getMenu(member)"></ngx-helper-menu>
+            </div>
+            } @empty {
+            <div class="page-comment">پرسنلی با مشخصات داده شده ثبت نشده است.</div>
+            }
+        </div>
+        }
+    </div>
+
+    <div id="map" class="map"></div>
+</content>
+
+<personnel-location-tooltip [location]="selected"></personnel-location-tooltip>

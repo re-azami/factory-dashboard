@@ -1,0 +1,107 @@
+<content>
+    <div class="menu">
+        @if (!loading) { @if (routes.length === 0) {
+        <div class="page-comment">مسیر نهایی ثبت نشده است.</div>
+        } @else {
+        <mat-select [(value)]="routeIndex" (valueChange)="setRouteIndex()">
+            @for (route of routes; track $index) {
+            <mat-option [value]="$index">{{ route.title }}</mat-option>
+            }
+        </mat-select>
+
+        <div class="counts">
+            <div class="count">
+                <div class="title">مسیر</div>
+                <div class="value">{{ route.count.path }}</div>
+            </div>
+            <div class="count">
+                <div class="title">ایستگاه</div>
+                <div class="value">{{ route.count.center }}</div>
+            </div>
+            <div class="count">
+                <div class="title">مکان</div>
+                <div class="value">{{ route.count.location }}</div>
+            </div>
+            <div class="count">
+                <div class="title">مسافر</div>
+                <div class="value">{{ route.count.passenger }}</div>
+            </div>
+        </div>
+
+        <!-- PATH -->
+        <div class="tools">
+            <mat-select [(value)]="pathIndex" (valueChange)="setPathIndex()" [placeholder]="'انتخاب مسیر'">
+                @if (route.paths.length > 1) {
+                <mat-option [value]="null"></mat-option>
+                } @for (path of route.paths; track $index) {
+                <mat-option [value]="$index">
+                    <span [ngStyle]="{ color: path.color }">مسیر {{ $index + 1 }}</span>
+                </mat-option>
+                }
+            </mat-select>
+            <ngx-helper-menu [menu]="linesMenu" [icon]="'settings'" [border]="1"></ngx-helper-menu>
+        </div>
+
+        <!-- PATH DATA -->
+        @if (pathIndex !== null) {
+        <div class="vehicle">
+            <mat-icon>{{ transportVehicleInfo[route.paths[pathIndex].vehicle.type].icon }}</mat-icon>
+            <div class="info">
+                <div class="title">{{ route.paths[pathIndex].vehicle.title }}</div>
+                <div class="capacity">ظرفیت: {{ route.paths[pathIndex].vehicle.capacity | number }} نفر</div>
+                <div class="counts">
+                    <div class="count">
+                        <div class="title">زمان</div>
+                        <div class="value">{{ route.paths[pathIndex].time | ngxHelperDuration }}</div>
+                    </div>
+                    <div class="count">
+                        <div class="title">مسافر</div>
+                        <div class="value">{{ route.paths[pathIndex].passenger | number }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="centers">
+            <div
+                class="center-info center-parking"
+                [class.center-selected]="selectedPathParking === 'ORIGIN'"
+                (click)="setParkingOrigin()"
+            >
+                <mat-icon color="primary">local_parking</mat-icon>
+                <div class="title">مبدا</div>
+            </div>
+            @for (center of route.paths[pathIndex].centers; track $index) {
+            <div
+                class="center-info"
+                [class.center-selected]="selectedPathCenter && selectedPathCenter.centerIndex === $index"
+                (click)="selectCenter($index)"
+            >
+                <mat-icon color="primary">group_work</mat-icon>
+                <div class="title">ایستگاه {{ $index + 1 | number }}</div>
+                <div class="passenger">{{ center.passenger.total | number }}</div>
+                <div class="time">{{ center.time.total | ngxHelperDuration }}</div>
+            </div>
+            }
+            <div
+                class="center-info center-parking"
+                [class.center-selected]="selectedPathParking === 'DESTINATION'"
+                (click)="setParkingDestination()"
+            >
+                <mat-icon color="primary">sports_score</mat-icon>
+                <div class="title">مقصد</div>
+                <div class="time">{{ route.paths[pathIndex].time | ngxHelperDuration }}</div>
+            </div>
+        </div>
+
+        <ngx-helper-menu [menu]="exportMenu" [icon]="'download'" [border]="1" [title]="'دانلود'"></ngx-helper-menu>
+        } } }
+    </div>
+
+    <div id="map" class="map"></div>
+
+    <tooltip-path
+        [path]="{ index: selectedPathCenter?.pathIndex, path: selectedPathCenter?.path }"
+        [center]="{ index: selectedPathCenter?.centerIndex, center: selectedPathCenter?.center }"
+    ></tooltip-path>
+</content>

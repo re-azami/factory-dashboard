@@ -1,0 +1,22 @@
+<page-card [title]="'استاندارد'" [icon]="'straighten'" [buttons]="buttons" [padding]="'0'">
+    @if (loading) {
+    <ngx-helper-loader></ngx-helper-loader>
+    } @else {
+    <!-- NO STANDARD -->
+    @if (!standard) {
+    <div class="page-comment">مشخص نشده است</div>
+    } @else {
+    <div class="standard">{{ standard.standard | number }}</div>
+    <div class="date">{{ standard.date | ngxHelperJalali }}</div>
+    <div class="data">
+        <div class="item">
+            <div class="title">وزن</div>
+            <div class="value">{{ standard.weight | number }}</div>
+        </div>
+        <div class="item">
+            <div class="title">حجم</div>
+            <div class="value">{{ standard.volume | number }}</div>
+        </div>
+    </div>
+    } }
+</page-card>

@@ -1,0 +1,10 @@
+content {
+    display: block;
+    text-align: justify;
+    margin-bottom: 1rem;
+    line-height: 1.75;
+
+    strong {
+        color: var(--warnColor);
+    }
+}

@@ -6,14 +6,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 AI-powered analytics platform for an Iranian iron concentrate factory. Factory workers upload daily production Excel reports (in Persian). An LLM agent answers natural-language questions about the data by writing and executing SQL.
 
-**Phase 1** (complete): PostgreSQL ingestion + LLM SQL agent + Streamlit UI.  
+**Phase 1** (complete): PostgreSQL ingestion + LLM SQL agent + Angular SPA.  
 **Phase 2** (not started): Semantic search over Persian downtime descriptions using BGE-M3 embeddings.
 
 ## Common Commands
 
 ```powershell
-# Start Phase 1 services (db + backend + Streamlit + Angular SPA)
-docker compose up -d db backend frontend frontend-spa
+# Start Phase 1 services (db + backend + Angular SPA)
+docker compose up -d db backend frontend-spa
 
 # Start with embeddings (Phase 2 — needs BGE-M3 model downloaded first)
 docker compose up -d
@@ -32,7 +32,6 @@ docker compose build backend && docker compose up -d backend
 
 # Unit + integration tests (run against in-memory SQLite, no services needed)
 python -m pytest backend/tests        # 279 tests
-python -m pytest frontend/tests       # 22 tests (Streamlit unit tests — legacy)
 
 # Angular SPA unit tests (Karma + Jasmine, ChromeHeadless)
 cd frontend-spa
@@ -44,14 +43,24 @@ cd frontend-spa
 npm start    # serves on http://localhost:4200 (HMR)
 cd ..
 
-# End-to-end tests via Playwright (requires backend + Streamlit + SPA running)
+# End-to-end tests via Playwright (requires backend + SPA running)
 python -m pip install -r tests/e2e/requirements-test.txt
 python -m playwright install chromium    # one-time, ~110 MB
-python -m pytest tests/e2e               # headless — exercises both 8501 and 4200
+python -m pytest tests/e2e               # headless — exercises the SPA on 4200
 python -m pytest tests/e2e --headed      # watch the browser
 ```
 
-**Services:** PostgreSQL 5432, FastAPI 8000, Streamlit 8501 (legacy — being replaced), Angular SPA 4200, embeddings 8001.
+**Services:** PostgreSQL 5432, FastAPI 8000, Angular SPA 4200, embeddings 8001.
+
+### GPU vs CPU hosts (`docker-compose.gpu.yml`)
+
+The base `docker-compose.yml` is CPU-friendly by default so the same stack runs on the production DigitalOcean droplet (no GPU). On hosts with an NVIDIA GPU + nvidia-container-toolkit, layer the override by setting in `.env`:
+
+```
+COMPOSE_FILE=docker-compose.yml:docker-compose.gpu.yml
+```
+
+`docker compose up` then requests the GPU for the `embeddings` service. On CPU-only hosts, leave `COMPOSE_FILE` unset and BGE-M3 falls back to CPU (~0.3–1.5 s per Persian query — acceptable for live query embedding; do NOT do bulk `POST /ingest/enrich` on the CPU server, pre-embed on the GPU laptop and restore the DB dump instead — see `TODO.md` → OPS-003).
 
 ## Environment Configuration
 
@@ -105,11 +114,11 @@ Three downtime sections parsed separately: `factory` (anchor `دلایل توق�
 
 ## Frontend (Angular SPA at `frontend-spa/`)
 
-The Streamlit UI at `frontend/` is being replaced by an Angular 21 SPA at `frontend-spa/`. Streamlit stays running on port 8501 during the migration; the new SPA runs on port 4200. UI-001a shipped the scaffold; UI-001b ports the chat page, UI-001c the history page, UI-001d retires Streamlit.
+The Angular 21 SPA at `frontend-spa/` is now the sole frontend, serving on port 4200. The legacy Streamlit UI was retired in UI-001d (2026-05-19) after the SPA reached parity through UI-001a (scaffold), UI-001b (chat), and UI-001c (history).
 
 ### Reference
 
-The SPA mirrors `temp/frontend-true/apps/admin/` from a reference monorepo the user provided. **`temp/` is gitignored** and the reference is for learning only — it is a different domain (logistics/admin), not our codebase. When in doubt about a convention, read the equivalent file in `temp/frontend-true/apps/admin/` or the shared `temp/frontend-true/libs/page/`, `libs/providers/`, `libs/shared/` libs.
+The SPA mirrors `temp/frontend-true/apps/admin/` from a reference monorepo the user provided. **`temp/frontend-true/` is tracked in git** (everything else under `temp/` is ignored) so it's available on every dev host including the production server. The reference is for learning only — it is a different domain (logistics/admin), not our codebase. When in doubt about a convention, read the equivalent file in `temp/frontend-true/apps/admin/` or the shared `temp/frontend-true/libs/page/`, `libs/providers/`, `libs/shared/` libs.
 
 ### Stack and conventions
 

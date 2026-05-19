@@ -1,0 +1,196 @@
+<!-- TYPE and ACTIVE -->
+@if (!type.loading || !active.loading) {
+<div class="type-active">
+    <page-section>
+        <!-- TYPE -->
+        @if (!type.loading) {
+        <page-section-column>
+            <page-block [blocks]="type.block"></page-block>
+            <div class="page-seperator"></div>
+            <page-card [title]="'انواع بار'" [icon]="'terrain'" [padding]="'0'" [option]="typeOption">
+                <table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+                    <tr>
+                        <th></th>
+                        <th class="title">نوع بار</th>
+                        <th>حواله</th>
+                        <th>وزن</th>
+                        <th></th>
+                    </tr>
+                    @for (item of type.data; track $index) {
+                    <tr>
+                        <td class="color"><div class="color" [style.background-color]="item.color"></div></td>
+                        <td class="title">{{ item.title }}</td>
+                        <td class="count">{{ item.count | number }}</td>
+                        <td class="weight">{{ item.weight | number }}</td>
+                        <td class="help">
+                            <button mat-button type="button" color="primary" (click)="showInfo(item.type)">
+                                <mat-icon>info</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                    }
+                </table>
+            </page-card>
+        </page-section-column>
+        }
+        <!-- ACTIVE -->
+        @if (!active.loading) {
+        <page-section-column>
+            <page-card [title]="'حواله‌های فعال'" [icon]="'assignment'" [padding]="'1px'">
+                <page-section>
+                    <page-section-column>
+                        <ngx-helper-value [values]="active.count" [width]="150"></ngx-helper-value>
+                    </page-section-column>
+                    <page-section-column [width]="300">
+                        <div class="active-total">{{ active.total | number }} حواله فعال</div>
+                        <div echarts class="page-chart" [options]="active.chart"></div>
+                    </page-section-column>
+                </page-section>
+            </page-card>
+        </page-section-column>
+        }
+    </page-section>
+</div>
+}
+
+<!-- CARGO -->
+@if (!cargo.loading && (cargo.draft.list.length > 0 || cargo.site.list.length > 0)) {
+<div class="cargos">
+    <table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+        <!-- DRAFT -->
+        @if (cargo.draft.list.length !== 0) {
+        <tr>
+            <th class="title frozen top" [rowSpan]="2">بارهای روزانه</th>
+            <th class="title top" [rowSpan]="2">طرف حساب</th>
+            <th class="title top" [rowSpan]="2">محموله</th>
+            <th class="top" [colSpan]="3">حواله‌های روزانه</th>
+            <th class="top" [colSpan]="3">تمام حواله‌های بار</th>
+        </tr>
+        <tr>
+            <th class="sub">فعال</th>
+            <th class="sub">پایان</th>
+            <th class="sub">وزن</th>
+            <th class="sub">تعداد</th>
+            <th class="sub">وزن</th>
+            <th class="sub left">باقیمانده{{ cargo.remaining === 'TON' ? ' (تن)' : '' }}</th>
+        </tr>
+        @for (item of cargo.draft.list; track $index) {
+        <tr>
+            <td class="title frozen">
+                {{ item.title }}
+                <div class="type">{{ loadCargoInfo[item.type].title }}</div>
+            </td>
+            <td class="title">{{ item.party ? item.party.title : '' }}</td>
+            <td class="title">{{ item.shipment ? item.shipment.title : '' }}</td>
+            <td class="value daily">{{ item.daily.active | number }}</td>
+            <td class="value daily">{{ item.daily.count | number }}</td>
+            <td class="value daily">{{ item.daily.weight | number }}</td>
+            <td class="value">{{ item.total.count | number }}</td>
+            <td class="value">{{ item.total.weight | number }}</td>
+            <td
+                class="value remaining"
+                [ngClass]="item.total.remaining !== null && item.total.remaining < 0 ? 'color-warn' : ''"
+            >
+                {{
+                    item.total.remaining === null
+                        ? '&nbsp;'
+                        : cargo.remaining === 'TON'
+                        ? (floor(item.total.remaining / 1000) | number)
+                        : (item.total.remaining | number)
+                }}
+            </td>
+        </tr>
+        }
+        <!-- DRAFT TOTAL -->
+        @if (cargo.draft.list.length > 1) {
+        <tr>
+            <th class="total frozen">مجموع</th>
+            <th class="total" [colSpan]="2"></th>
+            <th class="total">{{ cargo.draft.active | number }}</th>
+            <th class="total">{{ cargo.draft.count | number }}</th>
+            <th class="total">{{ cargo.draft.weight | number }}</th>
+            <th class="total" [colSpan]="3">&nbsp;</th>
+        </tr>
+        } }
+
+        <!-- SEPERATOR -->
+        @if (cargo.draft.list.length > 0 && cargo.site.list.length > 0) {
+        <tr>
+            <td class="seperator" [colSpan]="9"></td>
+        </tr>
+        }
+
+        <!-- SITE -->
+        @if (cargo.site.list.length !== 0) {
+        <tr>
+            <th class="title frozen top" [rowSpan]="2">بارهای داخلی</th>
+            <th class="title top" [rowSpan]="2">طرف حساب</th>
+            <th class="title top" [rowSpan]="2">محموله</th>
+            <th class="top" [colSpan]="3">حواله‌های روزانه</th>
+            <th class="top" [colSpan]="3">تمام حواله‌های بار</th>
+        </tr>
+        <tr>
+            <th class="sub">فعال</th>
+            <th class="sub">پایان</th>
+            <th class="sub">وزن</th>
+            <th class="sub">تعداد</th>
+            <th class="sub">وزن</th>
+            <th class="sub">باقیمانده{{ cargo.remaining === 'TON' ? ' (تن)' : '' }}</th>
+        </tr>
+        @for (item of cargo.site.list; track $index) {
+        <tr>
+            <td class="title frozen">
+                {{ item.title }}
+                <div class="type">{{ loadCargoInfo[item.type].title }}</div>
+            </td>
+            <td class="title">{{ item.party ? item.party.title : '' }}</td>
+            <td class="title">{{ item.shipment ? item.shipment.title : '' }}</td>
+            <td class="value daily">{{ item.daily.active | number }}</td>
+            <td class="value daily">{{ item.daily.count | number }}</td>
+            <td class="value daily">{{ item.daily.weight | number }}</td>
+            <td class="value">{{ item.total.count | number }}</td>
+            <td class="value">{{ item.total.weight | number }}</td>
+            <td
+                class="value remaining"
+                [ngClass]="item.total.remaining !== null && item.total.remaining < 0 ? 'color-warn' : ''"
+            >
+                {{
+                    item.total.remaining === null
+                        ? '&nbsp;'
+                        : cargo.remaining === 'TON'
+                        ? (floor(item.total.remaining / 1000) | number)
+                        : (item.total.remaining | number)
+                }}
+            </td>
+        </tr>
+        }
+        <!-- SITE TOTAL -->
+        @if (cargo.site.list.length > 1) {
+        <tr>
+            <th class="total frozen">مجموع</th>
+            <th class="total" [colSpan]="2"></th>
+            <th class="total">{{ cargo.site.active | number }}</th>
+            <th class="total">{{ cargo.site.count | number }}</th>
+            <th class="total">{{ cargo.site.weight | number }}</th>
+            <th class="total" [colSpan]="3">&nbsp;</th>
+        </tr>
+        } }
+    </table>
+</div>
+}
+
+<!-- CHART -->
+@if (!chart.loading) {
+<div class="chart">
+    <page-card [title]="'حواله‌های روزانه'" [icon]="'assignment'" [padding]="'0'">
+        <!-- DESKTOP -->
+        @if (!size.isMobile) {
+        <div echarts class="page-chart" [options]="chart.chartDesktop"></div>
+        }
+        <!-- MOBILE -->
+        @if (size.isMobile) {
+        <div echarts class="page-chart" [options]="chart.chartMobile"></div>
+        }
+    </page-card>
+</div>
+}

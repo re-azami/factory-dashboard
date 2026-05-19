@@ -1,0 +1,23 @@
+@if (access.length === 0) {
+<div class="page-comment">دسترسی‌ای برای کاربر ثبت نشده است.</div>
+} @else {
+<div class="accesses">
+    @for (item of access; track $index) {
+    <div class="item">
+        <div class="title">{{ item.title }}</div>
+        <ol class="list">
+            @for (a of item.list; track $index) {
+            <li>
+                <div class="data">
+                    <div class="access">{{ a.title }}</div>
+                    @if (a.type) {
+                    <div class="type en">{{ a.type }}</div>
+                    }
+                </div>
+            </li>
+            }
+        </ol>
+    </div>
+    }
+</div>
+}

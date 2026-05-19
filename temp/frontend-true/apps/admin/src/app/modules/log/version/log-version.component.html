@@ -1,0 +1,20 @@
+<page-title [(page)]="page" [title]="title" (paramChanged)="loadList($event)"></page-title>
+
+<page-tab (activeTabChanged)="activeTab = $event">
+    <page-tab-content [title]="'نسخه‌های نرم‌افزار'">
+        <list [list]="list" [loading]="loading" [data]="logs" [pagination]="pagination" (pageChanged)="page = $event"></list>
+    </page-tab-content>
+    <page-tab-content [title]="'مدیریت'">
+        @if (activeTab === 1) {
+        <log-version-app [app]="'ADMIN'"></log-version-app>
+        }
+    </page-tab-content>
+    <!-- APPS -->
+    @for (app of appList; track $index) {
+    <page-tab-content [title]="appInfo[app].title">
+        @if (activeTab === $index + 2) {
+        <log-version-app [app]="app"></log-version-app>
+        }
+    </page-tab-content>
+    }
+</page-tab>

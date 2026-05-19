@@ -1,0 +1,54 @@
+<header>
+    <!-- ICON -->
+    @if (icon) {
+    <mat-icon class="header">{{ icon }}</mat-icon>
+    }
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="title page-overflow">{{ title }}</div>
+        @if (description) {
+        <div class="description page-overflow">{{ description }}</div>
+        }
+    </div>
+
+    <!-- BUTTONS -->
+    @if (buttons.length>0) {
+    <div class="buttons">
+        @for (button of buttons; track $index) {
+        <button mat-button type="button" [color]="button.color || 'primary'" (click)="button.action()">
+            <!-- ICON -->
+            @if (size.isMobile || button.showIcon) { <mat-icon>{{ button.icon }}</mat-icon> }
+            <!-- TITLE -->
+            @else { {{ button.title }} }
+        </button>
+        }
+    </div>
+    }
+
+    <!-- OPTION -->
+    @if (option) {
+    <div class="option">
+        <ngx-helper-menu
+            [menu]="optionMenu"
+            [icon]="option.icon"
+            [title]="size.isMobile ? undefined : optionTitle"
+            [xPosition]="'before'"
+        ></ngx-helper-menu>
+    </div>
+    }
+
+    <!-- MENU -->
+    @if (menu.length > 0) {
+    <div class="option">
+        <ngx-helper-menu
+            [menu]="menu"
+            [xPosition]="'before'"
+            [title]="size.isMobile ? undefined : menuTitle"
+            [icon]="size.isMobile ? menuIcon : undefined"
+        ></ngx-helper-menu>
+    </div>
+    }
+</header>
+
+<content [ngStyle]="{ padding: padding }"><ng-content></ng-content></content>

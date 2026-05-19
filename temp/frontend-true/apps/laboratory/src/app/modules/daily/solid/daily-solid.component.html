@@ -1,0 +1,100 @@
+@if (loading) { <ngx-helper-loader></ngx-helper-loader> } @else {
+<!-- RESULTS -->
+@if (lines[1].length === 0 && lines[2].length === 0) {
+<div class="page-comment">نتیجه آزمایش ثبت نشده است.</div>
+} @else {
+
+<div class="table">
+    <table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+        <tr>
+            <th class="frozen location" [rowSpan]="2">مکان</th>
+            <!-- LINE 1 -->
+            @if (lines[1].length > 0) {
+            <th [colSpan]="lines[1].length">{{ laboratoryLineInfo[1].title }}</th>
+            }
+            <!-- LINE 2 -->
+            @if (lines[2].length > 0) {
+            <th [colSpan]="lines[2].length">{{ laboratoryLineInfo[2].title }}</th>
+            }
+        </tr>
+        <tr>
+            <!-- LINE 1 -->
+            @for (item of lines[1]; track $index) {
+            <th class="time">
+                {{ getTime(item) }}
+                <div
+                    [class.en]="!!item.cargo && item.cargo.portions.length > 0"
+                    [dir]="!!item.cargo && item.cargo.portions.length > 0 ? 'ltr' : 'rtl'"
+                >
+                    {{ item.cargo?.title }}
+                </div>
+            </th>
+            }
+            <!-- LINE 2 -->
+            @for (item of lines[2]; track $index) {
+            <th class="time">
+                {{ getTime(item) }}
+                <div
+                    [class.en]="!!item.cargo && item.cargo.portions.length > 0"
+                    [dir]="!!item.cargo && item.cargo.portions.length > 0 ? 'ltr' : 'rtl'"
+                >
+                    {{ item.cargo?.title }}
+                </div>
+            </th>
+            }
+        </tr>
+
+        <!-- TESTS -->
+        @for (test of laboratorySolidList; track $index;let tIndex = $index) {
+        <tr>
+            <td class="frozen location test" [class.odd]="tIndex % 2 === 1">{{ laboratorySolidInfo[test].title }}</td>
+            <!-- LINE 1 -->
+            @for (item of lines[1]; track $index) {
+            <td [class.odd]="tIndex % 2 === 1" [class.click]="!!getResult(item, test)" (click)="showResult(item, test)">
+                {{ getResult(item, test) }}
+            </td>
+            }
+            <!-- LINE 2 -->
+            @for (item of lines[2]; track $index) {
+            <td [class.odd]="tIndex % 2 === 1" [class.click]="!!getResult(item, test)" (click)="showResult(item, test)">
+                {{ getResult(item, test) }}
+            </td>
+            }
+        </tr>
+        }
+    </table>
+</div>
+
+<div class="page-seperator"></div>
+<div class="table">
+    <table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+        <tr>
+            <th class="cargo" [colSpan]="4">مشخصات بارها</th>
+        </tr>
+        <tr>
+            <th class="title">بار</th>
+            <th class="title">نوع بار</th>
+            <th class="title">طرف حساب</th>
+            <th class="title">محموله</th>
+        </tr>
+        @for (cargo of cargos; track $index) {
+        <tr>
+            <td class="title" [class.en]="cargo.portions.length > 0" [dir]="cargo.portions.length > 0 ? 'ltr' : 'rtl'">
+                {{ cargo.title }}
+            </td>
+            <td class="title">{{ cargo.type }}</td>
+            <td class="title">{{ cargo.party }}</td>
+            <td class="title">{{ cargo.shipment }}</td>
+        </tr>
+        <!-- PORTIONS -->
+        @for (portion of cargo.portions; track $index) {
+        <tr>
+            <td class="portion title">{{ portion.title }}</td>
+            <td class="portion title">{{ loadCargoInfo[portion.type].title }}</td>
+            <td class="portion title">{{ portion.party?.title || '' }}</td>
+            <td class="portion title">{{ portion.shipment?.title || '' }}</td>
+        </tr>
+        } }
+    </table>
+</div>
+}}

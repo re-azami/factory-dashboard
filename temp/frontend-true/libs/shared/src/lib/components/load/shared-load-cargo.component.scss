@@ -1,0 +1,100 @@
+.options {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+    column-gap: 1rem;
+    padding: 0.75rem 1rem;
+
+    .search {
+        display: flex;
+        align-items: center;
+
+        flex: 1;
+        height: 36px;
+        border-radius: 4px;
+        border: 1px solid var(--borderColor);
+
+        input {
+            flex: 1;
+
+            width: 100%;
+            border-radius: 4px;
+            outline: none;
+            border: 0;
+            line-height: 34px;
+            padding: 0 1rem;
+        }
+
+        mat-icon {
+            text-align: center;
+            font-size: 18px !important;
+            width: 36px !important;
+            height: 34px !important;
+            line-height: 34px !important;
+            background-color: var(--backgroundColor);
+            border-radius: 4px;
+            color: var(--grayColor);
+        }
+    }
+}
+
+.table {
+    max-width: 100%;
+    max-height: 60vh;
+    overflow: auto;
+    position: relative;
+
+    table {
+        position: relative;
+
+        tr {
+            th {
+                position: sticky;
+                top: 0;
+                z-index: 2;
+
+                text-align: justify;
+                padding: 1.25rem 1rem;
+                color: var(--primaryColor);
+                background-color: var(--backgroundColor);
+            }
+
+            td {
+                text-align: justify;
+                padding: 0.75rem 1rem;
+                border-top: 1px solid var(--borderColor);
+
+                .title {
+                    cursor: pointer;
+                    font-weight: 500;
+                    color: var(--primaryColor);
+                }
+
+                .type {
+                    font-size: 12px;
+                    color: var(--grayColor);
+                }
+            }
+
+            td:last-child {
+                border-left-width: 0;
+            }
+
+            th.status,
+            td.status {
+                text-align: center;
+            }
+        }
+
+        tr.odd {
+            background-color: var(--highlightColor);
+        }
+
+        tr:hover {
+            background-color: var(--backgroundColor) !important;
+        }
+    }
+}

@@ -1,0 +1,6 @@
+@if (parents.length !== 0) {
+<parents [parents]="parents"></parents>
+<div class="page-seperator"></div>
+}
+
+<ngx-form [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)" #ngxFormComponent></ngx-form>

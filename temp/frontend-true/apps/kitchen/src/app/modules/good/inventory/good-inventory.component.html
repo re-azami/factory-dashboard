@@ -1,0 +1,22 @@
+<page-title [(page)]="page" [title]="title" (paramChanged)="loadList($event)"></page-title>
+
+<page-section>
+    <page-section-column [width]="300" [sticky]="true">
+        <page-card [title]="good.title" [icon]="'inventory_2'" [padding]="'0'">
+            <ngx-helper-value [values]="values"></ngx-helper-value>
+            <!-- DESCRIPTION -->
+            @if (good.description) {
+            <div class="description" [innerHTML]="good.description | ngxHelperMultiLine"></div>
+            }
+        </page-card>
+    </page-section-column>
+    <page-section-column>
+        <list
+            [list]="list"
+            [loading]="loading"
+            [data]="inventories"
+            [pagination]="pagination"
+            (pageChanged)="page = $event"
+        ></list>
+    </page-section-column>
+</page-section>

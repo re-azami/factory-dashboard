@@ -1,0 +1,15 @@
+@if (loading) {
+<ngx-helper-loader></ngx-helper-loader>
+} @else {
+<!-- CARGOS -->
+<div class="cargos">
+    @for (cargo of cargos; track $index) {
+    <div class="cargo">
+        <div class="title">{{ cargo.title }}</div>
+        <div class="type">{{ loadCargoInfo[cargo.type].title }}</div>
+    </div>
+    } @empty {
+    <div class="page-comment">ناوگان در لیست ناوگان اختصاصی بارها ثبت نشده است.</div>
+    }
+</div>
+}

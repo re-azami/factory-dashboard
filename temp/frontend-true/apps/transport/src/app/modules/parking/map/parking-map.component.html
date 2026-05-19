@@ -1,0 +1,10 @@
+@if (loading) {
+<ngx-helper-loader></ngx-helper-loader>
+} @else {
+<div id="map" class="map"></div>
+<button mat-button type="button" [routerLink]="['/parking']">
+    <mat-icon color="primary">cancel</mat-icon>
+</button>
+
+<tooltip-parking [parking]="parking"></tooltip-parking>
+}

@@ -1,0 +1,27 @@
+<page-title [title]="title"></page-title>
+
+@if (!loading) { @for (date of calendar; track $index) {
+<!-- SEPERATOR -->
+@if ($index !== 0) {
+<div class="page-seperator"></div>
+}
+
+<page-card [title]="date.date | ngxHelperJalali" [padding]="'0'">
+    @for (location of date.locations; track $index) {
+    <div class="location">
+        <div class="title">{{ location.title }}</div>
+        <div class="periods">
+            @for (period of location.periods; track $index) {
+            <div class="period">
+                <div class="time">{{ period.end }}</div>
+                <div class="time">{{ period.start }}</div>
+                <div class="course page-overflow">{{ period.course }}</div>
+            </div>
+            }
+        </div>
+    </div>
+    }
+</page-card>
+} @empty {
+<div class="page-comment">دوره‌ای در روزهای آینده ثبت نشده است.</div>
+} }

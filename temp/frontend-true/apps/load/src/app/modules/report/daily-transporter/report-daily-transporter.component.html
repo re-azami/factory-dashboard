@@ -1,0 +1,51 @@
+<page-title [title]="title" (calendarChanged)="loadReport($event)"></page-title>
+
+@if (!loading) {
+<!-- EMPTY -->
+@if (report.length === 0) {
+<div class="page-comment">حواله مرتبط با باربری ثبت نشده است.</div>
+} @else {
+<!-- REPORT -->
+<div class="report">
+    <table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+        @for (transporter of report; track $index) {
+        <!-- SEPERATOR -->
+        @if ($index !== 0) {
+        <tr class="seperator">
+            <td [colSpan]="5"></td>
+        </tr>
+        }
+        <!-- HEADER -->
+        <tr class="header">
+            <th class="title frozen">{{ transporter.transporter.title }}</th>
+            <th class="title">طرف حساب</th>
+            <th class="title">محموله</th>
+            <th>حواله</th>
+            <th>وزن</th>
+        </tr>
+        <!-- CARGOS -->
+        @for (cargo of transporter.cargos; track $index) {
+        <tr class="cargo">
+            <td class="title frozen">
+                <div class="title">{{ cargo.title }}</div>
+                <div class="type">{{ loadCargoInfo[cargo.type] ? loadCargoInfo[cargo.type].title : '' }}</div>
+            </td>
+            <td class="title">{{ cargo.party ? cargo.party.title : '' }}</td>
+            <td class="title">{{ cargo.shipment ? cargo.shipment.title : '' }}</td>
+            <td>{{ cargo.count | number }}</td>
+            <td>{{ cargo.weight | number }}</td>
+        </tr>
+        }
+
+        <!-- SUM -->
+        @if (transporter.cargos.length > 1) {
+        <tr class="total">
+            <td class="title frozen">مجموع</td>
+            <td [colSpan]="2"></td>
+            <td>{{ getTotalCount(transporter.transporter.id) | number }}</td>
+            <td>{{ getTotalWeight(transporter.transporter.id) | number }}</td>
+        </tr>
+        } }
+    </table>
+</div>
+} }

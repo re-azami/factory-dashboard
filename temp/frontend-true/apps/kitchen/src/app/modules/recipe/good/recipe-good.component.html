@@ -1,0 +1,37 @@
+<header>
+    <div class="title">{{ kitchenGoodInfo[good].title }}</div>
+    <button mat-icon-button type="button" color="primary" (click)="createGood()"><mat-icon>add</mat-icon></button>
+</header>
+
+<!-- EMPTY -->
+@if (goods.length === 0) {
+<div class="empty">{{ kitchenGoodInfo[good].title }} ثبت نشده است.</div>
+}
+
+<!-- LIST -->
+@else {
+<div class="goods">
+    @for (item of goods; track $index) {
+    <div class="good">
+        <div class="header">
+            <div class="title">{{ item.title }}</div>
+            <!-- SERVING -->
+            @if (item.serving) {
+            <div class="serving">{{ item.serving.value | number }} {{ getUnitTitle(item) }}</div>
+            }
+            <!-- UPDATE -->
+            @if (good === 'INGREDIENT') {
+            <button mat-icon-button type="button" color="primary" (click)="updateGood(item)">
+                <mat-icon>edit</mat-icon>
+            </button>
+            }
+            <button mat-icon-button type="button" color="warn" (click)="deleteGood(item)"><mat-icon>close</mat-icon></button>
+        </div>
+        <!-- DESCRIPTION -->
+        @if (item.serving && item.serving.description) {
+        <div class="description" [innerHTML]="item.serving.description | ngxHelperMultiLine"></div>
+        }
+    </div>
+    }
+</div>
+}

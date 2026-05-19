@@ -1,0 +1,57 @@
+<!-- COUNT -->
+@if (!count.loading) {
+<div class="page-seperator"></div>
+<page-section>
+    <page-section-column><page-block [blocks]="count.blocks[0]" [column]="1"></page-block></page-section-column>
+    <page-section-column><page-block [blocks]="count.blocks[1]"></page-block></page-section-column>
+</page-section>
+}
+
+<!-- ACTIVE -->
+@if (activeLoading === false && active.length > 0) {
+<div class="page-seperator"></div>
+<page-card [title]="'دوره‌های در حال برگزاری'" [padding]="'0'" [icon]="'school'">
+    @for (item of active; track $index) {
+    <div class="study">
+        <div class="remaining">
+            @if (item.start !== null) {
+            <div class="value">{{ item.start | ngxHelperDuration : { format: 'DAY' } }}</div>
+            <div class="unit">روز</div>
+            } @else {
+            <div class="done">برگزار شده</div>
+            }
+        </div>
+        <div class="info">
+            <div
+                class="course"
+                [class.color-primary]="activeAccess"
+                [routerLink]="activeAccess ? ['/study', 'active', item.study.id] : null"
+            >
+                {{ item.study.course.title }}
+            </div>
+            <div class="educator">
+                {{ item.study.educator.title }} ({{ educationEducatorInfo[item.study.educator.type].title }})
+            </div>
+            <div class="date-time">
+                <div class="dates">{{ item.period | ngxHelperPeriod }}</div>
+                <div class="duration">{{ (item.study.duration.total | ngxHelperDuration).slice(0, -3) }}</div>
+            </div>
+        </div>
+    </div>
+    }
+</page-card>
+}
+
+<!-- STUDY -->
+@if (!studies.loading) {
+<div class="page-seperator"></div>
+<page-section>
+    @for (item of studies.data; track $index) {
+    <page-section-column>
+        <page-card [title]="item.title" [icon]="item.icon" [padding]="'0'">
+            <div echarts class="page-chart" [options]="item.chart"></div>
+        </page-card>
+    </page-section-column>
+    }
+</page-section>
+}

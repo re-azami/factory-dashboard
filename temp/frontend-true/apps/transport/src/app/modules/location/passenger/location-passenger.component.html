@@ -1,0 +1,10 @@
+<page-title [title]="title"></page-title>
+
+<page-section>
+    <page-section-column [width]="250" [sticky]="true">
+        <location-group [group]="group" [location]="location"></location-group>
+    </page-section-column>
+    <page-section-column>
+        <list [list]="list" [loading]="false" [data]="location.passengers"></list>
+    </page-section-column>
+</page-section>

@@ -1,0 +1,63 @@
+<page-title [title]="title"></page-title>
+
+@if (!loading) {
+<page-section>
+    <page-section-column [sticky]="true">
+        <page-card [title]="course.title" [icon]="'description'" [padding]="'0'">
+            <div class="data">
+                <div class="title">کد اختصاصی:</div>
+                <div class="value en">{{ course.code }}</div>
+            </div>
+            <div class="data">
+                <div class="title">تاریخ ثبت:</div>
+                <div class="value">{{ course.date | ngxHelperJalali }}</div>
+            </div>
+            <!-- DESCRIPTION -->
+            @if (course.description) {
+            <div class="description" [innerHTML]="course.description | ngxHelperMultiLine"></div>
+            }
+        </page-card>
+
+        @if (course.study !== 0) {
+        <div class="page-seperator"></div>
+        <page-block [blocks]="blocks[0]" [column]="1"></page-block>
+        <div class="page-seperator"></div>
+        <page-block [blocks]="blocks[1]" [column]="3"></page-block>
+        <div class="page-seperator"></div>
+        <page-block [blocks]="blocks[2]" [column]="3"></page-block>
+        <div class="page-seperator"></div>
+        <page-block [blocks]="blocks[3]" [column]="2"></page-block>
+
+        <div class="page-seperator"></div>
+        <div class="export">
+            @for (type of exportTypeList; track $index) {
+            <button mat-stroked-button type="button" color="primary" (click)="export(type)">
+                {{ exportTypeInfo[type].title }}
+            </button>
+            }
+        </div>
+        }
+    </page-section-column>
+    <page-section-column [flex]="1.5">
+        @if (course.study === 0) {
+        <div class="page-comment">برگزاری دوره ثبت نشده است.</div>
+        } @else {
+
+        <!-- INSTITUTE -->
+        @if (instituteChart) {
+        <page-card [title]="'موسسه‌های برگزار کننده'" [icon]="'download'" [padding]="'0'" [buttons]="instituteButtons">
+            <div echarts class="page-chart" [options]="instituteChart"></div>
+        </page-card>
+        <div class="page-seperator"></div>
+        }
+
+        <!-- MENTOR -->
+        @if (mentorChart) {
+        <page-card [title]="'مدرس‌های برگزار کننده'" [icon]="'download'" [padding]="'0'" [buttons]="mentorButtons">
+            <div echarts class="page-chart" [options]="mentorChart"></div>
+        </page-card>
+        <div class="page-seperator"></div>
+        } }
+    </page-section-column>
+</page-section>
+}

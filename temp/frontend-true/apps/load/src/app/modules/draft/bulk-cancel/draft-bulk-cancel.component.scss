@@ -1,0 +1,126 @@
+.cargo {
+    display: flex;
+    align-items: center;
+    column-gap: 1rem;
+
+    cursor: pointer;
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--borderColor);
+
+    .title {
+        flex: 1;
+        font-weight: 500;
+    }
+
+    .count {
+        font-size: 12px;
+        color: var(--grayColor);
+    }
+}
+
+.cargo:first-child {
+    border-top-width: 0;
+}
+
+.drafts {
+    max-width: 100%;
+    overflow: auto;
+    border-radius: 4px;
+    position: relative;
+
+    table {
+        max-width: 100%;
+        border-top-width: 0 !important;
+        border-bottom: 1px solid var(--borderColor);
+
+        tr {
+            th {
+                text-align: right;
+                white-space: nowrap;
+                padding: 1.25rem 1rem;
+                background-color: var(--backgroundColor);
+                border-top: 1px solid var(--borderColor);
+            }
+
+            th:first-child {
+                border-radius: 0 4px 0 0;
+                border-right: 1px solid var(--borderColor);
+            }
+
+            th:last-child {
+                border-radius: 4px 0 0 0;
+                border-left: 1px solid var(--borderColor);
+            }
+
+            th.plate {
+                text-align: center;
+            }
+
+            td {
+                padding: 0.75rem 1rem;
+                border-top: 1px solid var(--borderColor);
+
+                .code {
+                    display: flex;
+                    align-items: center;
+                    column-gap: 0.5rem;
+
+                    cursor: pointer;
+
+                    mat-icon {
+                        font-size: 24px !important;
+                    }
+
+                    .en {
+                        font-weight: 500;
+                        white-space: nowrap;
+                    }
+                }
+
+                ngx-helper-plate {
+                    display: block;
+                    width: 125px;
+
+                    ::ng-deep .ngx-helper-plate-right {
+                        flex: 1;
+                        text-align: center;
+                    }
+
+                    ::ng-deep .ngx-helper-plate-left {
+                        flex: 0.75;
+                        text-align: center;
+                    }
+                }
+            }
+
+            td:first-child {
+                border-right: 1px solid var(--borderColor);
+            }
+
+            td:last-child {
+                border-left: 1px solid var(--borderColor);
+            }
+
+            th.frozen,
+            td.frozen {
+                position: sticky;
+                right: 0;
+                z-index: 1;
+                background-color: var(--backgroundColor);
+            }
+
+            td.frozen {
+                background-color: rgb(247, 247, 247);
+            }
+        }
+    }
+}
+
+.selected {
+    font-weight: 500;
+    padding: 1.25rem 1rem;
+    background-color: rgb(245, 245, 245);
+    border-radius: 4px 4px 0 0;
+    border-bottom: 2px solid var(--borderColor);
+    color: var(--grayColor);
+}

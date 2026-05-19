@@ -1,0 +1,146 @@
+.not-served {
+    display: flex;
+    align-items: center;
+
+    position: relative;
+
+    font-size: 12px;
+    color: var(--warnColor);
+    border-radius: 0 0 4px 4px;
+    border-top: 1px solid var(--borderColor);
+
+    .background {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+
+        opacity: 0.05;
+        background-color: var(--warnColor);
+    }
+
+    .content {
+        flex: 1;
+        text-align: justify;
+        padding: 1rem;
+    }
+
+    button {
+        margin-left: 1rem;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .not-served {
+        flex-direction: column;
+
+        button {
+            width: 100%;
+            margin-left: 0;
+        }
+    }
+}
+
+.good {
+    display: flex;
+    align-items: center;
+
+    padding-left: 0.5rem;
+    border-top: 1px solid var(--borderColor);
+
+    .header {
+        flex: 1;
+        padding: 0.75rem 1rem;
+
+        .serving {
+            font-size: 12px;
+            color: var(--grayColor);
+        }
+    }
+
+    .usage {
+        cursor: pointer;
+        padding: 0.75rem 0;
+    }
+
+    .usage.no-specified {
+        font-size: 10px;
+        font-style: italic;
+        color: var(--grayColor);
+    }
+
+    button {
+        min-width: 46px;
+    }
+}
+
+.good.first {
+    border-top-width: 0;
+}
+
+.empty {
+    padding: 3rem 0;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--grayColor);
+}
+
+.logs {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.5rem;
+
+    margin-top: 0.5rem;
+
+    .log {
+        display: flex;
+        align-items: center;
+        column-gap: 0.5rem;
+
+        padding: 0 1rem;
+        border-radius: 4px;
+        border: 1px solid var(--borderColor);
+
+        .title {
+            width: 125px;
+            font-weight: 500;
+        }
+
+        .data {
+            flex: 1;
+            padding: 0.75rem 0;
+
+            .date {
+                opacity: 0.5;
+                font-size: 12px;
+            }
+
+            .user {
+                font-weight: 400;
+            }
+
+            .changes {
+                font-size: 12px;
+                margin-top: 0.5rem;
+
+                .change {
+                    display: flex;
+                    align-items: center;
+                    column-gap: 0.5rem;
+
+                    .title {
+                        width: 100px;
+                    }
+                }
+            }
+
+            .description {
+                padding-top: 0.5rem;
+                font-size: 12px;
+                text-align: justify;
+            }
+        }
+    }
+}

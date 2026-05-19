@@ -1,0 +1,69 @@
+<page-title [title]="title"></page-title>
+
+<page-tab [activeTab]="activeTab" (activeTabChanged)="activeTab = $event">
+    <page-tab-content [title]="'مشخصات ناوگان'" [active]="activeTab === 0">
+        @if (activeTab === 0) {
+        <page-section>
+            <page-section-column>
+                <page-block [blocks]="truckData" [column]="2"> </page-block>
+            </page-section-column>
+            <page-section-column>
+                <page-block [blocks]="draftData" [column]="2"> </page-block>
+            </page-section-column>
+        </page-section>
+
+        <div class="page-seperator"></div>
+        <page-section>
+            <page-section-column>
+                <page-card [title]="'سایر مشخصات'" [icon]="'info'" [padding]="'0'">
+                    <ngx-helper-value [values]="otherValues" [border]="true"></ngx-helper-value>
+                </page-card>
+            </page-section-column>
+            <page-section-column>
+                <page-card [title]="'راننده'" [icon]="'airline_seat_recline_normal'" [padding]="'0'">
+                    <ngx-helper-value [values]="driverValues" [border]="true"></ngx-helper-value>
+                </page-card>
+            </page-section-column>
+        </page-section>
+
+        <!-- DRAFT -->
+        @if (!draftLoading && draftReport.draft.count > 0) {
+        <div class="page-seperator"></div>
+        <draft-monthly-chart
+            [first]="draftReport.draft.first"
+            [last]="draftReport.draft.last"
+            [data]="draftReport.daily"
+        ></draft-monthly-chart>
+        } }
+    </page-tab-content>
+    <page-tab-content [title]="'ویرایش مشخصات'" [active]="activeTab === 1">
+        @if (activeTab === 1) {
+        <truck-update [truck]="truck" (updated)="setTruck($event)" (canceled)="activeTab = 0"></truck-update>
+        }
+    </page-tab-content>
+    <page-tab-content [title]="'تغییر پلاک'">
+        @if (activeTab === 2) {
+        <truck-update-plate [truck]="truck" (updated)="setTruck($event)" (canceled)="activeTab = 0"></truck-update-plate>
+        }
+    </page-tab-content>
+    <page-tab-content [title]="'تغییر مالک'">
+        @if (activeTab === 3) {
+        <truck-update-owner
+            [truck]="truck"
+            [owners]="owners"
+            (updated)="setTruck($event)"
+            (canceled)="activeTab = 0"
+        ></truck-update-owner>
+        }
+    </page-tab-content>
+    <page-tab-content [title]="'تغییر راننده'">
+        @if (activeTab === 4) {
+        <truck-update-driver [truck]="truck" (updated)="setTruck($event)" (canceled)="activeTab = 0"></truck-update-driver>
+        }
+    </page-tab-content>
+    <page-tab-content [title]="'بارهای مرتبط'">
+        @if (activeTab === 5) {
+        <truck-info-cargo [truck]="truck"></truck-info-cargo>
+        }
+    </page-tab-content>
+</page-tab>

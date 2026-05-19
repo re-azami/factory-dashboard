@@ -1,0 +1,40 @@
+@if (loading) { <ngx-helper-loader></ngx-helper-loader> } @else {
+<div class="logs">
+    @for (log of logs; track $index) {
+    <ngx-helper-list [id]="'ID'" [data]="log">
+        <ng-container ngx-helper-list-icon>
+            <mat-icon [color]="'primary'">{{ loadActionInfo[log.action].icon }}</mat-icon>
+        </ng-container>
+        <ng-container ngx-helper-list-data>
+            <div class="log">{{ loadActionInfo[log.action].title }}</div>
+            <div class="date">{{ log.date | ngxHelperJalali : { format: 'DATE' } }}</div>
+        </ng-container>
+        <ng-container ngx-helper-list-extra>
+            <div class="user">
+                <div class="name">{{ log.user?.name || 'سیستم' }}</div>
+                <div class="date">{{ log.date | ngxHelperJalali : { format: 'H:I' } }}</div>
+            </div>
+            <!-- CHANGES -->
+            @if (log.changes.length > 0) {
+            <div class="changes">
+                @for (change of log.changes; track $index) {
+                <div class="change">
+                    <div class="title page-overflow">{{ change.title }}:</div>
+                    <div class="value" [class.empty]="change.initial === null">{{ change.initial || 'مشخص نشده' }}</div>
+                    <mat-icon>keyboard_double_arrow_left</mat-icon>
+                    <div class="value" [class.empty]="change.changed === null">{{ change.changed || 'مشخص نشده' }}</div>
+                </div>
+                }
+            </div>
+            }
+            <!-- DESCRIPTION -->
+            @if (log.description) {
+            <div class="description" [innerHTML]="log.description | ngxHelperMultiLine"></div>
+            }
+        </ng-container>
+    </ngx-helper-list>
+    } @empty {
+    <div class="page-comment">گزارش تغییرات ثبت نشده است.</div>
+    }
+</div>
+}

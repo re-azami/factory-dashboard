@@ -1,0 +1,30 @@
+<page-title [title]="title"></page-title>
+
+@if (categories.length === 0) {
+<!-- NO CATEGORY -->
+<div class="page-comment">گروه ثبت نشده است.</div>
+} @else {
+<!-- NO STOCK -->
+@if (total === 0) {
+<div class="page-comment">کالا ثبت نشده است.</div>
+} @else {
+
+<page-section>
+    <!-- PARENTS -->
+    <page-section-column [sticky]="true" [flex]="0.75">
+        @if (parents.length !== 0) {
+        <parents [parents]="parents" [route]="getCategoryRoute"></parents>
+        <div class="page-seperator"></div>
+        }
+        <div class="current">
+            <div class="title">{{ warehouseQuestion[this.parents.length].title }}</div>
+            <mat-icon [color]="'primary'">keyboard_double_arrow_left</mat-icon>
+        </div>
+    </page-section-column>
+
+    <!-- CATEGORIES -->
+    <page-section-column>
+        <list [list]="list" [loading]="false" [data]="items"></list>
+    </page-section-column>
+</page-section>
+} }

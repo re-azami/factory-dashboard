@@ -1,0 +1,24 @@
+<page-title [(page)]="page" [title]="title" (paramChanged)="loadList($event)"></page-title>
+
+<page-section>
+    <page-section-column [sticky]="true" [width]="300">
+        <page-card [title]="data.title" [icon]="loadAttachmentInfo[attachment].icon" [padding]="'0'">
+            <ngx-helper-value [values]="values" [width]="65"></ngx-helper-value>
+        </page-card>
+    </page-section-column>
+    <page-section-column>
+        <!-- CARGO LETTER -->
+        @if (attachment === 'CARGO') {
+        <attachment-cargo-letter [cargo]="cargo"></attachment-cargo-letter>
+        <div class="page-seperator"></div>
+        }
+
+        <list
+            [list]="list"
+            [loading]="loading"
+            [data]="attachments"
+            [pagination]="pagination"
+            (pageChanged)="page = $event"
+        ></list>
+    </page-section-column>
+</page-section>

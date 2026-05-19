@@ -1,0 +1,26 @@
+content.page-list {
+    margin: 0;
+}
+
+.log {
+    flex: 1;
+    font-size: 12px;
+    color: var(--primaryColor);
+    font-weight: 600;
+}
+
+.date {
+    font-size: 11px;
+    color: var(--grayColor);
+}
+
+.user {
+    display: flex;
+    align-items: center;
+    column-gap: 0.5rem;
+    font-size: 11px;
+
+    .name {
+        flex: 1;
+    }
+}

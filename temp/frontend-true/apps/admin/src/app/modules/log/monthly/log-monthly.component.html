@@ -1,0 +1,15 @@
+<page-title [title]="title" (calendarChanged)="loadReport($event)"></page-title>
+
+@if (!loading) { @if (request === 0) {
+<div class="page-comment">گزارش ثبت نشده است.</div>
+} @else {
+<page-section>
+    <page-section-column><page-block [blocks]="blocks[0]" [column]="1"></page-block></page-section-column>
+    <page-section-column><page-block [blocks]="blocks[1]" [column]="2"></page-block></page-section-column>
+</page-section>
+
+<div class="page-seperator"></div>
+<page-card [title]="'نمودار ماهانه'" [padding]="'0'">
+    <div echarts class="page-chart" [options]="chart"></div>
+</page-card>
+} }

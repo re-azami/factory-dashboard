@@ -1,0 +1,12 @@
+@if (loading) {
+<ngx-helper-loader></ngx-helper-loader>
+} @else {
+<div class="description">
+    با توجه به اینکه نوع بار مرتبط با این حواله
+    <span class="color-warn">بار {{ loadCargoInfo[draft.cargo.type].title }}</span> انتخاب شده است. برای تغییر بار فقط
+    می‌توانید بارهای دارای همین نوع بار را انتخاب کنید. در صورتی که نوع بار اشتباه انتخاب شده است باید این حواله را لغو کرده
+    و حواله جدید در سیستم ثبت کنید.
+</div>
+
+<ngx-form [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form>
+}

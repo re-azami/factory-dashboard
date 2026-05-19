@@ -1,0 +1,31 @@
+@if (index !== undefined && center) {
+<ngx-helper-box [title]="'ایستگاه ' + (index + 1).toString()" [padding]="0" [@box]>
+    <div class="box">
+        @for (l of center.locations; track $index) { @if (!location || location.id === l.id) {
+        <table class="locations" [cellPadding]="0" [cellSpacing]="0">
+            <tr>
+                <th>مکان</th>
+                <th>فاصله</th>
+                <th>زمان</th>
+            </tr>
+            <tr>
+                <td>{{ l.title }}</td>
+                <td>{{ l.distance | number }}</td>
+                <td>{{ l.time | ngxHelperDuration }}</td>
+            </tr>
+        </table>
+        <div class="passengers">
+            @for (passenger of l.passengers; track $index) {
+            <div class="passenger">
+                <mat-icon color="primary">{{ transportPassengerInfo[passenger.type].icon }}</mat-icon>
+                @if (passenger.code) {
+                <div class="code en">{{ passenger.code }}</div>
+                }
+                <div class="name">{{ passenger.name }}</div>
+            </div>
+            }
+        </div>
+        } }
+    </div>
+</ngx-helper-box>
+}

@@ -1,0 +1,9 @@
+@if (!loading) {
+<page-title [title]="title" (paramChanged)="loadList($event)"></page-title>
+
+@if (categories.length === 0) {
+<!-- NO CATEGORY -->
+<div class="page-comment">گروه ثبت نشده است.</div>
+} @else {
+<list [list]="view === 'KEY' ? kList : tList" [loading]="loading" [data]="data"></list>
+} }

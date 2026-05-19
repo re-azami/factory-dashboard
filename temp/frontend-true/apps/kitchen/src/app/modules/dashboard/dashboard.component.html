@@ -1,0 +1,108 @@
+<div class="page-seperator"></div>
+<page-section>
+    <page-section-column>
+        @if (!count.loading) {
+        <page-block [blocks]="count.blocks" [column]="2"></page-block>
+        <div class="page-seperator"></div>
+        <page-card [title]="'وعده‌های غذایی'" [icon]="'kebab_dining'" [padding]="'0'" [option]="countOption">
+            <div class="meal-data">
+                <div class="meals">
+                    <div class="meal header">
+                        <div class="color"></div>
+                        <div class="title">وعده</div>
+                        @if (!deviceSize.isMobile) {
+                        <div class="count">سرو</div>
+                        }
+                        <div class="serving">غذا</div>
+                    </div>
+
+                    @for (meal of kitchenMealList; track $index) {
+                    <div class="meal">
+                        <div class="color" [style.background-color]="kitchenMealInfo[meal].color"></div>
+                        <div class="title">{{ kitchenMealInfo[meal].title }}</div>
+                        @if (!deviceSize.isMobile) {
+                        <div class="count">{{ count.meals[meal].count | number }}</div>
+                        }
+                        <div class="serving">{{ count.meals[meal].serving | number }}</div>
+                    </div>
+                    }
+                </div>
+                <div class="meal-chart">
+                    <div class="chart" echarts [options]="count.chart"></div>
+                </div>
+            </div>
+        </page-card>
+        }
+    </page-section-column>
+
+    <!-- CALENDAR -->
+    @if (!calendar.loading) {
+    <page-section-column>
+        <page-card
+            [title]="'برنامه غذایی هفتگی'"
+            [buttons]="calendarButtons"
+            [description]="this.calendar.period | ngxHelperPeriod"
+            [padding]="'0'"
+        >
+            <table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+                <tr>
+                    <th class="week">&nbsp;</th>
+                    <th class="date">&nbsp;</th>
+                    @for (meal of kitchenMealList; track $index) {
+                    <th class="meal">{{ kitchenMealInfo[meal].title }}</th>
+                    }
+                </tr>
+                @for (day of calendar.days; track $index; let dayIndex = $index) {
+                <tr>
+                    <td class="week">{{ (day.date | ngxHelperJalali : { format: 'W' }).substring(0, 1) }}</td>
+                    <td class="date">{{ day.date | ngxHelperJalali : { format: 'd N' } }}</td>
+                    @for (meal of kitchenMealList; track $index) {
+                    <td
+                        class="meal"
+                        [class.current]="calendarMeal.index === dayIndex && calendarMeal.meal === meal"
+                        [class.empty]="!day.meals[meal]"
+                        [class.served]="!!day.meals[meal]?.isServed"
+                        [class.link]="!!day.meals[meal] && servingAccess"
+                        [routerLink]="!!day.meals[meal] && servingAccess ? ['/calendar', day.meals[meal].id] : null"
+                    >
+                        <!-- CURRENT MEAL     -->
+                        @if (calendarMeal.index === dayIndex && calendarMeal.meal === meal) {
+                        <div class="current"></div>
+                        }
+                        {{ day.meals[meal]?.recipe?.title || '.' }}
+                    </td>
+                    }
+                </tr>
+                }
+            </table>
+        </page-card>
+    </page-section-column>
+    }
+</page-section>
+
+<!-- SERVING -->
+@if (!serving.loading) {
+<div class="page-seperator"></div>
+<page-card [title]="'غذای سرو شده'" [icon]="'dining'" [padding]="'0'">
+    <!-- DESKTOP -->
+    @if (!deviceSize.isMobile) {
+    <div echarts class="page-chart" [options]="serving.chartDesktop"></div>
+    }
+    <!-- MOBILE -->
+    @if (deviceSize.isMobile) {
+    <div echarts class="page-chart" [options]="serving.chartMobile"></div>
+    }
+</page-card>
+
+}
+
+<!-- INVENTORY -->
+@if (!inventory.loading && inventory.blocks.length>0) {
+<div class="page-seperator"></div>
+<div class="page-section">موجودی انبار</div>
+<div class="page-seperator"></div>
+<page-block
+    [blocks]="inventory.blocks"
+    [column]="deviceSize.isMobile ? 2 : inventory.blocks.length > 4 ? 4 : inventory.blocks.length"
+></page-block>
+}

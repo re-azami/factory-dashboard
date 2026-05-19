@@ -1,0 +1,40 @@
+@if (newAlerts.length > 0 || (showAlerts && alerts.length > 0)) {
+<div class="background"></div>
+}
+
+<div class="alerts" [@alerts]="newAlerts.length > 0 || (showAlerts && alerts.length > 0) ? 'show' : 'hide'">
+    <header>
+        <mat-icon class="icon">notifications_active</mat-icon>
+        <div class="title">اعلان‌های سیستمی</div>
+        <button mat-icon-button type="button" (click)="toggleShowAlert()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </header>
+    <content>
+        <div class="container">
+            @for (app of appList; track $index) {
+            <!-- CHECK APP -->
+            @if (hasApp(app)) {
+            <div class="app page-box-shadow">
+                <div class="info">
+                    <mat-icon>{{ appInfo[app].icon }}</mat-icon>
+                    <div class="title">{{ appInfo[app].title }}</div>
+                </div>
+                <div class="alert">
+                    @for (item of getAlerts(); track $index) {
+                    <!-- CHECK APP -->
+                    @if (alertInfo[item.type].app === app) {
+                    <div class="item">
+                        <div class="content">{{ item.alert }}</div>
+                        <div class="date-time">
+                            <div class="date">{{ item.date.create | ngxHelperJalali : { format: 'W، d N Y' } }}</div>
+                            <div class="time">{{ item.date.create | ngxHelperJalali : { format: 'H:I' } }}</div>
+                        </div>
+                    </div>
+                    } }
+                </div>
+            </div>
+            } }
+        </div>
+    </content>
+</div>

@@ -1,0 +1,8 @@
+@for (user of notification.users; track $index) {
+<div class="user">
+    <div class="name">{{ user.name }}</div>
+    <div class="view" [class.no-view]="!user.view">
+        {{ user.view ? (user.view | ngxHelperJalali : { format: 'W، d N Y H:I' }) : 'مشاهده نشده' }}
+    </div>
+</div>
+}

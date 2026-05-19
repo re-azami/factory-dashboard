@@ -1,0 +1,15 @@
+.current {
+    display: flex;
+    align-items: center;
+    column-gap: 1rem;
+
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    border: 1px solid var(--borderColor);
+    background-color: var(--backgroundColor);
+
+    .title {
+        flex: 1;
+        color: var(--primaryColor);
+    }
+}

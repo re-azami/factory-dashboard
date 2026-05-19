@@ -1,0 +1,40 @@
+@if (loading) { <ngx-helper-loader></ngx-helper-loader> } @else {
+<div class="date">
+    <div class="value">{{ date | ngxHelperJalali }}</div>
+    <button mat-button type="button" color="primary" (click)="changeDate()">تغییر تاریخ</button>
+</div>
+
+<!-- EMPTY LIST -->
+@if (transporters.length === 0) {
+<div class="page-comment">حواله مرتبط با باربری ثبت نشده است.</div>
+} @else {
+<table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+    <tr>
+        <th class="checkbox"></th>
+        <th class="title">باربری</th>
+        <th>حواله</th>
+        <th>تناژ</th>
+    </tr>
+    @for (item of transporters; track $index) {
+    <tr class="transporter">
+        <td>
+            <mat-checkbox
+                [checked]="selected.includes(item.id)"
+                color="primary"
+                (change)="setSelected(item.id, transporterCheckbox.checked)"
+                #transporterCheckbox
+            ></mat-checkbox>
+        </td>
+        <td class="title click">{{ item.title }}</td>
+        <td class="click">{{ item.count | number }}</td>
+        <td class="click">{{ item.weight | number }}</td>
+    </tr>
+    }
+</table>
+
+<div class="export">
+    <button mat-flat-button type="button" color="primary" (click)="export()" [disabled]="selected.length === 0">
+        پرینت صورت جلسه باربری
+    </button>
+</div>
+} }

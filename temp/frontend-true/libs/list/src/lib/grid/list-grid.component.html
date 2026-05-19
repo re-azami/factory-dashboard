@@ -1,0 +1,82 @@
+@if (setting) {
+<table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+    <tr class="header page-sticky">
+        <!-- ICON -->
+        @if (setting.hasIcon) {
+        <th class="icons"></th>
+        }
+        <!-- COLUMNS -->
+        @for (column of list.columns; track $index) {
+        <th [ngStyle]="{ 'border-top-right-radius': $index === 0 ? '4px' : '0' }">{{ column.title }}</th>
+        }
+        <!-- ACTIONS -->
+        <th class="actions"></th>
+    </tr>
+
+    <!-- DATA -->
+    @for (item of data; track $index; let row = $index; let odd = $odd; ) {
+    <tr
+        [class.odd]="odd"
+        [class.selected]="openedMenu === row || mouseOver === row"
+        (mouseenter)="mouseOver = row"
+        (mouseleave)="mouseOver = undefined"
+    >
+        <!-- ICON -->
+        @if (setting.hasIcon) {
+        <td class="icons">
+            <mat-icon [color]="setting.icons[$index].color">{{ setting.icons[$index].icon }}</mat-icon>
+        </td>
+        }
+        <!-- COLUMNS -->
+        @for (column of list.columns; track $index) {
+        <td>
+            <list-value
+                [column]="column"
+                [item]="item"
+                [deactive]="$index == setting.titleIndex && setting.deactives.includes(row)"
+            ></list-value>
+        </td>
+        }
+        <!-- ACTIONS -->
+        <td class="actions">
+            <!-- ACTION -->
+            @if (list.action) {
+            <button
+                mat-button
+                [color]="list.action.color || 'primary'"
+                type="button"
+                class="action"
+                (click)="click(item, list.action.action)"
+            >
+                <mat-icon>{{ list.action.icon }}</mat-icon>
+            </button>
+            }
+            <!-- MENU -->
+            <ngx-helper-menu
+                [menu]="getMenu(list, item)"
+                [xPosition]="'before'"
+                (menuOpened)="openedMenu = row"
+                (menuClosed)="openedMenu = undefined"
+            ></ngx-helper-menu>
+        </td>
+    </tr>
+    <!-- DESCRIPTION -->
+    @if (list.description && list.description(item)) {
+    <tr
+        [class.odd]="odd"
+        [class.selected]="openedMenu === row || mouseOver === row"
+        (mouseenter)="mouseOver = row"
+        (mouseleave)="mouseOver = undefined"
+    >
+        @if (setting.hasIcon) {
+        <td class="description"></td>
+        }
+        <td
+            class="description"
+            [colSpan]="list.columns.length + 1"
+            [innerHTML]="list.description(item) | ngxHelperMultiLine"
+        ></td>
+    </tr>
+    } }
+</table>
+}

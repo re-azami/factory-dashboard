@@ -1,0 +1,16 @@
+import { ILoadCargoDTO } from '../../../../dtos';
+
+export interface ILoadCargoSettingCreateRq {
+    readonly approximate: boolean;
+    readonly expire: number;
+    readonly cancel: number;
+    readonly block: boolean;
+    readonly draftParty: boolean;
+    readonly steps: {
+        readonly step: string;
+        readonly status: 'ACTIVE' | 'DEACTIVE';
+        readonly delay: number;
+    }[];
+}
+
+export interface ILoadCargoSettingCreateRs extends ILoadCargoDTO {}

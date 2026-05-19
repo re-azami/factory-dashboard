@@ -1,0 +1,6 @@
+@if (loading) { <ngx-helper-loader></ngx-helper-loader> }
+
+<!-- FORM -->
+@else {
+<ngx-form [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form>
+}

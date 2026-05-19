@@ -1,0 +1,25 @@
+<!-- EMPTY WEIGHT CHANGED -->
+@if (emptyChanged && !!draft.weight.empty) {
+<div class="empty">
+    <div class="weight">
+        <div class="title">توزین ناوگان</div>
+        <div class="value">{{ draft.weight.empty | number }}</div>
+    </div>
+    <div class="comment">با توجه به تغییر وزن خالی، مقدار توزین ناوگان نیز در سیستم تغییر داده خواهد شد.</div>
+</div>
+}
+
+<!-- STEP WEIGHT_EMPTY -->
+@if (hasWeightEmptyStep) {
+<div class="empty-step">مرحله توزین خالی برای این حواله فعال است.</div>
+} @else if (!showEmptyWeight) {
+<div class="empty-step">
+    مرحله توزین خالی برای این بار فعال نیست اما با توجه به اینکه توزین خالی ناوگان ثبت نشده است. مرحله توزین خالی برای این
+    حواله فعال می‌شود.
+</div>
+}
+
+<div class="form">
+    <ngx-helper-plate [plate]="draft.plate.split('-')"></ngx-helper-plate>
+    <ngx-form [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form>
+</div>

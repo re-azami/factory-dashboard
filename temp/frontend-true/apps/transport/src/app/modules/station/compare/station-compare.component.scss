@@ -1,0 +1,100 @@
+ngx-helper-loading {
+    height: 100%;
+}
+
+content {
+    display: flex;
+    width: 100%;
+    height: 100%;
+
+    .menu {
+        width: 200px;
+        height: 100%;
+        max-height: 100%;
+        overflow: auto;
+
+        .buttons {
+            display: flex;
+            align-items: center;
+
+            button {
+                min-width: auto;
+                padding: 0 1rem;
+
+                mat-icon {
+                    font-size: 24px !important;
+                    font-weight: 500 !important;
+                }
+            }
+
+            .seperator {
+                flex: 1;
+            }
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+
+            margin-top: 1rem;
+            background-color: var(--backgroundColor);
+
+            .title {
+                flex: 1;
+                padding: 1rem;
+                font-weight: 500;
+                color: var(--primaryColor);
+            }
+
+            button {
+                min-width: auto;
+            }
+        }
+
+        mat-select {
+            margin: 1rem;
+            width: calc(100% - 2rem);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            border: 1px solid var(--borderColor);
+        }
+
+        .stations {
+            .station {
+                display: flex;
+                align-items: center;
+                column-gap: 0.5rem;
+
+                cursor: pointer;
+                padding: 0.75rem 0.5rem;
+                border-top: 1px solid var(--borderColor);
+
+                mat-icon {
+                    font-size: 20px !important;
+                }
+
+                .title {
+                    flex: 1;
+
+                    color: var(--primaryColor);
+                }
+
+                .color {
+                    width: 16px;
+                    height: 16px;
+                    border-radius: 4px;
+                }
+            }
+
+            .station:hover {
+                background-color: var(--backgroundColor);
+            }
+        }
+    }
+
+    .map {
+        width: calc(100% - 200px);
+        height: 100%;
+        background-color: #fff;
+    }
+}

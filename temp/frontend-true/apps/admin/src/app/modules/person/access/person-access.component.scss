@@ -1,0 +1,44 @@
+.center {
+    margin: 1rem 0;
+    border-radius: 4px;
+    border: 1px solid var(--borderColor);
+    padding: 0.75rem 1rem;
+    font-size: 12px;
+    background-color: var(--backgroundColor);
+    color: var(--primaryColor);
+}
+
+.actions {
+    padding: 1rem;
+    border-radius: 4px;
+    border: 1px solid var(--borderColor);
+
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.75rem;
+
+    .action {
+        display: flex;
+        font-size: 11px;
+
+        div.access {
+            width: 90px;
+            font-weight: 500;
+        }
+
+        ul.access {
+            flex: 1;
+            list-style: none;
+        }
+    }
+}
+
+:host ::ng-deep ngx-input-multi-select .options {
+    height: 230px !important;
+}
+
+@media only screen and (max-width: 600px) {
+    :host ::ng-deep ngx-input-multi-select .options {
+        height: auto !important;
+    }
+}

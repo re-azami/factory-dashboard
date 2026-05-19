@@ -1,0 +1,12 @@
+<ngx-form [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)" (ngxChange)="ngxChange($event)">
+    <div [ngClass]="{ duration: true, error: error, empty: !error && !period }">
+        <div class="title">فاصله زمانی:</div>
+        <div class="value">
+            @if (!error && !period) { تاریخ‌ها مشخص نشده‌اند. } @else {
+            <!-- DURATION ERROR -->
+            @if (error) {تاریخ‌ها به صورت صحیح مشخص نشده‌اند.}
+            <!-- DURATION -->
+            @if (period) { {{ period | ngxHelperDuration : { format: 'DAY' } }} روز } }
+        </div>
+    </div>
+</ngx-form>

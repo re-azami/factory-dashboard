@@ -1,0 +1,70 @@
+<content>
+    <div class="menu">
+        <div class="buttons">
+            <button mat-button type="button" color="primary" (click)="save()">
+                <mat-icon>save</mat-icon>
+            </button>
+            <div class="seperator"></div>
+            <button mat-button type="button" color="primary" [routerLink]="['/station', 'map', station.id]">
+                <mat-icon color="warn">cancel</mat-icon>
+            </button>
+        </div>
+
+        <div class="header">
+            <div class="title">{{ station.title }}</div>
+        </div>
+        <div class="counts">
+            <div class="count">
+                <div class="title">ایستگاه</div>
+                <div class="value">{{ station.centers.length | number }}</div>
+            </div>
+            <div class="count">
+                <div class="title">مکان</div>
+                <div class="value">{{ station.count.location | number }}</div>
+            </div>
+            <div class="count">
+                <div class="title">مسافر</div>
+                <div class="value">{{ station.count.passenger | number }}</div>
+            </div>
+        </div>
+
+        @if (selected) {
+        <div class="header">
+            <div class="title">ایستگاه {{ selected.index + 1 }}</div>
+            <button mat-button type="button" color="primary" (click)="centerCoordinates(selected.center)">
+                <mat-icon>location_on</mat-icon>
+            </button>
+        </div>
+        <div class="locations">
+            @for (location of selected.center.locations; track $index) {
+            <div class="location" [class.selected]="selected.location && selected.location.id === location.id">
+                <div class="title page-overflow">{{ location.title }}</div>
+                <div class="passengers">{{ location.passengers.length | number }}</div>
+                @if (selected.center.locations.length > 1) {
+                <button
+                    mat-button
+                    type="button"
+                    color="primary"
+                    (click)="locationCenter(selected.index, selected.center, location)"
+                >
+                    <mat-icon>group_work</mat-icon>
+                </button>
+                }
+                <button
+                    mat-button
+                    type="button"
+                    color="primary"
+                    (click)="locationMove(selected.index, selected.center, location)"
+                >
+                    <mat-icon>move_up</mat-icon>
+                </button>
+            </div>
+            }
+        </div>
+        }
+    </div>
+
+    <div id="map" class="map"></div>
+
+    <tooltip-center [index]="selected?.index" [center]="selected?.center" [location]="selected?.location"></tooltip-center>
+</content>

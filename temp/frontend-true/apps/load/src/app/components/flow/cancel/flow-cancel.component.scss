@@ -1,0 +1,20 @@
+:host {
+    position: relative;
+
+    ngx-helper-plate {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: calc(40% - 1rem);
+
+        ::ng-deep .ngx-helper-plate-right {
+            flex: 1;
+            text-align: center;
+        }
+
+        ::ng-deep .ngx-helper-plate-left {
+            flex: 0.75;
+            text-align: center;
+        }
+    }
+}

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+    <head>
+        <meta charset="utf-8" />
+        <title>PERSONNEL</title>
+        <base href="/" />
+        <meta name="google" content="notranslate" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" type="image/x-icon" href="favicon.ico" />
+        <link rel="manifest" href="manifest.webmanifest" />
+        <meta name="theme-color" content="#1d5b74" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&amp;display=swap" rel="stylesheet" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100;200;300;400;500;600;700;800;900&display=swap"
+            rel="stylesheet"
+        />
+
+        <style>
+            div.app-loading {
+                position: fixed;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 10001;
+
+                background-color: rgb(29, 91, 116);
+                background-image: url('./assets/images/loading.gif');
+                background-repeat: no-repeat;
+                background-position: 50% calc(100vh - 5rem);
+            }
+        </style>
+    </head>
+    <body class="mat-typography">
+        <app-root><div class="app-loading"></div></app-root>
+        <noscript>Please enable JavaScript to continue using this application.</noscript>
+    </body>
+</html>

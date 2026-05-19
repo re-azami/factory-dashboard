@@ -1,0 +1,24 @@
+<page-card [title]="'مشخصات بار'" [icon]="'terrain'" [padding]="'0'">
+    <page-section>
+        <page-section-column><page-block [blocks]="blocks[0]" [border]="false"></page-block></page-section-column>
+        <page-section-column><page-block [blocks]="blocks[1]" [border]="false"></page-block></page-section-column>
+    </page-section>
+</page-card>
+
+<div class="page-seperator"></div>
+<page-card [title]="'پایان اتوماتیک بار'" [icon]="'done_all'" [padding]="'1rem 1rem 2rem 1rem'">
+    <div class="comment">
+        در صورت فعال کردن این گزینه، پس از ثبت نهایی هر حواله مربوط به بار، وزن باقیمانده بار بررسی می‌شود و در صورتی که این
+        وزن کمتر از مقدار مشخص شده در گزینه زیر باشد، وضعیت بار به صورت اتوماتیک به حالت پایان یافته تغییر داده می‌شود.
+        <br /><br />
+        در صورتی که در زمان ثبت پایان بار، حواله فعال مرتبط با بار در سیستم ثبت شده باشد. مراحل فرایند مربوط به حواله بدون
+        توجه به وضعیت بار، ادامه پیدا می‌کند.
+    </div>
+
+    <!-- TONNAGE -->
+    @if (!cargo.tonnage) {
+    <div class="page-comment">برای فعال سازی پایان اتوماتیک بار، باید مقدار تناژ بار مشخص شده باشد.</div>
+    } @else {
+    <ngx-form-responsive [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form-responsive>
+    }
+</page-card>

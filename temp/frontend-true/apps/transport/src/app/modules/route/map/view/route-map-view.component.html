@@ -1,0 +1,125 @@
+<content>
+    <div class="menu">
+        <div class="buttons">
+            <button mat-button type="button" color="primary" [routerLink]="['/route', 'attach', route.id]">
+                <mat-icon>add_box</mat-icon>
+            </button>
+            <button
+                mat-button
+                type="button"
+                color="primary"
+                [routerLink]="['/route', 'edit', route.id, pathIndex?.toString()]"
+                [disabled]="pathIndex === null"
+            >
+                <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-button type="button" color="primary" (click)="reversePath()" [disabled]="pathIndex === null">
+                <mat-icon>repeat</mat-icon>
+            </button>
+            <button mat-button type="button" color="primary" (click)="setColors()">
+                <mat-icon>palette</mat-icon>
+            </button>
+
+            <div class="seperator"></div>
+            <button mat-button type="button" color="warn" [routerLink]="['/route']">
+                <mat-icon>cancel</mat-icon>
+            </button>
+        </div>
+
+        <div class="header">
+            <div class="title">{{ route.title }}</div>
+        </div>
+        <div class="counts">
+            <div class="count">
+                <div class="title">مسیر</div>
+                <div class="value">{{ route.count.path | number }}</div>
+            </div>
+            <div class="count">
+                <div class="title">ایستگاه</div>
+                <div class="value">{{ route.count.center | number }}</div>
+            </div>
+            <div class="count">
+                <div class="title">مکان</div>
+                <div class="value">{{ route.count.location | number }}</div>
+            </div>
+            <div class="count">
+                <div class="title">مسافر</div>
+                <div class="value">{{ route.count.passenger | number }}</div>
+            </div>
+        </div>
+
+        <mat-select [(value)]="pathIndex" (valueChange)="setPathIndex()">
+            <!-- FULL VIEW -->
+            @if (route.paths.length > 1) { <mat-option [value]="null"></mat-option> }
+            <!-- PATH -->
+            @for (path of route.paths; track $index) {
+            <mat-option [ngStyle]="{ color: path.color }" [value]="$index"> مسیر {{ $index + 1 }} </mat-option>
+            }
+        </mat-select>
+
+        @if (pathIndex !== null) {
+        <div class="vehicle">
+            <mat-icon>{{ transportVehicleInfo[route.paths[pathIndex].vehicle.type].icon }}</mat-icon>
+            <div class="info">
+                <div class="title">{{ route.paths[pathIndex].vehicle.title }}</div>
+                <div class="parking">پارکینگ: {{ route.paths[pathIndex].parking.title }}</div>
+                <div class="capacity">ظرفیت: {{ route.paths[pathIndex].vehicle.capacity | number }} نفر</div>
+                <div class="counts">
+                    <div class="count">
+                        <div class="title">زمان</div>
+                        <div class="value">{{ route.paths[pathIndex].time | ngxHelperDuration }}</div>
+                    </div>
+                    <div class="count">
+                        <div class="title">مسافر</div>
+                        <div class="value">{{ route.paths[pathIndex].passenger | number }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tools">
+            <button mat-button color="primary" (click)="calculate()">
+                <mat-icon>straighten</mat-icon>
+            </button>
+
+            <ngx-helper-menu [menu]="exportMenu" [icon]="'download'"></ngx-helper-menu>
+        </div>
+
+        <div class="centers">
+            <div
+                class="center-info center-parking"
+                [class.center-selected]="selectedPathParking === 'ORIGIN'"
+                (click)="setParkingOrigin()"
+            >
+                <div class="title">پارکینگ: {{ route.paths[pathIndex].parking.title }}</div>
+            </div>
+            @for (center of route.paths[pathIndex].centers; track $index) {
+            <div
+                class="center-info"
+                [class.center-selected]="selectedPathCenter && selectedPathCenter.centerIndex === $index"
+                (click)="selectCenter($index)"
+            >
+                <div class="title">ایستگاه {{ $index + 1 | number }}</div>
+                <div class="passenger">{{ center.passenger.total | number }}</div>
+                <div class="time">{{ center.time.total | ngxHelperDuration }}</div>
+            </div>
+            }
+            <div
+                class="center-info center-parking"
+                [class.center-selected]="selectedPathParking === 'DESTINATION'"
+                (click)="setParkingDestination()"
+            >
+                <div class="title">@if (isEsm) { سایت {{ applicationTitle }} } @else { مقصد }</div>
+                <div class="time">{{ route.paths[pathIndex].time | ngxHelperDuration }}</div>
+            </div>
+        </div>
+        }
+    </div>
+
+    <div id="map" class="map"></div>
+
+    <tooltip-path
+        [path]="{ index: selectedPathCenter?.pathIndex, path: selectedPathCenter?.path }"
+        [center]="{ index: selectedPathCenter?.centerIndex, center: selectedPathCenter?.center }"
+    ></tooltip-path>
+</content>

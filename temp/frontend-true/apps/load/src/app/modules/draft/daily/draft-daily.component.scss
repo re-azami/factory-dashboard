@@ -1,0 +1,270 @@
+.header {
+    display: flex;
+    align-items: center;
+    column-gap: 0.5rem;
+
+    position: sticky;
+    top: 0;
+
+    padding: 0.5rem;
+    background-color: var(--whiteColor);
+    z-index: 2;
+
+    .select {
+        flex: 1;
+        background-color: var(--backgroundColor);
+
+        mat-form-field {
+            height: 75px;
+            width: 100%;
+
+            mat-select {
+                width: 100%;
+            }
+        }
+    }
+
+    .item {
+        flex: 0.75;
+        height: 75px;
+        background-color: var(--backgroundColor);
+        border-bottom: 2px solid var(--backgroundColor);
+        padding: 0 1rem;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        .title {
+            font-size: 13px;
+            padding-bottom: 0.5rem;
+        }
+
+        .value {
+            font-weight: 500;
+            font-size: 18px;
+
+            .unit {
+                font-size: 15px;
+            }
+        }
+    }
+
+    .click {
+        cursor: pointer;
+    }
+
+    .active {
+        color: rgb(0, 0, 0);
+        background-color: var(--backgroundColor);
+    }
+
+    .delay {
+        color: rgb(255, 100, 0);
+        background-color: rgba(255, 100, 0, 0.1);
+        border-bottom-color: transparent;
+    }
+
+    .cancel {
+        color: var(--warnColor);
+        background-color: rgba(var(--warnColorRGB), 0.1);
+        border-bottom-color: transparent;
+    }
+
+    .done {
+        flex: 1.25;
+        color: var(--primaryColor);
+        background-color: rgba(var(--primaryColorRGB), 0.1);
+        border-bottom-color: transparent;
+    }
+
+    .view {
+        border-bottom: 2px solid var(--primaryColor);
+    }
+}
+
+:host ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+}
+
+:host ::ng-deep .mdc-floating-label {
+    color: #000 !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    margin-top: 0.75rem !important;
+}
+
+:host ::ng-deep .mat-mdc-select {
+    margin-top: 1rem;
+}
+
+table {
+    width: calc(100% - 1rem);
+    margin: 0 auto 1rem auto;
+    border-right: 1px solid var(--borderColor);
+
+    tr {
+        th {
+            position: sticky;
+            top: calc(75px + 1rem);
+            z-index: 2;
+
+            padding: 1rem 0;
+            background-color: var(--backgroundColor);
+            border-top: 1px solid var(--borderColor);
+            border-left: 1px solid var(--borderColor);
+            border-bottom: 1px solid var(--borderColor);
+        }
+
+        th.setting {
+            padding: 0;
+            width: 50px;
+
+            button {
+                width: 50px;
+                height: 50px;
+                min-width: auto;
+                border-radius: 0;
+            }
+        }
+
+        td {
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid var(--borderColor);
+            border-left: 1px solid var(--borderColor);
+
+            ngx-helper-plate {
+                display: block;
+                width: 125px;
+
+                ::ng-deep .ngx-helper-plate-right {
+                    flex: 1;
+                    text-align: center;
+                }
+
+                ::ng-deep .ngx-helper-plate-left {
+                    flex: 0.75;
+                    text-align: center;
+                }
+            }
+
+            .description {
+                font-size: 11px;
+                text-align: justify;
+
+                .info {
+                    display: flex;
+                    align-items: center;
+                    column-gap: 0.5rem;
+                    text-align: left;
+
+                    .title {
+                        flex: 1;
+                        text-align: right;
+                    }
+                }
+            }
+
+            .cargo-type {
+                font-size: 10px;
+                opacity: 0.5;
+            }
+
+            .plate {
+                display: flex;
+                justify-content: center;
+            }
+        }
+
+        td.code {
+            text-align: center;
+            font-weight: 500;
+            position: relative;
+
+            .draft-code {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                column-gap: 0.5rem;
+                cursor: pointer;
+
+                mat-icon {
+                    font-size: 14px !important;
+                }
+            }
+
+            .steps {
+                display: flex;
+                flex-direction: row-reverse;
+                align-items: center;
+                column-gap: 2px;
+
+                position: absolute;
+                bottom: 2px;
+                left: 2px;
+                right: 2px;
+
+                .step {
+                    flex: 1;
+                    height: 5px;
+                }
+            }
+        }
+
+        td.center {
+            text-align: center;
+        }
+
+        td.weight {
+            font-size: 15px;
+        }
+
+        td.flow {
+            max-width: 250px;
+            border-left-width: 0;
+        }
+
+        td.tools {
+            width: 50px;
+            text-align: center;
+            vertical-align: middle;
+
+            padding: 0;
+            line-height: 0;
+
+            ngx-helper-menu {
+                ::ng-deep button,
+                ::ng-deep mat-icon {
+                    color: rgb(0, 0, 0) !important;
+                }
+            }
+        }
+
+        td.delay {
+            color: rgb(255, 100, 0);
+            background-color: #ffefe5;
+
+            ngx-helper-menu {
+                ::ng-deep button,
+                ::ng-deep mat-icon {
+                    color: rgb(255, 100, 0) !important;
+                }
+            }
+        }
+
+        td.finish {
+            color: var(--primaryColor);
+            background-color: #e8eef1;
+        }
+
+        td.cancel {
+            color: var(--warnColor);
+            background-color: #ffeae8;
+        }
+    }
+
+    tr:nth-child(odd) {
+        background-color: var(--highlightColor);
+    }
+}

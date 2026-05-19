@@ -1,0 +1,57 @@
+<page-title [title]="title"></page-title>
+
+@if (!loading) {
+<page-section>
+    <page-section-column [sticky]="true">
+        <page-card [title]="mentor.name.first + ' ' + mentor.name.last" [icon]="'badge'" [padding]="'0'" [buttons]="buttons">
+            <div class="data">
+                <div class="title">موبایل:</div>
+                <div class="value" [class.en]="mentor.mobile" [class.empty]="!mentor.mobile">
+                    @if (mentor.mobile) {
+                    {{ mentor.mobile | ngxHelperMobile }}
+                    } @else { مشخص نشده است }
+                </div>
+            </div>
+            <div class="data">
+                <div class="title">کد ملی:</div>
+                <div class="value" [class.en]="mentor.nationalCode" [class.empty]="!mentor.nationalCode">
+                    @if (mentor.nationalCode) {
+                    {{ mentor.nationalCode }}
+                    } @else { مشخص نشده است }
+                </div>
+            </div>
+            <div class="data">
+                <div class="title">تاریخ ثبت:</div>
+                <div class="value">{{ mentor.date | ngxHelperJalali }}</div>
+            </div>
+        </page-card>
+
+        @if (mentor.study !== 0) {
+        <div class="page-seperator"></div>
+        <page-block [blocks]="blocks[0]" [column]="1"></page-block>
+        <div class="page-seperator"></div>
+        <page-block [blocks]="blocks[1]" [column]="3"></page-block>
+        <div class="page-seperator"></div>
+        <page-block [blocks]="blocks[2]" [column]="3"></page-block>
+        <div class="page-seperator"></div>
+        <page-block [blocks]="blocks[3]" [column]="2"></page-block>
+
+        <div class="page-seperator"></div>
+        <div class="export">
+            @for (type of exportTypeList; track $index) {
+            <button mat-stroked-button type="button" color="primary" (click)="export(type)">
+                {{ exportTypeInfo[type].title }}
+            </button>
+            }
+        </div>
+        }
+    </page-section-column>
+    <page-section-column [flex]="1.5">
+        @if (mentor.study === 0) {
+        <div class="page-comment">برگزاری دوره ثبت نشده است.</div>
+        } @else {
+        <list [list]="list" [loading]="loading" [data]="studies"></list>
+        }
+    </page-section-column>
+</page-section>
+}

@@ -1,0 +1,40 @@
+<page-title [(page)]="page" [title]="title" (paramChanged)="loadList($event)"></page-title>
+
+@if (!loading) { @if (loading) {
+<ngx-helper-loader></ngx-helper-loader>
+} @else {
+<div class="logs">
+    @for (log of logs; track $index) {
+    <ngx-helper-list [id]="'ID'" [data]="log">
+        <ng-container ngx-helper-list-icon>
+            <mat-icon [fontIcon]="'app_registration'"></mat-icon>
+        </ng-container>
+        <ng-container ngx-helper-list-data>
+            <div class="date">{{ log.date | ngxHelperJalali : { format: 'DATE' } }}</div>
+        </ng-container>
+        <ng-container ngx-helper-list-extra>
+            <div class="containers">
+                @for (container of log.containers; track $index) {
+                <div class="container">
+                    <div class="name mono">{{ container.name }}</div>
+                    <div class="image mono">{{ container.image }}</div>
+                    <div class="status mono">{{ container.status }}</div>
+                </div>
+                }
+            </div>
+        </ng-container>
+    </ngx-helper-list>
+    } @empty {
+    <div class="page-comment">گزارش ثبت نشده است.</div>
+    }
+</div>
+}
+
+<!-- PAGINATION -->
+@if (pagination) {
+<ngx-helper-pagination
+    [current]="pagination.page.current"
+    [total]="pagination.page.total"
+    (page)="page = $event"
+></ngx-helper-pagination>
+} }

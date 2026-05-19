@@ -1,0 +1,232 @@
+.cargo {
+    .cargo-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        height: 90px;
+
+        .type {
+            margin-top: 0.5rem;
+            font-size: 12px;
+            opacity: 0.5;
+        }
+    }
+
+    .cargo-data {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        height: 90px;
+
+        .data {
+            flex: 1;
+            text-align: center;
+
+            padding: 0.75rem 0;
+
+            .title {
+                font-size: 12px;
+            }
+
+            .value {
+                margin-top: 0.75rem;
+                font-weight: 500;
+            }
+        }
+    }
+}
+
+.truck {
+    .plate {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        height: 90px;
+
+        ngx-helper-plate {
+            width: 160px;
+
+            ::ng-deep .ngx-helper-plate-right {
+                flex: 1;
+                text-align: center;
+            }
+
+            ::ng-deep .ngx-helper-plate-left {
+                flex: 0.75;
+                text-align: center;
+            }
+        }
+    }
+
+    .truck-data {
+        display: flex;
+        align-items: center;
+
+        height: 90px;
+
+        .data {
+            flex: 1;
+            text-align: center;
+
+            padding: 0.75rem 0;
+
+            .title {
+                font-size: 12px;
+            }
+
+            .value {
+                margin-top: 0.75rem;
+                font-weight: 500;
+            }
+        }
+    }
+
+    .no-truck {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        height: 90px;
+        text-align: center;
+        font-style: italic;
+    }
+}
+
+.attachments {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.5rem;
+
+    margin-top: 0.5rem;
+
+    .attachment {
+        display: flex;
+        align-items: center;
+        column-gap: 0.5rem;
+
+        padding: 0 1rem;
+        border-radius: 4px;
+        border: 1px solid var(--borderColor);
+
+        mat-icon.icon {
+            opacity: 0.65;
+            font-size: 26px !important;
+            margin-left: 0.75rem !important;
+        }
+
+        .data {
+            width: 0;
+            flex: 1;
+            padding: 0.75rem 0;
+
+            .user-date {
+                opacity: 0.5;
+                font-size: 12px;
+            }
+
+            .title {
+                font-weight: 400;
+            }
+        }
+
+        .size {
+            width: 125px;
+
+            .title {
+                opacity: 0.5;
+                font-size: 12px;
+                font-weight: 400;
+            }
+
+            .value {
+                font-size: 13px;
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .attachments {
+        .attachment {
+            .size {
+                display: none;
+            }
+        }
+    }
+}
+
+.logs {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.5rem;
+
+    margin-top: 0.5rem;
+
+    .log {
+        display: flex;
+        align-items: center;
+        column-gap: 0.5rem;
+
+        padding: 0 1rem;
+        border-radius: 4px;
+        border: 1px solid var(--borderColor);
+
+        .step {
+            width: 125px;
+            font-weight: 500;
+            padding: 0.75rem 0;
+        }
+
+        .updated {
+            color: var(--primaryColor);
+        }
+
+        .canceled {
+            color: var(--warnColor);
+        }
+
+        .data {
+            flex: 1;
+            padding: 0.75rem 0;
+
+            .date {
+                opacity: 0.5;
+                font-size: 12px;
+            }
+
+            .user {
+                font-weight: 400;
+            }
+
+            .changes {
+                font-size: 12px;
+                margin-top: 0.5rem;
+
+                .change {
+                    display: flex;
+                    align-items: center;
+                    column-gap: 0.5rem;
+
+                    .title {
+                        width: 100px;
+                    }
+
+                    .empty {
+                        font-size: 10px;
+                        font-style: italic;
+                    }
+                }
+            }
+
+            .description {
+                padding-top: 0.5rem;
+                font-size: 12px;
+                text-align: justify;
+            }
+        }
+    }
+}

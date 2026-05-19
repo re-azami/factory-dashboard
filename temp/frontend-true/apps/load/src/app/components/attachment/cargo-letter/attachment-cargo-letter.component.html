@@ -1,0 +1,19 @@
+<input type="file" style="display: none" [accept]="uploadMimes.join(',')" (change)="uploadFile($event)" #fileUpload />
+
+<page-card [title]="'نامه ترخیص'" [icon]="'forward_to_inbox'" [buttons]="buttons" [padding]="'0'">
+    @if (!cargo.letter) {
+    <div class="no-letter">مشخص نشده است.</div>
+    } @else {
+    <div class="data">
+        <div class="item">
+            <div class="title">حجم</div>
+            <div class="value">{{ cargo.letter.size | ngxHelperFileSize }}</div>
+        </div>
+        <div class="item">
+            <div class="title">نوع فایل</div>
+            <div class="value en">{{ cargo.letter.mime }}</div>
+        </div>
+    </div>
+    <div class="footer">این فایل در صفحه گزارش بارهای جاری نمایش داده می‌شود و امکان دانلود آن وجود دارد.</div>
+    }
+</page-card>

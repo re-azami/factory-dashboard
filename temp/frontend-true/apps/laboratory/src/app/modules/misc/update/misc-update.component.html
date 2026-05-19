@@ -1,0 +1,10 @@
+<page-title [title]="title"></page-title>
+
+<page-section>
+    <page-section-column [width]="300">
+        <standard [(standard)]="standard"></standard>
+    </page-section-column>
+    <page-section-column>
+        <ngx-form-responsive [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form-responsive>
+    </page-section-column>
+</page-section>

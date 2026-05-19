@@ -1,0 +1,18 @@
+<page-title [title]="title"></page-title>
+
+<page-tab (activeTabChanged)="activeTab = $event" (activeTabChange)="setForm()">
+    <page-tab-content [title]="'تنظیمات عمومی'">
+        @if (activeTab === 0) {
+        <ngx-form-responsive [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form-responsive>
+        }
+    </page-tab-content>
+
+    <!-- CARGO TYPES -->
+    @for (cargo of loadCargoList; track $index) {
+    <page-tab-content [title]="'بار ' + loadCargoInfo[cargo].title">
+        @if (activeTab === $index + 1) {
+        <setting-cargo [cargo]="cargo"></setting-cargo>
+        }
+    </page-tab-content>
+    }
+</page-tab>

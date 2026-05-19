@@ -1,0 +1,38 @@
+:host {
+    header {
+        display: block;
+        border-radius: 4px;
+        border: 1px solid var(--borderColor);
+        background-color: var(--backgroundColor);
+        color: var(--primaryColor);
+
+        margin-top: 1rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .columns {
+        display: flex;
+        align-items: flex-start;
+        column-gap: 1rem;
+    }
+
+    ::ng-deep page-section-column {
+        flex: 1;
+        background-color: #fff;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    :host {
+        .columns {
+            flex-direction: column;
+            column-gap: 0;
+            row-gap: 1rem;
+        }
+
+        ::ng-deep page-section-column {
+            flex: 1;
+            width: 100% !important;
+        }
+    }
+}

@@ -1,0 +1,19 @@
+<div class="info page-box-shadow">
+    <div class="alert">
+        <div class="app">{{ appInfo[alertInfo[alert.type].app].title }}</div>
+        <div class="type">{{ alertInfo[alert.type].title }}</div>
+    </div>
+    <div class="date">{{ alert.date | ngxHelperJalali : { format: 'W، d N Y H:I' } }}</div>
+</div>
+
+<div class="recipients page-box-shadow">
+    @for (recipient of alert.recipients; track $index) {
+    <div class="recipient">
+        <div class="name">{{ recipient.name }}</div>
+        <div class="view">{{ recipient.view ? (recipient.view | ngxHelperJalali : { format: 'W، d N Y H:I' }) : '' }}</div>
+        <div class="duration">
+            {{ recipient.view ? ({ from: alert.date, to: recipient.view } | ngxHelperDuration) : '' }}
+        </div>
+    </div>
+    }
+</div>

@@ -1,0 +1,44 @@
+<page-title [title]="title"></page-title>
+
+<page-card [title]="solid.time.begin | ngxHelperJalali" [icon]="'calendar_month'" [padding]="'0'" [buttons]="buttons">
+    <page-section>
+        <page-section-column>
+            <page-block [blocks]="blocks[0]" [column]="2" [border]="false"></page-block>
+        </page-section-column>
+    </page-section>
+    <page-section>
+        <page-section-column>
+            <page-block [blocks]="blocks[1]" [column]="2" [border]="false"></page-block>
+        </page-section-column>
+        <page-section-column>
+            <page-block [blocks]="blocks[2]" [column]="2" [border]="false"></page-block>
+        </page-section-column>
+    </page-section>
+    <!-- PORTIONS -->
+    @if (solid.cargo && solid.cargo.portions.length > 0) {
+    <div class="portions">
+        <table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+            <tr>
+                <th>بار</th>
+                <th class="info">طرف حساب</th>
+                <th class="info">محموله</th>
+                <th class="center">نسبت</th>
+            </tr>
+            @for (item of solid.cargo.portions; track $index) {
+            <tr>
+                <td>
+                    {{ item.title }}
+                    <div class="type">{{ loadCargoInfo[item.type].title }}</div>
+                </td>
+                <td class="info">{{ item.party?.title || '' }}</td>
+                <td class="info">{{ item.shipment?.title || '' }}</td>
+                <td class="center en">{{ item.proportion }}</td>
+            </tr>
+            }
+        </table>
+    </div>
+    }
+</page-card>
+
+<div class="page-seperator"></div>
+<list [list]="list" [loading]="false" [data]="tests"></list>

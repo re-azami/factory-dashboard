@@ -1,0 +1,148 @@
+<!-- SELECT PLATE -->
+@if (!plate) {
+<ngx-form [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form>
+}
+
+<!-- SELECT CARGO -->
+@if (plate && !cargo) {
+<div class="truck">
+    <page-card
+        [title]="'ناوگان'"
+        [icon]="'local_shipping'"
+        [padding]="'0'"
+        [description]="truck ? '' : 'در سیستم ثبت نشده است'"
+    >
+        <ngx-helper-plate [plate]="plate.split('-')"></ngx-helper-plate>
+        <!-- TRUCK -->
+        @if (truck) {
+        <div class="info">
+            <div class="item">
+                <div class="title">نوع ناوگان</div>
+                <div class="value">{{ truck.type }}</div>
+            </div>
+            <div class="item">
+                <div class="title">راننده</div>
+                <div class="value">{{ truck.driver.name.first }} {{ truck.driver.name.last }}</div>
+            </div>
+        </div>
+        }
+
+        <!-- DRAFT -->
+        @if (draft) {
+        <div class="draft">
+            <div class="title">آخرین حواله</div>
+            <div class="cargo page-overflow">{{ draft.cargo.title }}</div>
+            <div class="code en">{{ draft.code }}</div>
+        </div>
+        }
+    </page-card>
+</div>
+
+<div class="cargos">
+    @for (cargo of cargos; track $index) {
+    <div class="cargo" (click)="setCargo(cargo)">
+        <div class="header">
+            <div class="background" [style.background-color]="loadCargoInfo[cargo.type].color"></div>
+            <div class="info page-overflow" [style.color]="loadCargoInfo[cargo.type].color">
+                <div class="title page-overflow" [class.en]="!hasPersian(cargo.title)">{{ cargo.title }}</div>
+                <!-- PARTY -->
+                @if (cargo.party) {
+                <div class="party page-overflow">{{ cargo.party.title }}</div>
+                }
+            </div>
+            <div class="type">
+                <mat-icon [style.color]="loadCargoInfo[cargo.type].color">{{ loadCargoInfo[cargo.type].icon }}</mat-icon>
+                <div class="title" [style.color]="loadCargoInfo[cargo.type].color">
+                    {{ loadCargoInfo[cargo.type].title }}
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="data">
+                <div class="item">
+                    <div class="title">محموله:</div>
+                    <div class="value" [class.empty]="!cargo.shipment">
+                        {{ cargo.shipment ? cargo.shipment.title : 'مشخص نشده' }}
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="title">باقیمانده:</div>
+                    @if (info[cargo.id] && info[cargo.id].remaining) {
+                    <div class="value" [class.color-warn]="info[cargo.id].remaining < 0">
+                        <span [dir]="'ltr'">{{ info[cargo.id].remaining | number }}</span>
+                        کیلو
+                    </div>
+                    } @else {
+                    <div class="value empty">مشخص نشده</div>
+                    }
+                </div>
+                <!-- APPROXIMATE -->
+                @if (info[cargo.id] && info[cargo.id].count && info[cargo.id].approximate && getApproximate(info[cargo.id]))
+                {
+                <div class="item">
+                    <div class="title">حواله باقیمانده:</div>
+                    <div class="value">{{ getApproximate(info[cargo.id]) | number }}</div>
+                </div>
+                }
+            </div>
+            <div class="active">
+                <div class="value">
+                    {{ (info[cargo.id] && info[cargo.id].active ? info[cargo.id].active : 0) | number }}
+                </div>
+                <div class="title">حواله فعال</div>
+            </div>
+        </div>
+    </div>
+    } @empty {
+    <div class="no-cargo">
+        بار فعالی در سیستم ثبت نشده است یا امکان ثبت حواله مرتبط با بارهای ثبت شده در سیستم برای این شماره پلاک وجود ندارد.
+    </div>
+    }
+</div>
+
+<div class="buttons">
+    <button mat-stroked-button type="button" [color]="'primary'" (click)="resetPlate()">تغییر ناوگان</button>
+    <button mat-stroked-button type="button" [color]="'primary'" (click)="close()">انصراف</button>
+</div>
+}
+
+<!-- CREATE DRAFT -->
+@if (plate && cargo) {
+<div class="create">
+    <!-- PLATE -->
+    <ngx-helper-plate [plate]="plate.split('-')"></ngx-helper-plate>
+
+    @switch (cargo.type) {
+    <!-- OUT -->
+    @case ('OUT') {
+    <flow-create-out
+        [plate]="plate"
+        [truck]="truck"
+        [cargo]="cargo"
+        [ngxForm]="createForm"
+        (created)="viewDraft($event)"
+    ></flow-create-out>
+    }
+    <!-- IN -->
+    @case ('IN') {
+    <flow-create-in
+        [plate]="plate"
+        [truck]="truck"
+        [cargo]="cargo"
+        [ngxForm]="createForm"
+        (created)="viewDraft($event)"
+    ></flow-create-in>
+    }
+    <!-- BUY -->
+    @case ('BUY') {
+    <flow-create-buy
+        [plate]="plate"
+        [truck]="truck"
+        [cargo]="cargo"
+        [ngxForm]="createForm"
+        (created)="viewDraft($event)"
+    ></flow-create-buy>
+    } }
+</div>
+}

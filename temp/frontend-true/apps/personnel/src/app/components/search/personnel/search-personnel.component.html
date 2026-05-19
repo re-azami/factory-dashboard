@@ -1,0 +1,20 @@
+<ngx-form [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form>
+
+@if (isLoaded) {
+<!-- LOADING -->
+@if (loading) {
+<ngx-helper-loader></ngx-helper-loader>
+} @else {
+<!-- MEMBERS LIST -->
+<div class="members">
+    @for (member of members; track $index) {
+    <div class="member" (click)="select(member)">
+        <div class="code en">{{ member.code }}</div>
+        <div class="name page-overflow">{{ member.name.first }} {{ member.name.last }}</div>
+        <div class="department">{{ member.department.title }}</div>
+    </div>
+    } @empty {
+    <div class="page-comment">پرسنلی با مشخصات داده شده ثبت نشده است.</div>
+    }
+</div>
+} }

@@ -1,0 +1,32 @@
+@if (draft.status !== 'FINISHED') {
+<div class="page-comment">ویرایش تاریخ پایان حواله فقط برای حواله‌هایی که فرایند آنها به پایان رسیده است امکان دارد.</div>
+} @else {
+<page-section>
+    <page-section-column>
+        <page-card [title]="'تاریخ ثبت شده'" [icon]="'event_available'">
+            <div class="dates">
+                <div class="date">
+                    <div class="title">تاریخ ثبت</div>
+                    <div class="value">{{ draft.date.create | ngxHelperJalali : { format: 'W، d N Y H:I' } }}</div>
+                </div>
+                <div class="date">
+                    <div class="title">تاریخ پایان</div>
+                    <div class="value">{{ draft.date.finish | ngxHelperJalali : { format: 'W، d N Y H:I' } }}</div>
+                </div>
+            </div>
+
+            <div class="page-seperator"></div>
+            <ul>
+                <!-- GENERAL -->
+                <li>
+                    مشخص کردن توضیحات در هنگام ویرایش تاریخ پایان الزامی است و این توضیحات در گزارش تغییرات حواله نمایش داده
+                    خواهد شد.
+                </li>
+            </ul>
+        </page-card>
+    </page-section-column>
+    <page-section-column>
+        <ngx-form [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form>
+    </page-section-column>
+</page-section>
+}

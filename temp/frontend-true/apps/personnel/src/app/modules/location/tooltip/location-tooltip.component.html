@@ -1,0 +1,37 @@
+@if (location) {
+<ngx-helper-box [title]="location.index === -1 ? 'سایت' : 'مکان ' + (location.index + 1).toString()" [padding]="0" [@box]>
+    <div class="data">
+        <div class="item">
+            <div class="title">طول جغرافیایی</div>
+            <div class="value">{{ +location.longitude.toFixed(7) }}</div>
+        </div>
+        <div class="item">
+            <div class="title">عرض جغرافیایی</div>
+            <div class="value">{{ +location.latitude.toFixed(7) }}</div>
+        </div>
+        <div class="item">
+            <div class="title">پرسنل</div>
+            <div class="value">{{ location.members.length | number }}</div>
+        </div>
+    </div>
+
+    <div class="members">
+        @for (member of location.members; track $index) {
+        <div class="member">
+            <mat-icon
+                [fontIcon]="
+                    member.location && member.location.status !== 'PERSONNEL'
+                        ? personnelLocationInfo[member.location.status].icon
+                        : personnelGenderInfo[member.gender].icon
+                "
+                color="primary"
+            ></mat-icon>
+            <div class="code en">{{ member.code }}</div>
+            <div class="name page-overflow">{{ member.name.first }} {{ member.name.last }}</div>
+        </div>
+        @if (location.index !== -1 && !member.location?.transport) {
+        <div class="no-transport">از سرویس حمل و نقل استفاده نمی‌کند.</div>
+        } }
+    </div>
+</ngx-helper-box>
+}

@@ -1,0 +1,1091 @@
+{
+    "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+    "cli": { "analytics": false },
+    "version": 1,
+    "newProjectRoot": "apps",
+    "projects": {
+        "admin": {
+            "projectType": "application",
+            "schematics": {
+                "@schematics/angular:component": { "style": "scss", "standalone": false },
+                "@schematics/angular:directive": { "standalone": false },
+                "@schematics/angular:pipe": { "standalone": false }
+            },
+            "root": "apps/admin",
+            "sourceRoot": "apps/admin/src",
+            "prefix": "app",
+            "architect": {
+                "build": {
+                    "builder": "@angular/build:application",
+                    "options": {
+                        "outputPath": { "base": "dist/admin", "browser": "" },
+                        "index": "apps/admin/src/index.html",
+                        "browser": "apps/admin/src/main.ts",
+                        "polyfills": ["zone.js"],
+                        "tsConfig": "apps/admin/tsconfig.app.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "apps/admin/src/favicon.ico",
+                            "apps/admin/src/assets",
+                            "apps/admin/src/manifest.webmanifest"
+                        ],
+                        "styles": [
+                            "node_modules/ol/ol.css",
+                            "theme/fonts/icon/material-icons-outlined.css",
+                            "theme/fonts/yekan/iran-yekan.css",
+                            "theme/style/admin/color.scss",
+                            "theme/style/admin/palette.scss",
+                            "theme/style/styles.scss"
+                        ],
+                        "scripts": [],
+                        "allowedCommonJsDependencies": [
+                            "@webilix/helper-library",
+                            "@webilix/jalali-date-time",
+                            "device-detector-js",
+                            "color-name",
+                            "rbush"
+                        ]
+                    },
+                    "configurations": {
+                        "production": {
+                            "budgets": [
+                                { "type": "initial", "maximumWarning": "5mb", "maximumError": "5mb" },
+                                { "type": "anyComponentStyle", "maximumWarning": "50kb", "maximumError": "50kb" }
+                            ],
+                            "outputHashing": "all",
+                            "serviceWorker": "apps/admin/ngsw-config.json"
+                        },
+                        "development": {
+                            "optimization": false,
+                            "extractLicenses": false,
+                            "sourceMap": true
+                        }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "serve": {
+                    "builder": "@angular/build:dev-server",
+                    "configurations": {
+                        "production": { "buildTarget": "admin:build:production" },
+                        "development": { "buildTarget": "admin:build:development" }
+                    },
+                    "defaultConfiguration": "development"
+                },
+                "extract-i18n": {
+                    "builder": "@angular/build:extract-i18n",
+                    "options": { "buildTarget": "admin:build" }
+                },
+                "test": {
+                    "builder": "@angular/build:karma",
+                    "options": {
+                        "polyfills": ["zone.js", "zone.js/testing"],
+                        "tsConfig": "apps/admin/tsconfig.spec.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "apps/admin/src/favicon.ico",
+                            "apps/admin/src/assets",
+                            "apps/admin/src/manifest.webmanifest"
+                        ],
+                        "styles": [
+                            "node_modules/ol/ol.css",
+                            "theme/fonts/icon/material-icons-outlined.css",
+                            "theme/fonts/yekan/iran-yekan.css",
+                            "theme/style/admin/color.scss",
+                            "theme/style/admin/palette.scss",
+                            "theme/style/styles.scss"
+                        ],
+                        "scripts": []
+                    }
+                }
+            }
+        },
+        "education": {
+            "projectType": "application",
+            "schematics": {
+                "@schematics/angular:component": { "style": "scss", "standalone": false },
+                "@schematics/angular:directive": { "standalone": false },
+                "@schematics/angular:pipe": { "standalone": false }
+            },
+            "root": "apps/education",
+            "sourceRoot": "apps/education/src",
+            "prefix": "app",
+            "architect": {
+                "build": {
+                    "builder": "@angular/build:application",
+                    "options": {
+                        "outputPath": { "base": "dist/education", "browser": "" },
+                        "index": "apps/education/src/index.html",
+                        "browser": "apps/education/src/main.ts",
+                        "polyfills": ["zone.js"],
+                        "tsConfig": "apps/education/tsconfig.app.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "apps/education/src/favicon.ico",
+                            "apps/education/src/assets",
+                            "apps/education/src/manifest.webmanifest"
+                        ],
+                        "styles": [
+                            "node_modules/ol/ol.css",
+                            "theme/fonts/icon/material-icons-outlined.css",
+                            "theme/fonts/yekan/iran-yekan.css",
+                            "theme/style/education/color.scss",
+                            "theme/style/education/palette.scss",
+                            "theme/style/styles.scss"
+                        ],
+                        "scripts": [],
+                        "allowedCommonJsDependencies": [
+                            "@webilix/helper-library",
+                            "@webilix/jalali-date-time",
+                            "device-detector-js",
+                            "color-name",
+                            "rbush"
+                        ]
+                    },
+                    "configurations": {
+                        "production": {
+                            "budgets": [
+                                { "type": "initial", "maximumWarning": "5mb", "maximumError": "5mb" },
+                                { "type": "anyComponentStyle", "maximumWarning": "50kb", "maximumError": "50kb" }
+                            ],
+                            "outputHashing": "all",
+                            "serviceWorker": "apps/education/ngsw-config.json"
+                        },
+                        "development": {
+                            "optimization": false,
+                            "extractLicenses": false,
+                            "sourceMap": true
+                        }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "serve": {
+                    "builder": "@angular/build:dev-server",
+                    "configurations": {
+                        "production": { "buildTarget": "education:build:production" },
+                        "development": { "buildTarget": "education:build:development" }
+                    },
+                    "defaultConfiguration": "development"
+                },
+                "extract-i18n": {
+                    "builder": "@angular/build:extract-i18n",
+                    "options": { "buildTarget": "education:build" }
+                },
+                "test": {
+                    "builder": "@angular/build:karma",
+                    "options": {
+                        "polyfills": ["zone.js", "zone.js/testing"],
+                        "tsConfig": "apps/education/tsconfig.spec.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "apps/education/src/favicon.ico",
+                            "apps/education/src/assets",
+                            "apps/education/src/manifest.webmanifest"
+                        ],
+                        "styles": [
+                            "node_modules/ol/ol.css",
+                            "theme/fonts/icon/material-icons-outlined.css",
+                            "theme/fonts/yekan/iran-yekan.css",
+                            "theme/style/education/color.scss",
+                            "theme/style/education/palette.scss",
+                            "theme/style/styles.scss"
+                        ],
+                        "scripts": []
+                    }
+                }
+            }
+        },
+        "kitchen": {
+            "projectType": "application",
+            "schematics": {
+                "@schematics/angular:component": { "style": "scss", "standalone": false },
+                "@schematics/angular:directive": { "standalone": false },
+                "@schematics/angular:pipe": { "standalone": false }
+            },
+            "root": "apps/kitchen",
+            "sourceRoot": "apps/kitchen/src",
+            "prefix": "app",
+            "architect": {
+                "build": {
+                    "builder": "@angular/build:application",
+                    "options": {
+                        "outputPath": { "base": "dist/kitchen", "browser": "" },
+                        "index": "apps/kitchen/src/index.html",
+                        "browser": "apps/kitchen/src/main.ts",
+                        "polyfills": ["zone.js"],
+                        "tsConfig": "apps/kitchen/tsconfig.app.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "apps/kitchen/src/favicon.ico",
+                            "apps/kitchen/src/assets",
+                            "apps/kitchen/src/manifest.webmanifest"
+                        ],
+                        "styles": [
+                            "node_modules/ol/ol.css",
+                            "theme/fonts/icon/material-icons-outlined.css",
+                            "theme/fonts/yekan/iran-yekan.css",
+                            "theme/style/kitchen/color.scss",
+                            "theme/style/kitchen/palette.scss",
+                            "theme/style/styles.scss"
+                        ],
+                        "scripts": [],
+                        "allowedCommonJsDependencies": [
+                            "@webilix/helper-library",
+                            "@webilix/jalali-date-time",
+                            "device-detector-js",
+                            "color-name",
+                            "rbush"
+                        ]
+                    },
+                    "configurations": {
+                        "production": {
+                            "budgets": [
+                                { "type": "initial", "maximumWarning": "5mb", "maximumError": "5mb" },
+                                { "type": "anyComponentStyle", "maximumWarning": "50kb", "maximumError": "50kb" }
+                            ],
+                            "outputHashing": "all",
+                            "serviceWorker": "apps/kitchen/ngsw-config.json"
+                        },
+                        "development": {
+                            "optimization": false,
+                            "extractLicenses": false,
+                            "sourceMap": true
+                        }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "serve": {
+                    "builder": "@angular/build:dev-server",
+                    "configurations": {
+                        "production": { "buildTarget": "kitchen:build:production" },
+                        "development": { "buildTarget": "kitchen:build:development" }
+                    },
+                    "defaultConfiguration": "development"
+                },
+                "extract-i18n": {
+                    "builder": "@angular/build:extract-i18n",
+                    "options": { "buildTarget": "kitchen:build" }
+                },
+                "test": {
+                    "builder": "@angular/build:karma",
+                    "options": {
+                        "polyfills": ["zone.js", "zone.js/testing"],
+                        "tsConfig": "apps/kitchen/tsconfig.spec.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "apps/kitchen/src/favicon.ico",
+                            "apps/kitchen/src/assets",
+                            "apps/kitchen/src/manifest.webmanifest"
+                        ],
+                        "styles": [
+                            "node_modules/ol/ol.css",
+                            "theme/fonts/icon/material-icons-outlined.css",
+                            "theme/fonts/yekan/iran-yekan.css",
+                            "theme/style/kitchen/color.scss",
+                            "theme/style/kitchen/palette.scss",
+                            "theme/style/styles.scss"
+                        ],
+                        "scripts": []
+                    }
+                }
+            }
+        },
+        "laboratory": {
+            "projectType": "application",
+            "schematics": {
+                "@schematics/angular:component": { "style": "scss", "standalone": false },
+                "@schematics/angular:directive": { "standalone": false },
+                "@schematics/angular:pipe": { "standalone": false }
+            },
+            "root": "apps/laboratory",
+            "sourceRoot": "apps/laboratory/src",
+            "prefix": "app",
+            "architect": {
+                "build": {
+                    "builder": "@angular/build:application",
+                    "options": {
+                        "outputPath": { "base": "dist/laboratory", "browser": "" },
+                        "index": "apps/laboratory/src/index.html",
+                        "browser": "apps/laboratory/src/main.ts",
+                        "polyfills": ["zone.js"],
+                        "tsConfig": "apps/laboratory/tsconfig.app.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "apps/laboratory/src/favicon.ico",
+                            "apps/laboratory/src/assets",
+                            "apps/laboratory/src/manifest.webmanifest"
+                        ],
+                        "styles": [
+                            "node_modules/ol/ol.css",
+                            "theme/fonts/icon/material-icons-outlined.css",
+                            "theme/fonts/yekan/iran-yekan.css",
+                            "theme/style/laboratory/color.scss",
+                            "theme/style/laboratory/palette.scss",
+                            "theme/style/styles.scss"
+                        ],
+                        "scripts": [],
+                        "allowedCommonJsDependencies": [
+                            "@webilix/helper-library",
+                            "@webilix/jalali-date-time",
+                            "device-detector-js",
+                            "color-name",
+                            "rbush"
+                        ]
+                    },
+                    "configurations": {
+                        "production": {
+                            "budgets": [
+                                { "type": "initial", "maximumWarning": "5mb", "maximumError": "5mb" },
+                                { "type": "anyComponentStyle", "maximumWarning": "50kb", "maximumError": "50kb" }
+                            ],
+                            "outputHashing": "all",
+                            "serviceWorker": "apps/education/ngsw-config.json"
+                        },
+                        "development": {
+                            "optimization": false,
+                            "extractLicenses": false,
+                            "sourceMap": true
+                        }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "serve": {
+                    "builder": "@angular/build:dev-server",
+                    "configurations": {
+                        "production": { "buildTarget": "laboratory:build:production" },
+                        "development": { "buildTarget": "laboratory:build:development" }
+                    },
+                    "defaultConfiguration": "development"
+                },
+                "extract-i18n": {
+                    "builder": "@angular/build:extract-i18n",
+                    "options": { "buildTarget": "laboratory:build" }
+                },
+                "test": {
+                    "builder": "@angular/build:karma",
+                    "options": {
+                        "polyfills": ["zone.js", "zone.js/testing"],
+                        "tsConfig": "apps/laboratory/tsconfig.spec.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "apps/laboratory/src/favicon.ico",
+                            "apps/laboratory/src/assets",
+                            "apps/laboratory/src/manifest.webmanifest"
+                        ],
+                        "styles": [
+                            "node_modules/ol/ol.css",
+                            "theme/fonts/icon/material-icons-outlined.css",
+                            "theme/fonts/yekan/iran-yekan.css",
+                            "theme/style/laboratory/color.scss",
+                            "theme/style/laboratory/palette.scss",
+                            "theme/style/styles.scss"
+                        ],
+                        "scripts": []
+                    }
+                }
+            }
+        },
+        "load": {
+            "projectType": "application",
+            "schematics": {
+                "@schematics/angular:component": { "style": "scss", "standalone": false },
+                "@schematics/angular:directive": { "standalone": false },
+                "@schematics/angular:pipe": { "standalone": false }
+            },
+            "root": "apps/load",
+            "sourceRoot": "apps/load/src",
+            "prefix": "app",
+            "architect": {
+                "build": {
+                    "builder": "@angular/build:application",
+                    "options": {
+                        "outputPath": { "base": "dist/load", "browser": "" },
+                        "index": "apps/load/src/index.html",
+                        "browser": "apps/load/src/main.ts",
+                        "polyfills": ["zone.js"],
+                        "tsConfig": "apps/load/tsconfig.app.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "apps/load/src/favicon.ico",
+                            "apps/load/src/assets",
+                            "apps/load/src/manifest.webmanifest"
+                        ],
+                        "styles": [
+                            "node_modules/ol/ol.css",
+                            "theme/fonts/icon/material-icons-outlined.css",
+                            "theme/fonts/yekan/iran-yekan.css",
+                            "theme/style/load/color.scss",
+                            "theme/style/load/palette.scss",
+                            "theme/style/styles.scss"
+                        ],
+                        "scripts": [],
+                        "allowedCommonJsDependencies": [
+                            "@webilix/helper-library",
+                            "@webilix/jalali-date-time",
+                            "device-detector-js",
+                            "color-name",
+                            "rbush"
+                        ]
+                    },
+                    "configurations": {
+                        "production": {
+                            "budgets": [
+                                { "type": "initial", "maximumWarning": "5mb", "maximumError": "5mb" },
+                                { "type": "anyComponentStyle", "maximumWarning": "50kb", "maximumError": "50kb" }
+                            ],
+                            "outputHashing": "all",
+                            "serviceWorker": "apps/education/ngsw-config.json"
+                        },
+                        "development": {
+                            "optimization": false,
+                            "extractLicenses": false,
+                            "sourceMap": true
+                        }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "serve": {
+                    "builder": "@angular/build:dev-server",
+                    "configurations": {
+                        "production": { "buildTarget": "load:build:production" },
+                        "development": { "buildTarget": "load:build:development" }
+                    },
+                    "defaultConfiguration": "development"
+                },
+                "extract-i18n": {
+                    "builder": "@angular/build:extract-i18n",
+                    "options": { "buildTarget": "load:build" }
+                },
+                "test": {
+                    "builder": "@angular/build:karma",
+                    "options": {
+                        "polyfills": ["zone.js", "zone.js/testing"],
+                        "tsConfig": "apps/load/tsconfig.spec.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "apps/load/src/favicon.ico",
+                            "apps/load/src/assets",
+                            "apps/load/src/manifest.webmanifest"
+                        ],
+                        "styles": [
+                            "theme/fonts/icon/material-icons-outlined.css",
+                            "theme/fonts/yekan/iran-yekan.css",
+                            "theme/style/load/color.scss",
+                            "theme/style/load/palette.scss",
+                            "theme/style/styles.scss"
+                        ],
+                        "scripts": []
+                    }
+                }
+            }
+        },
+        "personnel": {
+            "projectType": "application",
+            "schematics": {
+                "@schematics/angular:component": { "style": "scss", "standalone": false },
+                "@schematics/angular:directive": { "standalone": false },
+                "@schematics/angular:pipe": { "standalone": false }
+            },
+            "root": "apps/personnel",
+            "sourceRoot": "apps/personnel/src",
+            "prefix": "app",
+            "architect": {
+                "build": {
+                    "builder": "@angular/build:application",
+                    "options": {
+                        "outputPath": { "base": "dist/personnel", "browser": "" },
+                        "index": "apps/personnel/src/index.html",
+                        "browser": "apps/personnel/src/main.ts",
+                        "polyfills": ["zone.js"],
+                        "tsConfig": "apps/personnel/tsconfig.app.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "apps/personnel/src/favicon.ico",
+                            "apps/personnel/src/assets",
+                            "apps/personnel/src/manifest.webmanifest"
+                        ],
+                        "styles": [
+                            "node_modules/ol/ol.css",
+                            "theme/fonts/icon/material-icons-outlined.css",
+                            "theme/fonts/yekan/iran-yekan.css",
+                            "theme/style/personnel/color.scss",
+                            "theme/style/personnel/palette.scss",
+                            "theme/style/styles.scss"
+                        ],
+                        "scripts": [],
+                        "allowedCommonJsDependencies": [
+                            "@webilix/helper-library",
+                            "@webilix/jalali-date-time",
+                            "device-detector-js",
+                            "color-name",
+                            "rbush"
+                        ]
+                    },
+                    "configurations": {
+                        "production": {
+                            "budgets": [
+                                { "type": "initial", "maximumWarning": "5mb", "maximumError": "5mb" },
+                                { "type": "anyComponentStyle", "maximumWarning": "50kb", "maximumError": "50kb" }
+                            ],
+                            "outputHashing": "all",
+                            "serviceWorker": "apps/personnel/ngsw-config.json"
+                        },
+                        "development": {
+                            "optimization": false,
+                            "extractLicenses": false,
+                            "sourceMap": true
+                        }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "serve": {
+                    "builder": "@angular/build:dev-server",
+                    "configurations": {
+                        "production": { "buildTarget": "personnel:build:production" },
+                        "development": { "buildTarget": "personnel:build:development" }
+                    },
+                    "defaultConfiguration": "development"
+                },
+                "extract-i18n": {
+                    "builder": "@angular/build:extract-i18n",
+                    "options": { "buildTarget": "personnel:build" }
+                },
+                "test": {
+                    "builder": "@angular/build:karma",
+                    "options": {
+                        "polyfills": ["zone.js", "zone.js/testing"],
+                        "tsConfig": "apps/personnel/tsconfig.spec.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "apps/personnel/src/favicon.ico",
+                            "apps/personnel/src/assets",
+                            "apps/personnel/src/manifest.webmanifest"
+                        ],
+                        "styles": [
+                            "node_modules/ol/ol.css",
+                            "theme/fonts/icon/material-icons-outlined.css",
+                            "theme/fonts/yekan/iran-yekan.css",
+                            "theme/style/personnel/color.scss",
+                            "theme/style/personnel/palette.scss",
+                            "theme/style/styles.scss"
+                        ],
+                        "scripts": []
+                    }
+                }
+            }
+        },
+        "support": {
+            "projectType": "application",
+            "schematics": {
+                "@schematics/angular:component": { "style": "scss", "standalone": false },
+                "@schematics/angular:directive": { "standalone": false },
+                "@schematics/angular:pipe": { "standalone": false }
+            },
+            "root": "apps/support",
+            "sourceRoot": "apps/support/src",
+            "prefix": "app",
+            "architect": {
+                "build": {
+                    "builder": "@angular/build:application",
+                    "options": {
+                        "outputPath": { "base": "dist/support", "browser": "" },
+                        "index": "apps/support/src/index.html",
+                        "browser": "apps/support/src/main.ts",
+                        "polyfills": ["zone.js"],
+                        "tsConfig": "apps/support/tsconfig.app.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "apps/support/src/favicon.ico",
+                            "apps/support/src/assets",
+                            "apps/support/src/manifest.webmanifest"
+                        ],
+                        "styles": [
+                            "node_modules/ol/ol.css",
+                            "theme/fonts/icon/material-icons-outlined.css",
+                            "theme/fonts/yekan/iran-yekan.css",
+                            "theme/style/support/color.scss",
+                            "theme/style/support/palette.scss",
+                            "theme/style/styles.scss"
+                        ],
+                        "scripts": [],
+                        "allowedCommonJsDependencies": [
+                            "@webilix/helper-library",
+                            "@webilix/jalali-date-time",
+                            "device-detector-js",
+                            "color-name",
+                            "rbush"
+                        ]
+                    },
+                    "configurations": {
+                        "production": {
+                            "budgets": [
+                                { "type": "initial", "maximumWarning": "5mb", "maximumError": "5mb" },
+                                { "type": "anyComponentStyle", "maximumWarning": "50kb", "maximumError": "50kb" }
+                            ],
+                            "outputHashing": "all",
+                            "serviceWorker": "apps/support/ngsw-config.json"
+                        },
+                        "development": {
+                            "optimization": false,
+                            "extractLicenses": false,
+                            "sourceMap": true
+                        }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "serve": {
+                    "builder": "@angular/build:dev-server",
+                    "configurations": {
+                        "production": { "buildTarget": "support:build:production" },
+                        "development": { "buildTarget": "support:build:development" }
+                    },
+                    "defaultConfiguration": "development"
+                },
+                "extract-i18n": {
+                    "builder": "@angular/build:extract-i18n",
+                    "options": { "buildTarget": "support:build" }
+                },
+                "test": {
+                    "builder": "@angular/build:karma",
+                    "options": {
+                        "polyfills": ["zone.js", "zone.js/testing"],
+                        "tsConfig": "apps/support/tsconfig.spec.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "apps/support/src/favicon.ico",
+                            "apps/support/src/assets",
+                            "apps/support/src/manifest.webmanifest"
+                        ],
+                        "styles": [
+                            "theme/fonts/icon/material-icons-outlined.css",
+                            "theme/fonts/yekan/iran-yekan.css",
+                            "theme/style/support/color.scss",
+                            "theme/style/support/palette.scss",
+                            "theme/style/styles.scss"
+                        ],
+                        "scripts": []
+                    }
+                }
+            }
+        },
+        "transport": {
+            "projectType": "application",
+            "schematics": {
+                "@schematics/angular:component": { "style": "scss", "standalone": false },
+                "@schematics/angular:directive": { "standalone": false },
+                "@schematics/angular:pipe": { "standalone": false }
+            },
+            "root": "apps/transport",
+            "sourceRoot": "apps/transport/src",
+            "prefix": "app",
+            "architect": {
+                "build": {
+                    "builder": "@angular/build:application",
+                    "options": {
+                        "outputPath": { "base": "dist/transport", "browser": "" },
+                        "index": "apps/transport/src/index.html",
+                        "browser": "apps/transport/src/main.ts",
+                        "polyfills": ["zone.js"],
+                        "tsConfig": "apps/transport/tsconfig.app.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "apps/transport/src/favicon.ico",
+                            "apps/transport/src/assets",
+                            "apps/transport/src/manifest.webmanifest"
+                        ],
+                        "styles": [
+                            "node_modules/ol/ol.css",
+                            "theme/fonts/icon/material-icons-outlined.css",
+                            "theme/fonts/yekan/iran-yekan.css",
+                            "theme/style/transport/color.scss",
+                            "theme/style/transport/palette.scss",
+                            "theme/style/styles.scss"
+                        ],
+                        "scripts": [],
+                        "allowedCommonJsDependencies": [
+                            "@webilix/helper-library",
+                            "@webilix/jalali-date-time",
+                            "device-detector-js",
+                            "color-name",
+                            "rbush"
+                        ]
+                    },
+                    "configurations": {
+                        "production": {
+                            "budgets": [
+                                { "type": "initial", "maximumWarning": "5mb", "maximumError": "5mb" },
+                                { "type": "anyComponentStyle", "maximumWarning": "50kb", "maximumError": "50kb" }
+                            ],
+                            "outputHashing": "all",
+                            "serviceWorker": "apps/transport/ngsw-config.json"
+                        },
+                        "development": {
+                            "optimization": false,
+                            "extractLicenses": false,
+                            "sourceMap": true
+                        }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "serve": {
+                    "builder": "@angular/build:dev-server",
+                    "configurations": {
+                        "production": { "buildTarget": "transport:build:production" },
+                        "development": { "buildTarget": "transport:build:development" }
+                    },
+                    "defaultConfiguration": "development"
+                },
+                "extract-i18n": {
+                    "builder": "@angular/build:extract-i18n",
+                    "options": { "buildTarget": "transport:build" }
+                },
+                "test": {
+                    "builder": "@angular/build:karma",
+                    "options": {
+                        "polyfills": ["zone.js", "zone.js/testing"],
+                        "tsConfig": "apps/transport/tsconfig.spec.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "apps/transport/src/favicon.ico",
+                            "apps/transport/src/assets",
+                            "apps/transport/src/manifest.webmanifest"
+                        ],
+                        "styles": [
+                            "node_modules/ol/ol.css",
+                            "theme/fonts/icon/material-icons-outlined.css",
+                            "theme/fonts/yekan/iran-yekan.css",
+                            "theme/style/transport/color.scss",
+                            "theme/style/transport/palette.scss",
+                            "theme/style/styles.scss"
+                        ],
+                        "scripts": []
+                    }
+                }
+            }
+        },
+        "warehouse": {
+            "projectType": "application",
+            "schematics": {
+                "@schematics/angular:component": { "style": "scss", "standalone": false },
+                "@schematics/angular:directive": { "standalone": false },
+                "@schematics/angular:pipe": { "standalone": false }
+            },
+            "root": "apps/warehouse",
+            "sourceRoot": "apps/warehouse/src",
+            "prefix": "app",
+            "architect": {
+                "build": {
+                    "builder": "@angular/build:application",
+                    "options": {
+                        "outputPath": { "base": "dist/warehouse", "browser": "" },
+                        "index": "apps/warehouse/src/index.html",
+                        "browser": "apps/warehouse/src/main.ts",
+                        "polyfills": ["zone.js"],
+                        "tsConfig": "apps/warehouse/tsconfig.app.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "apps/warehouse/src/favicon.ico",
+                            "apps/warehouse/src/assets",
+                            "apps/warehouse/src/manifest.webmanifest"
+                        ],
+                        "styles": [
+                            "node_modules/ol/ol.css",
+                            "theme/fonts/icon/material-icons-outlined.css",
+                            "theme/fonts/yekan/iran-yekan.css",
+                            "theme/style/warehouse/color.scss",
+                            "theme/style/warehouse/palette.scss",
+                            "theme/style/styles.scss"
+                        ],
+                        "scripts": [],
+                        "allowedCommonJsDependencies": [
+                            "@webilix/helper-library",
+                            "@webilix/jalali-date-time",
+                            "device-detector-js",
+                            "color-name",
+                            "rbush"
+                        ]
+                    },
+                    "configurations": {
+                        "production": {
+                            "budgets": [
+                                { "type": "initial", "maximumWarning": "5mb", "maximumError": "5mb" },
+                                { "type": "anyComponentStyle", "maximumWarning": "50kb", "maximumError": "50kb" }
+                            ],
+                            "outputHashing": "all",
+                            "serviceWorker": "apps/warehouse/ngsw-config.json"
+                        },
+                        "development": {
+                            "optimization": false,
+                            "extractLicenses": false,
+                            "sourceMap": true
+                        }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "serve": {
+                    "builder": "@angular/build:dev-server",
+                    "configurations": {
+                        "production": { "buildTarget": "warehouse:build:production" },
+                        "development": { "buildTarget": "warehouse:build:development" }
+                    },
+                    "defaultConfiguration": "development"
+                },
+                "extract-i18n": {
+                    "builder": "@angular/build:extract-i18n",
+                    "options": { "buildTarget": "warehouse:build" }
+                },
+                "test": {
+                    "builder": "@angular/build:karma",
+                    "options": {
+                        "polyfills": ["zone.js", "zone.js/testing"],
+                        "tsConfig": "apps/warehouse/tsconfig.spec.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "apps/warehouse/src/favicon.ico",
+                            "apps/warehouse/src/assets",
+                            "apps/warehouse/src/manifest.webmanifest"
+                        ],
+                        "styles": [
+                            "node_modules/ol/ol.css",
+                            "theme/fonts/icon/material-icons-outlined.css",
+                            "theme/fonts/yekan/iran-yekan.css",
+                            "theme/style/warehouse/color.scss",
+                            "theme/style/warehouse/palette.scss",
+                            "theme/style/styles.scss"
+                        ],
+                        "scripts": []
+                    }
+                }
+            }
+        },
+
+        "apis": {
+            "projectType": "library",
+            "schematics": {
+                "@schematics/angular:component": { "style": "scss", "standalone": false },
+                "@schematics/angular:directive": { "standalone": false },
+                "@schematics/angular:pipe": { "standalone": false }
+            },
+            "root": "libs/apis",
+            "sourceRoot": "libs/apis/src",
+            "prefix": "lib",
+            "architect": {
+                "build": {
+                    "builder": "@angular/build:ng-packagr",
+                    "options": { "project": "libs/apis/ng-package.json" },
+                    "configurations": {
+                        "production": { "tsConfig": "libs/apis/tsconfig.lib.prod.json" },
+                        "development": { "tsConfig": "libs/apis/tsconfig.lib.json" }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "test": {
+                    "builder": "@angular/build:karma",
+                    "options": {
+                        "tsConfig": "libs/apis/tsconfig.spec.json",
+                        "polyfills": ["zone.js", "zone.js/testing"]
+                    }
+                }
+            }
+        },
+        "list": {
+            "projectType": "library",
+            "schematics": {
+                "@schematics/angular:component": { "style": "scss", "standalone": false },
+                "@schematics/angular:directive": { "standalone": false },
+                "@schematics/angular:pipe": { "standalone": false }
+            },
+            "root": "libs/list",
+            "sourceRoot": "libs/list/src",
+            "prefix": "lib",
+            "architect": {
+                "build": {
+                    "builder": "@angular/build:ng-packagr",
+                    "options": { "project": "libs/list/ng-package.json" },
+                    "configurations": {
+                        "production": { "tsConfig": "libs/list/tsconfig.lib.prod.json" },
+                        "development": { "tsConfig": "libs/list/tsconfig.lib.json" }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "test": {
+                    "builder": "@angular/build:karma",
+                    "options": {
+                        "tsConfig": "libs/list/tsconfig.spec.json",
+                        "polyfills": ["zone.js", "zone.js/testing"]
+                    }
+                }
+            }
+        },
+        "modules": {
+            "projectType": "library",
+            "schematics": {
+                "@schematics/angular:component": { "style": "scss", "standalone": false },
+                "@schematics/angular:directive": { "standalone": false },
+                "@schematics/angular:pipe": { "standalone": false }
+            },
+            "root": "libs/modules",
+            "sourceRoot": "libs/modules/src",
+            "prefix": "lib",
+            "architect": {
+                "build": {
+                    "builder": "@angular/build:ng-packagr",
+                    "options": { "project": "libs/modules/ng-package.json" },
+                    "configurations": {
+                        "production": { "tsConfig": "libs/modules/tsconfig.lib.prod.json" },
+                        "development": { "tsConfig": "libs/modules/tsconfig.lib.json" }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "test": {
+                    "builder": "@angular/build:karma",
+                    "options": {
+                        "tsConfig": "libs/modules/tsconfig.spec.json",
+                        "polyfills": ["zone.js", "zone.js/testing"]
+                    }
+                }
+            }
+        },
+        "page": {
+            "projectType": "library",
+            "schematics": {
+                "@schematics/angular:component": { "style": "scss", "standalone": false },
+                "@schematics/angular:directive": { "standalone": false },
+                "@schematics/angular:pipe": { "standalone": false }
+            },
+            "root": "libs/page",
+            "sourceRoot": "libs/page/src",
+            "prefix": "lib",
+            "architect": {
+                "build": {
+                    "builder": "@angular/build:ng-packagr",
+                    "options": { "project": "libs/page/ng-package.json" },
+                    "configurations": {
+                        "production": { "tsConfig": "libs/page/tsconfig.lib.prod.json" },
+                        "development": { "tsConfig": "libs/page/tsconfig.lib.json" }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "test": {
+                    "builder": "@angular/build:karma",
+                    "options": {
+                        "tsConfig": "libs/page/tsconfig.spec.json",
+                        "polyfills": ["zone.js", "zone.js/testing"]
+                    }
+                }
+            }
+        },
+        "providers": {
+            "projectType": "library",
+            "schematics": {
+                "@schematics/angular:component": { "style": "scss", "standalone": false },
+                "@schematics/angular:directive": { "standalone": false },
+                "@schematics/angular:pipe": { "standalone": false }
+            },
+            "root": "libs/providers",
+            "sourceRoot": "libs/providers/src",
+            "prefix": "lib",
+            "architect": {
+                "build": {
+                    "builder": "@angular/build:ng-packagr",
+                    "options": { "project": "libs/providers/ng-package.json" },
+                    "configurations": {
+                        "production": { "tsConfig": "libs/providers/tsconfig.lib.prod.json" },
+                        "development": { "tsConfig": "libs/providers/tsconfig.lib.json" }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "test": {
+                    "builder": "@angular/build:karma",
+                    "options": {
+                        "tsConfig": "libs/providers/tsconfig.spec.json",
+                        "polyfills": ["zone.js", "zone.js/testing"]
+                    }
+                }
+            }
+        },
+        "shared": {
+            "projectType": "library",
+            "schematics": {
+                "@schematics/angular:component": { "style": "scss", "standalone": false },
+                "@schematics/angular:directive": { "standalone": false },
+                "@schematics/angular:pipe": { "standalone": false }
+            },
+            "root": "libs/shared",
+            "sourceRoot": "libs/shared/src",
+            "prefix": "lib",
+            "architect": {
+                "build": {
+                    "builder": "@angular/build:ng-packagr",
+                    "options": { "project": "libs/shared/ng-package.json" },
+                    "configurations": {
+                        "production": { "tsConfig": "libs/shared/tsconfig.lib.prod.json" },
+                        "development": { "tsConfig": "libs/shared/tsconfig.lib.json" }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "test": {
+                    "builder": "@angular/build:karma",
+                    "options": {
+                        "tsConfig": "libs/shared/tsconfig.spec.json",
+                        "polyfills": ["zone.js", "zone.js/testing"]
+                    }
+                }
+            }
+        },
+        "ticket": {
+            "projectType": "library",
+            "schematics": {
+                "@schematics/angular:component": { "style": "scss", "standalone": false },
+                "@schematics/angular:directive": { "standalone": false },
+                "@schematics/angular:pipe": { "standalone": false }
+            },
+            "root": "libs/ticket",
+            "sourceRoot": "libs/ticket/src",
+            "prefix": "lib",
+            "architect": {
+                "build": {
+                    "builder": "@angular/build:ng-packagr",
+                    "options": { "project": "libs/ticket/ng-package.json" },
+                    "configurations": {
+                        "production": { "tsConfig": "libs/ticket/tsconfig.lib.prod.json" },
+                        "development": { "tsConfig": "libs/ticket/tsconfig.lib.json" }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "test": {
+                    "builder": "@angular/build:karma",
+                    "options": {
+                        "tsConfig": "libs/ticket/tsconfig.spec.json",
+                        "polyfills": ["zone.js", "zone.js/testing"]
+                    }
+                }
+            }
+        }
+    },
+    "schematics": {
+        "@schematics/angular:component": {
+            "type": "component"
+        },
+        "@schematics/angular:directive": {
+            "type": "directive"
+        },
+        "@schematics/angular:service": {
+            "type": "service"
+        },
+        "@schematics/angular:guard": {
+            "typeSeparator": "."
+        },
+        "@schematics/angular:interceptor": {
+            "typeSeparator": "."
+        },
+        "@schematics/angular:module": {
+            "typeSeparator": "."
+        },
+        "@schematics/angular:pipe": {
+            "typeSeparator": "."
+        },
+        "@schematics/angular:resolver": {
+            "typeSeparator": "."
+        }
+    }
+}

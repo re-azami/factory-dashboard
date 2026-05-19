@@ -1,0 +1,63 @@
+@if (setting) {
+<div class="cards">
+    @for (item of data; track $index) {
+    <div class="card">
+        <div class="header">
+            <!-- ICON -->
+            @if (setting.hasIcon) {
+            <mat-icon [color]="setting.icons[$index].color">{{ setting.icons[$index].icon }}</mat-icon>
+            }
+            <!-- TITLE  -->
+            <div class="title">
+                <list-value
+                    [column]="list.columns[setting.titleIndex]"
+                    [item]="item"
+                    [type]="'TITLE'"
+                    [deactive]="setting.deactives.includes($index)"
+                ></list-value>
+                @if (setting.descriptionIndex !== undefined) {
+                <list-value
+                    [column]="list.columns[setting.descriptionIndex]"
+                    [item]="item"
+                    [type]="'DESCRIPTION'"
+                ></list-value>
+                }
+            </div>
+            <!-- ACTION -->
+            @if (list.action) {
+            <button
+                mat-button
+                [color]="list.action.color || 'primary'"
+                type="button"
+                class="action"
+                (click)="click(item, list.action.action)"
+            >
+                <mat-icon>{{ list.action.icon }}</mat-icon>
+            </button>
+            }
+            <!-- MENU -->
+            <ngx-helper-menu [menu]="getMenu(list, item)"></ngx-helper-menu>
+        </div>
+        <!-- CONETNT -->
+        @if (setting.hasContent) {
+        <div class="content">
+            @for (column of list.columns; track $index) {
+            <!-- CHECK TITLE / DESCRIPTION -->
+            @if ($index !== setting.titleIndex && $index !== setting.descriptionIndex) {
+            <div class="list">
+                <div class="title">{{ column.title }}:</div>
+                <div class="value">
+                    <list-value [column]="column" [item]="item"></list-value>
+                </div>
+            </div>
+            } }
+        </div>
+        }
+        <!-- DESCRIPTION -->
+        @if (list.description && list.description(item)) {
+        <div class="description" [innerHTML]="list.description(item) | ngxHelperMultiLine"></div>
+        }
+    </div>
+    }
+</div>
+}

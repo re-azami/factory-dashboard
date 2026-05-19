@@ -1,0 +1,25 @@
+@if (loading) {
+<ngx-helper-loader></ngx-helper-loader>
+} @else {
+<!-- NO CAGO -->
+@if (!cargo) {
+<div class="page-comment">اطلاعات بار مرتبط با حواله حذف شده است.</div>
+}
+
+<!-- CARGO TRUCK -->
+@else {
+<div class="description">
+    @switch (cargo.truck) {
+    <!-- ON -->
+    @case ('ON') { با توجه به تنظیمات انجام شده در ارتباط با بار مرتبط با این حواله، فقط می‌توانید شماره پلاک
+    <span class="color-warn">ناوگان ثبت شده در سیستم</span> را به عنوان ناوگان مرتبط با این حواله، ثبت کنید. }
+    <!-- OFF -->
+    @case ('OFF') { با توجه به تنظیمات انجام شده در ارتباط با بار مرتبط با این حواله، فقط می‌توانید شماره پلاک
+    <span class="color-warn">ناوگان ثبت نشده در سیستم</span> را به عنوان ناوگان مرتبط با این حواله، ثبت کنید. }
+    <!-- DEFAULT -->
+    @default { با توجه به تنظیمات انجام شده در ارتباط با بار مرتبط با این حواله، محدودیتی در ارتباط با شماره پلاک ناوگان
+    مرتبط با حواله در نظر گرفته نشده است. } }
+</div>
+
+<ngx-form [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form>
+} }

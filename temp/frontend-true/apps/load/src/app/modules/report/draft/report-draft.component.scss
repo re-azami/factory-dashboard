@@ -1,0 +1,19 @@
+.data {
+    display: flex;
+    align-items: center;
+    border-top: 1px solid var(--borderColor);
+    padding: 0.75rem 1rem;
+
+    .title {
+        flex: 1;
+        font-size: 12px;
+    }
+
+    .value {
+        font-weight: 500;
+    }
+}
+
+.data:nth-of-type(1) {
+    border-top-width: 0;
+}

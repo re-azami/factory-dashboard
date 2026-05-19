@@ -1,0 +1,60 @@
+.value {
+    display: flex;
+    align-items: center;
+    column-gap: 0.5rem;
+    overflow: hidden;
+
+    div {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        .deactive {
+            text-decoration: line-through;
+        }
+    }
+
+    mat-icon {
+        font-size: 14px !important;
+    }
+
+    .copy {
+        cursor: pointer;
+    }
+
+    .hasDescription {
+        font-size: 13px;
+    }
+}
+
+.description {
+    font-size: 11px;
+    opacity: 0.5;
+}
+
+.link {
+    cursor: pointer;
+}
+
+:host ngx-helper-plate {
+    display: block;
+    width: 125px;
+
+    ::ng-deep .ngx-helper-plate-left,
+    ::ng-deep .ngx-helper-plate-right {
+        flex: 1;
+        text-align: center;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .value {
+        .hasDescription {
+            font-size: 12px;
+        }
+    }
+
+    .description {
+        font-size: 10px;
+    }
+}

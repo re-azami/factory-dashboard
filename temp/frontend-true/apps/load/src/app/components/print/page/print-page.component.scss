@@ -1,0 +1,42 @@
+.pages {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 1rem;
+    column-gap: 1rem;
+
+    .page {
+        text-align: center;
+        padding: 2rem 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        border-radius: 4px;
+        color: var(--primaryColor);
+        border: 1px solid var(--borderColor);
+        background-color: var(--backgroundColor);
+    }
+}
+
+.save {
+    cursor: pointer;
+    margin-top: 1rem;
+
+    mat-checkbox {
+        .title {
+            font-weight: 600;
+        }
+    }
+
+    .comment {
+        padding-right: 3.2rem;
+        text-align: justify;
+        position: relative;
+        top: -0.5rem;
+        font-size: 11px;
+        padding-left: 0.5rem;
+    }
+}
+
+.cancel {
+    width: 100%;
+    margin-top: 2rem;
+}

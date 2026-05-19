@@ -1,0 +1,127 @@
+<div class="title">
+    @if (!size.isMobile) {
+    <div class="header-background"></div>
+    }
+
+    <!-- APP MENU -->
+    @if (appMenu.length > 1) {
+    <ngx-helper-menu [menu]="appMenu" [tigger]="menuTrigger"></ngx-helper-menu>
+    }
+
+    <img src="/assets/images/company.png" width="40" height="46" #menuTrigger />
+    <div class="company">{{ size.isMobile && appTitle ? appTitle : applicationTitle }}</div>
+    @if (!size.isMobile) {
+    <div class="divider">::</div>
+    <div class="app">{{ appTitle || applicationTitle }}</div>
+    }
+</div>
+
+@if (!!user && menu.length > 0) {
+<div class="menu" [@menu]="size.isMobile ? 'hide' : 'show'">
+    @for (item of menu; track $index) {
+    <!-- SINGLE MENU ITEM  -->
+    @if (item.children.length === 1) {
+    <button mat-button [disabled]="size.isMobile" (click)="click(item.children[0])">
+        <div class="menu-button">
+            <mat-icon [color]="id === item.id ? 'accent' : ''">{{ item.icon }}</mat-icon>
+            <div class="menu-button-title" [class.menu-button-selected]="id === item.id">{{ item.title }}</div>
+        </div>
+    </button>
+
+    }
+    <!-- MULTIPLE MENU ITEM  -->
+    @else {
+    <button
+        mat-button
+        [matMenuTriggerFor]="menu"
+        (menuOpened)="openedMenu = $index"
+        (menuClosed)="openedMenu = undefined"
+        [disabled]="size.isMobile"
+    >
+        <div class="menu-button" [class.menu-button-opened]="openedMenu === $index">
+            <mat-icon [color]="id === item.id ? 'accent' : ''">{{ item.icon }}</mat-icon>
+            <div class="menu-button-title" [class.menu-button-selected]="id === item.id">{{ item.title }}</div>
+        </div>
+    </button>
+    <mat-menu #menu="matMenu">
+        @for (child of item.children; track $index) {
+        <!-- MENU ITEMS -->
+        @if (child === 'DIVIDER') {
+        <!-- DIVIDER -->
+        <mat-divider></mat-divider> } @else {
+        <!-- MENU ITEM -->
+        <button mat-menu-item (click)="click(child)">{{ child.title }}</button>
+        } }
+    </mat-menu>
+    } }
+</div>
+}
+
+<div class="seperator"></div>
+
+<div class="icons" [@icon]="user ? 'show' : 'hide'">
+    <!-- ALERTS -->
+    @if (hasAlert) {
+    <button mat-icon-button type="button" [disabled]="!user" (click)="toggleShowAlert()">
+        <mat-icon>notifications_active</mat-icon>
+    </button>
+    }
+
+    <button mat-icon-button type="button" [disabled]="!user" [matMenuTriggerFor]="userMenu">
+        <mat-icon [ngStyle]="{ color: updated ? 'var(--warnColor)' : 'var(--whiteColor)' }">account_circle</mat-icon>
+    </button>
+    <mat-menu #userMenu="matMenu">
+        @if (user) {
+        <div class="user">
+            <div class="group">{{ userGroupInfo[user.group].title }}</div>
+            <div class="name">{{ user.name.first }} {{ user.name.last }}</div>
+        </div>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="update()">
+            <div class="item">
+                <mat-icon>account_circle</mat-icon>
+                <div class="title">ویرایش مشخصات</div>
+            </div>
+        </button>
+        <button mat-menu-item (click)="password()">
+            <div class="item">
+                <mat-icon>password</mat-icon>
+                <div class="title">تغییر کلمه عبور</div>
+            </div>
+        </button>
+        <mat-divider></mat-divider>
+        @if (app && app !== 'ADMIN' && hasSupport) {
+        <button mat-menu-item [routerLink]="['/ticket']">
+            <div class="item">
+                <mat-icon>support_agent</mat-icon>
+                <div class="title">پشتیبانی</div>
+            </div>
+        </button>
+        }
+        <button mat-menu-item (click)="about()" [ngStyle]="{ color: updated ? 'var(--warnColor)' : '#000' }">
+            <div class="item">
+                <mat-icon [color]="updated ? 'warn' : ''">info</mat-icon>
+                <div class="title">درباره نرم‌افزار</div>
+            </div>
+        </button>
+        }
+    </mat-menu>
+
+    <button mat-icon-button [disabled]="!user" (click)="signout()">
+        <mat-icon>logout</mat-icon>
+    </button>
+</div>
+
+<!-- SIGNOUT -->
+@if (user) {
+<div class="signout" [@signout]="signoutShow ? 'show' : 'hide'">
+    <div class="message">برای خروج مجددا کلیک کنید.</div>
+    <div class="timer">{{ signoutTimer }}</div>
+    <button mat-icon-button [disabled]="!user" (click)="signout()">
+        <mat-icon>logout</mat-icon>
+    </button>
+</div>
+}
+
+<!-- LOADING -->
+@if (loading && !signoutShow) { <mat-progress-bar mode="indeterminate" color="accent"></mat-progress-bar> }

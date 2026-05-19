@@ -1,0 +1,37 @@
+@if (app && ticket) {
+<page-title [title]="title"></page-title>
+
+<page-section>
+    <page-section-column [sticky]="true">
+        <div class="ticket">
+            <header>
+                <mat-icon [color]="supportTicketInfo[ticket.status].color">
+                    {{ supportTicketInfo[ticket.status].icon }}
+                </mat-icon>
+                <div class="content">
+                    <div class="title">{{ ticket.title }}</div>
+                    <div class="date">
+                        {{ supportRequestInfo[ticket.type].title }} ::
+                        {{ ticket.date.create | ngxHelperJalali : { format: 'W، d N Y H:I' } }}
+                    </div>
+                    <div class="status">{{ supportTicketInfo[ticket.status].title }}</div>
+                </div>
+            </header>
+            <content [innerHTML]="ticket.ticket | ngxHelperMultiLine"></content>
+            <ticket-attachment-view [attachments]="ticket.attachments" [padding]="'1rem'"></ticket-attachment-view>
+        </div>
+    </page-section-column>
+    <page-section-column [flex]="1.5">
+        <!-- REPLIES -->
+        @for (reply of ticket.replies; track $index) {
+        <ticket-reply-view [ticket]="ticket" [reply]="$index"></ticket-reply-view>
+        } @empty {
+        <div class="page-comment">پاسخ ثبت نشده است.</div>
+        }
+        <!-- NEW REPLY -->
+        <div class="form">
+            <ticket-reply-form [app]="app" [(ticket)]="ticket"></ticket-reply-form>
+        </div>
+    </page-section-column>
+</page-section>
+}

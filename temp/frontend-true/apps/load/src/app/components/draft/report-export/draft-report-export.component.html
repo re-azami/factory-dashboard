@@ -1,0 +1,7 @@
+<page-card [title]="'دانلود لیست حواله‌ها'" [description]="description" [icon]="'download'">
+    @if (loading) {
+    <ngx-form [ngxForm]="ngxFormEmpty"></ngx-form>
+    } @else {
+    <ngx-form [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form>
+    }
+</page-card>

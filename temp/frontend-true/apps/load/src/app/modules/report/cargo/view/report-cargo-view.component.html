@@ -1,0 +1,35 @@
+<page-title [title]="title"></page-title>
+
+<page-card [title]="'مشخصات بار'" [description]="cargo.title" [icon]="'terrain'" [padding]="'2px'" [buttons]="buttons">
+    <page-section>
+        <page-section-column>
+            <page-section>
+                <page-section-column>
+                    <page-block [blocks]="cargoBlock" [column]="3" [border]="false"></page-block>
+                </page-section-column>
+                <page-section-column><page-block [blocks]="draftBlock" [border]="false"></page-block></page-section-column>
+            </page-section>
+
+            <!-- DATES -->
+            @if (draft.count) {
+            <div class="page-seperator"></div>
+            <page-section>
+                <page-section-column>
+                    <page-block [blocks]="datesBlock[0]" [column]="1" [border]="false"></page-block>
+                </page-section-column>
+                <page-section-column>
+                    <page-block [blocks]="datesBlock[1]" [column]="1" [border]="false"></page-block>
+                </page-section-column>
+            </page-section>
+            }
+
+            <!-- INITIAL -->
+            @if (cargo.initial) {
+            <div class="initial">
+                تعداد {{ cargo.initial.count | number }} حواله با مجموع وزنی {{ cargo.initial.weight | number }} کیلو به
+                عنوان مقادیر اولیه برای این بار در سیستم ثبت شده و در محاسبه باقیمانده بار در نظر گرفته می‌شود.
+            </div>
+            }
+        </page-section-column>
+    </page-section>
+</page-card>

@@ -1,0 +1,104 @@
+<page-title [title]="title"></page-title>
+
+<page-card [title]="serving.date | ngxHelperJalali" [icon]="'dining'" [padding]="'0'" [buttons]="buttons">
+    <page-block [blocks]="data" [border]="false" [column]="deviceSize.isMobile ? 2 : 4"></page-block>
+    <!-- NOT SERVED -->
+    @if (!serving.isServed ) {
+    <div class="not-served">
+        <div class="background"></div>
+        <div class="content">
+            اطلاعات سرو در سیستم ثبت نشده است. تا زمانی که این اطلاعات در سیستم ثبت نشده باشد، میزان مصرف مواد استفاده شده در
+            موجودی کالاها نمایش داده نمی‌شود.
+            <br />
+            <!-- USAGE  -->
+            @if (!usageCompelete) { پس از ثبت میزان مصرف تمام مواد ثبت شده می‌توانید اطلاعات سرو را ثبت کنید. }
+            <!-- USAGE  -->
+            @else { پس از بررسی اطلاعات میزان مصرف می‌توانید اطلاعات سرو را در سیستم ثبت کنید. }
+        </div>
+        <button mat-button type="button" color="warn" [disabled]="!usageCompelete" (click)="done()">ثبت اطلاعات سرو</button>
+    </div>
+    }
+</page-card>
+
+<!-- GOODS -->
+<div class="page-seperator"></div>
+<page-section>
+    @for (good of kitchenGoodList; track $index) {
+    <page-section-column>
+        <page-card
+            [title]="kitchenGoodInfo[good].title"
+            [icon]="kitchenGoodInfo[good].icon"
+            [padding]="'0'"
+            [buttons]="goodButtons(good)"
+        >
+            @for (item of goods[good]; track $index) {
+            <div class="good" [class.first]="$index === 0">
+                <div class="header">
+                    <div class="title">{{ item.good.title }}</div>
+                    <!-- SERVING -->
+                    @if (item.serving) {
+                    <div class="serving">{{ item.serving }}</div>
+                    }
+                </div>
+                <!-- UPDATE -->
+                <div class="usage" [class.no-specified]="!item.usage" (click)="updateGood(item.good)">
+                    {{ item.usage || 'نامشخص' }}
+                </div>
+                <button mat-button type="button" (click)="updateGood(item.good)">
+                    <mat-icon>edit</mat-icon>
+                </button>
+                <!-- DELETE -->
+                <button mat-button type="button" color="warn" (click)="deleteGood(item.good)">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </div>
+            } @empty {
+            <div class="empty">مشخص نشده است.</div>
+            }
+        </page-card>
+    </page-section-column>
+    }
+</page-section>
+
+<!-- LOGS -->
+@if (logs.length > 0) {
+<div class="page-seperator"></div>
+<div class="page-section">گزارش تغییرات</div>
+<div class="logs">
+    @for (log of logs; track $index) {
+    <div class="log">
+        <div class="title">{{ kitchenLogInfo[log.log].title }}</div>
+        <div class="data">
+            <div class="date">{{ log.date | ngxHelperJalali : { format: 'W، d N Y H:I' } }}</div>
+            <div class="user">{{ log.user.name }}</div>
+            <!-- DESCRIPTION -->
+            @if (log.description) {
+            <div class="description" [innerHTML]="log.description | ngxHelperMultiLine"></div>
+            }
+            <!-- CHANGES -->
+            @if (log.changes.length > 0) {
+            <div class="changes">
+                @for (change of log.changes; track $index) {
+                <div class="change">
+                    <div class="change">
+                        <div class="title page-overflow">{{ change.title }}:</div>
+                        <!-- INITIAL -->
+                        @if (change.initial) {
+                        <div class="value">{{ change.initial }}</div>
+                        }
+                        <!-- ICON -->
+                        @if (change.initial && change.changed) { <mat-icon>keyboard_double_arrow_left</mat-icon> }
+                        <!-- CHANGED -->
+                        @if (change.changed) {
+                        <div class="value">{{ change.changed }}</div>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+            }
+        </div>
+    </div>
+    }
+</div>
+}

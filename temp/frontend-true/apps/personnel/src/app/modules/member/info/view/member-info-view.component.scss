@@ -1,0 +1,25 @@
+.data {
+    .item {
+        display: flex;
+        align-items: center;
+
+        padding: 1rem;
+        border-top: 1px solid var(--borderColor);
+
+        .title {
+            width: 150px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .empty {
+            font-size: 12px;
+            font-style: italic;
+            color: var(--grayColor);
+        }
+    }
+
+    .item:first-child {
+        border-top-width: 0;
+    }
+}

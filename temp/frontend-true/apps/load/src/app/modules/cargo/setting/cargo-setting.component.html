@@ -1,0 +1,22 @@
+<content>
+    <mat-icon>info</mat-icon>
+    <section>
+        @if (cargo.setting) {
+        <!-- HAS SETTING -->
+        تنظیمات اختصاصی برای این بار ثبت شده است و فرایند حواله‌های این بار بر اساس این تنظیمات انجام می‌شود. به همین دلیل در
+        صورت تغییر تنظیمات عمومی بارهای سیستم، تغییری در فرایند حواله‌های این بار ایجاد نمی‌شود.
+
+        <!-- DELETE SETTING -->
+        <div class="delete">
+            <button mat-flat-button type="button" color="warn" (click)="delete()">حذف تنظیمات</button>
+        </div>
+        } @else {
+        <!-- NO SETTING -->
+        تنظیمات اختصاصی برای این بار ثبت نشده است و فرایند حواله‌های این بار با توجه به تنظیمات عمومی
+        <span class="color-warn">بارهای {{ loadCargoInfo[cargo.type].title }}</span> انجام خواهد شد. در صورت تمایل می‌توانید
+        تنظیمات اختصاصی بار را با استفاده از فرم زیر مشخص کنید. در صورت مشخص کردن تنظیمات اختصاصی، تغییر تنظیمات عمومی بارهای
+        سیستم تاثیری در فرایند حواله‌های این بار نخواهد داشت. }
+    </section>
+</content>
+
+<ngx-form-responsive [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form-responsive>

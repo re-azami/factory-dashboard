@@ -1,0 +1,13 @@
+<ngx-form [ngxForm]="ngxForm" (ngxChange)="ngxChange($event)" (ngxSubmit)="ngxSubmit($event)">
+    @if (location) {
+    <div class="location">
+        <div class="header">پرسنل فعلی مکان {{ location.index + 1 }}</div>
+        @for (member of location.members; track $index) {
+        <div class="member">
+            <div class="code en">{{ member.code }}</div>
+            <div class="name page-overflow">{{ member.name.first }} {{ member.name.last }}</div>
+        </div>
+        }
+    </div>
+    }
+</ngx-form>

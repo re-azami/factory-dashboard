@@ -1,0 +1,50 @@
+@if (value !== undefined) {
+<!-- SHOW VALUE -->
+<div class="value" [class.link]="!!action" (click)="!!action ? click() : null" [style.color]="getColor()">
+    <!-- LINK ICON -->
+    @if (!!action) {
+    <mat-icon>open_in_new</mat-icon>
+    }
+    <!-- COPY ICON -->
+    @if (!!copy) {
+    <mat-icon
+        [fontIcon]="copied ? 'done_all' : 'copy'"
+        class="copy"
+        [cdkCopyToClipboard]="copy"
+        (click)="setCopied()"
+    ></mat-icon>
+    }
+    <div [class.copy]="!!copy" [cdkCopyToClipboard]="copy || ''" (click)="setCopied()">
+        <span
+            [class.deactive]="deactive"
+            [class.en]="isEn"
+            [dir]="isEn ? 'ltr' : 'rtl'"
+            [class.hasDescription]="!!description"
+            [class.mono]="column.isMono"
+        >
+            @switch (column.type) {
+            <!-- DATE -->
+            @case ('DATE') { {{ value | ngxHelperJalali : { format: column.format } }} }
+            <!-- DURATION -->
+            @case ('DURATION') { <span dir="ltr">{{ value | ngxHelperDuration : { format: column.format } }}</span> }
+            <!-- FILE SIZE -->
+            @case ('FILE-SIZE') { {{ value | ngxHelperFileSize }} }
+            <!-- MOBILE -->
+            @case ('MOBILE') { {{ value | ngxHelperMobile }} }
+            <!-- NUMBER -->
+            @case ('NUMBER') { {{ value | number }} }
+            <!-- PLATE -->
+            @case ('PLATE') { <ngx-helper-plate [plate]="value.split('-')" [border]="true"></ngx-helper-plate> }
+            <!-- PRICE -->
+            @case ('PRICE') { {{ value | ngxHelperPrice }} }
+            <!-- STRING, NATIONAL-CODE -->
+            @default { {{ value }} } }
+        </span>
+    </div>
+</div>
+<!-- DESCRIPTION -->
+@if (description) {
+<div class="description" [class.en]="descriptionEn">{{ description }}</div>
+} }
+<!-- EMPTY VALUE -->
+@else { &nbsp; }

@@ -1,0 +1,26 @@
+<page-card [title]="group.title" [description]="location?.title" [icon]="'layers'" [padding]="'1rem 0 0 0'">
+    <div class="data">
+        <div class="title">تعداد مکان</div>
+        <div class="value">{{ group.location | number }}</div>
+    </div>
+    <div class="data">
+        <div class="title">تعداد مسافر</div>
+        <div class="value">{{ group.passenger | number }}</div>
+    </div>
+
+    <div class="buttons">
+        <button mat-button type="button" color="primary" [routerLink]="['/location', group.id, 'map']">نقشه</button>
+        <button
+            mat-button
+            type="button"
+            color="primary"
+            [routerLink]="['/location', group.id, 'passengers']"
+            [disabled]="group.passenger === 0"
+        >
+            مسافرها
+        </button>
+        <button mat-button type="button" color="primary" (click)="download()" [disabled]="group.location === 0">
+            دانلود
+        </button>
+    </div>
+</page-card>

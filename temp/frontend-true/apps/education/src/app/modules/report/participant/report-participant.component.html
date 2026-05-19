@@ -1,0 +1,91 @@
+<page-title [title]="title"></page-title>
+
+@if (!loading) {
+<page-section>
+    <page-section-column [sticky]="true">
+        <page-card [title]="participant.name.first + ' ' + participant.name.last" [icon]="'badge'" [padding]="'0'">
+            <div class="data">
+                <div class="title">کدپرسنلی:</div>
+                <div class="value en">{{ participant.code }}</div>
+            </div>
+            <div class="data">
+                <div class="title">واحد:</div>
+                <div class="value" [class.empty]="!participant.department">
+                    @if (participant.department ) {
+                    {{ participant.department.title }}
+                    } @else { مشخص نشده است }
+                </div>
+            </div>
+            <div class="data">
+                <div class="title">سمت:</div>
+                <div class="value" [class.empty]="!participant.position">
+                    @if (participant.position ) {
+                    {{ participant.position.title }}
+                    } @else { مشخص نشده است }
+                </div>
+            </div>
+        </page-card>
+
+        @if (results.length !== 0) {
+        <div class="page-seperator"></div>
+        <page-block [blocks]="blocks[0]" [column]="3"></page-block>
+        <div class="page-seperator"></div>
+        <page-block [blocks]="blocks[1]" [column]="2"></page-block>
+
+        <div class="page-seperator"></div>
+        <div class="export">
+            @for (type of exportTypeList; track $index) {
+            <button mat-stroked-button type="button" color="primary" (click)="export(type)">
+                {{ exportTypeInfo[type].title }}
+            </button>
+            }
+        </div>
+        }
+    </page-section-column>
+    <page-section-column [flex]="1.5">
+        @if (results.length === 0) {
+        <div class="page-comment">شرکت در دوره ثبت نشده است.</div>
+        } @else {
+        <page-card [title]="'نتایج شرکت در دوره'" [icon]="'checklist_rtl'" [padding]="'0'">
+            <table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'">
+                <tr>
+                    <th class="title">عنوان</th>
+                    <th>تعداد دوره</th>
+                    <th>مشخص نشده</th>
+                    <th>متوسط امتیاز</th>
+                </tr>
+                <tr>
+                    <td class="title">عملکرد کلاسی</td>
+                    <td>{{ results.length | number }}</td>
+                    <td>{{ emptyPerformance | number }}</td>
+                    <td class="en">{{ performance || '' }}</td>
+                </tr>
+
+                <!-- EXAM -->
+                @for (item of educationExamList; track $index) {
+                <tr>
+                    <td class="title">آزمون {{ educationExamInfo[item].title }}</td>
+                    <td>{{ exam[item].count | number }}</td>
+                    <td>{{ exam[item].empty | number }}</td>
+                    <td>{{ exam[item].score | number }}</td>
+                </tr>
+                }
+
+                <!-- CERTIFICATE -->
+                @if (certificate.study) {
+                <tr>
+                    <td class="title">گواهینامه</td>
+                    <td>{{ certificate.study | number }}</td>
+                    <td>دریافت</td>
+                    <td>{{ certificate.get | number }}</td>
+                </tr>
+                }
+            </table>
+        </page-card>
+
+        <div class="page-seperator"></div>
+        <list [list]="list" [loading]="loading" [data]="results"></list>
+        }
+    </page-section-column>
+</page-section>
+}

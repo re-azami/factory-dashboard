@@ -1,0 +1,65 @@
+@if (loading) {
+<ngx-helper-loader></ngx-helper-loader>
+} @else {
+<page-section>
+    <page-section-column>
+        <page-card [title]="'بار ثبت شده'" [icon]="'terrain'">
+            <div class="cargo">
+                <div class="cargo-title">{{ draft.cargo.title }}</div>
+                <div class="info">
+                    <div class="item">
+                        <div class="title">نوع بار</div>
+                        <div class="value">{{ loadCargoInfo[draft.cargo.type].title }}</div>
+                    </div>
+                    <div class="item">
+                        <div class="title">طرف حساب</div>
+                        <div class="value" [class.empty]="!draft.cargo.party">
+                            {{ draft.cargo.party ? draft.cargo.party.title : 'مشخص نشده است' }}
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="title">محموله</div>
+                        <div class="value" [class.empty]="!draft.cargo.shipment">
+                            {{ draft.cargo.shipment ? draft.cargo.shipment.title : 'مشخص نشده است' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </page-card>
+
+        <div class="page-seperator"></div>
+        <ul>
+            <li>
+                با توجه به اینکه نوع بار مرتبط با این حواله
+                <span class="color-warn">بار {{ loadCargoInfo[draft.cargo.type].title }}</span> انتخاب شده است. برای تغییر
+                بار فقط می‌توانید بارهای دارای همین نوع بار را انتخاب کنید. در صورتی که نوع بار اشتباه انتخاب شده است باید
+                این حواله را لغو کرده و حواله جدید در سیستم ثبت کنید.
+            </li>
+
+            <li>
+                پس از تغییر بار، اطلاعات مربوط به <span class="color-warn">طرف حساب و محموله</span> با توجه به مشخصات بار
+                جدید تغییر می‌کند.
+            </li>
+
+            <li>
+                تغییر بار، تاثیری در اطلاعات <span class="color-warn">باربری</span> مرتبط با حواله ندارد و در صورت لزوم، پس
+                از تغییر بار، باید با مراجعه به بخش ویرایش باربری، باربری ثبت شده برای حواله را تغییر دهید.
+            </li>
+
+            <li>
+                پس از تغییر بار، در صورت لزوم، اطلاعات مربوط به <span class="color-warn">هزینه حمل بار</span> با توجه به
+                تنظیمات بار جدید، تغییر خواهد کرد.
+            </li>
+
+            <!-- GENERAL -->
+            <li>
+                مشخص کردن توضیحات در هنگام ویرایش بار الزامی است و این توضیحات در گزارش تغییرات حواله نمایش داده خواهد شد.
+            </li>
+        </ul>
+    </page-section-column>
+    <page-section-column>
+        <ngx-form [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form>
+    </page-section-column>
+</page-section>
+
+}

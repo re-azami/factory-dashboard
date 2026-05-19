@@ -1,0 +1,18 @@
+<page-title [title]="title"></page-title>
+
+<page-card [title]="'مشخصات بار ' + loadCargoInfo[load.cargo.type].title" [icon]="'terrain'" [padding]="'0'">
+    <page-block [blocks]="blocks[0]" [column]="3" [border]="false"></page-block>
+    <page-block [blocks]="blocks[1]" [column]="3" [border]="false"></page-block>
+</page-card>
+
+<div class="page-seperator"></div>
+<page-section>
+    <page-section-column [width]="300">
+        <standard [(standard)]="standard"></standard>
+    </page-section-column>
+    <page-section-column>
+        <page-card [title]="'نتایج آزمایش'" [icon]="'biotech'">
+            <ngx-form-responsive [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form-responsive>
+        </page-card>
+    </page-section-column>
+</page-section>

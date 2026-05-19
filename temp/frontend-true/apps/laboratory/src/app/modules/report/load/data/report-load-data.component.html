@@ -1,0 +1,112 @@
+@if (ID) {
+<page-title [title]="title"></page-title>
+
+@if (!loading) {
+<page-card [title]="'بار'" [icon]="'terrain'" [padding]="'0'">
+    <page-section>
+        <page-section-column>
+            <page-block [blocks]="blocks[0]" [column]="2" [border]="false"></page-block>
+        </page-section-column>
+        <page-section-column>
+            <page-block [blocks]="blocks[1]" [column]="2" [border]="false"></page-block>
+        </page-section-column>
+    </page-section>
+    <page-section>
+        <page-section-column>
+            <page-block [blocks]="blocks[2]" [column]="2" [border]="false"></page-block>
+        </page-section-column>
+        <page-section-column>
+            <page-block [blocks]="blocks[3]" [column]="2" [border]="false"></page-block>
+        </page-section-column>
+    </page-section>
+</page-card>
+
+<div class="page-seperator"></div>
+
+<page-section>
+    <page-section-column [sticky]="true">
+        <page-card [title]="'تنظیمات'" [icon]="'settings'" [buttons]="dateButtons" [padding]="'0'">
+            <div class="settings">
+                <div class="item">
+                    <div class="title">از تاریخ:</div>
+                    <mat-select [value]="dates.from" (selectionChange)="this.dates.from = $event.value; setBlocks()">
+                        @for (item of dates.list; track $index) {
+                        <!-- CHECK ITEM -->
+                        @if (item.date.getTime() < dates.to.getTime()) {
+                        <mat-option [value]="item.date">{{ item.title }}</mat-option>
+                        } }
+                    </mat-select>
+                </div>
+                <div class="item">
+                    <div class="title">تا تاریخ:</div>
+                    <mat-select [value]="dates.to" (selectionChange)="this.dates.to = $event.value; setBlocks()">
+                        @for (item of dates.list; track $index) {
+                        <!-- CHECK ITEM -->
+                        @if (item.date.getTime() > dates.from.getTime()) {
+                        <mat-option [value]="item.date">{{ item.title }}</mat-option>
+                        } }
+                    </mat-select>
+                </div>
+                <mat-checkbox [checked]="dates.show" color="primary" (change)="dates.show = $event.checked">
+                    نمایش موارد انتخاب نشده
+                </mat-checkbox>
+            </div>
+        </page-card>
+    </page-section-column>
+    <page-section-column [flex]="3">
+        <page-card [title]="'نتایج آزمایش'" [icon]="'biotech'" [padding]="'0'" [buttons]="buttons">
+            <div class="table">
+                <table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+                    <tr>
+                        <th class="title frozen">تاریخ</th>
+                        <th>حواله</th>
+                        <th>وزن</th>
+                        <th>{{ laboratoryResultInfo['FE'].title }}</th>
+                        <th>{{ laboratoryResultInfo['FEO'].title }}</th>
+                        <th>{{ laboratoryResultInfo['GRIND'].title }}</th>
+                        <th>{{ laboratoryResultInfo['MOISTURE'].title }}</th>
+                        <th>{{ laboratoryResultInfo['SULPHUR'].title }}</th>
+                    </tr>
+                    @for (item of loads; track $index) {
+                    <!-- CHECK DATE -->
+                    @if (dates.show || (item.date.getTime() >= dates.from.getTime() && item.date.getTime() <=
+                    dates.to.getTime())) {
+                    <tr
+                        [class.out-of-range]="
+                            item.date.getTime() < dates.from.getTime() || item.date.getTime() > dates.to.getTime()
+                        "
+                    >
+                        <td class="title frozen">{{ item.date | ngxHelperJalali : { format: dateFormat } }}</td>
+                        <td>{{ item.draft.count | number }}</td>
+                        <td>{{ item.draft.weight | number }}</td>
+                        <td>{{ item.fe ? item.fe.result : '' }}</td>
+                        <td>{{ item.feo ? item.feo.result : '' }}</td>
+                        <td>{{ item.grind ? item.grind.result : '' }}</td>
+                        <td>{{ item.moisture ? item.moisture.result : '' }}</td>
+                        <td>{{ item.sulphur ? item.sulphur.result : '' }}</td>
+                    </tr>
+                    } }
+                    <!-- AVERAGE WEIGHT -->
+                    <tr>
+                        <td class="title frozen footer" [colSpan]="3">میانگین وزنی</td>
+                        <td class="footer">{{ getWeight('FE') | number }}</td>
+                        <td class="footer">{{ getWeight('FEO') | number }}</td>
+                        <td class="footer">{{ getWeight('GRIND') | number }}</td>
+                        <td class="footer">{{ getWeight('MOISTURE') | number }}</td>
+                        <td class="footer">{{ getWeight('SULPHUR') | number }}</td>
+                    </tr>
+                    <!-- AVERAGE -->
+                    <tr>
+                        <td class="title frozen footer" [colSpan]="3">میانگین حسابی</td>
+                        <td class="footer">{{ getAverage('FE') | number }}</td>
+                        <td class="footer">{{ getAverage('FEO') | number }}</td>
+                        <td class="footer">{{ getAverage('GRIND') | number }}</td>
+                        <td class="footer">{{ getAverage('MOISTURE') | number }}</td>
+                        <td class="footer">{{ getAverage('SULPHUR') | number }}</td>
+                    </tr>
+                </table>
+            </div>
+        </page-card>
+    </page-section-column>
+</page-section>
+} }

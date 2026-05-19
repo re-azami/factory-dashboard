@@ -1,0 +1,25 @@
+@if (loading) {
+<ngx-helper-loader></ngx-helper-loader>
+} @else {
+
+<!-- EMPTY LIST -->
+@if (data.length === 0) {
+<div class="empty">{{ list.type }} ثبت نشده است.</div>
+} @else {
+<!-- DESKTIOP VIEW -->
+@if (!size.isMobile) {
+<list-grid [list]="list" [data]="data"></list-grid>
+}
+<!-- MOBILE VIEW -->
+@else {
+<list-card [list]="list" [data]="data"></list-card>
+} }
+
+<!-- PAGINATION -->
+@if (pagination ) {
+<ngx-helper-pagination
+    [current]="pagination.page.current"
+    [total]="pagination.page.total"
+    (page)="pageChanged.emit($event)"
+></ngx-helper-pagination>
+} }

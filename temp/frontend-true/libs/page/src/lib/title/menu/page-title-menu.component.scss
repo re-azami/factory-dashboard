@@ -1,0 +1,17 @@
+.menu-item {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+
+    .description {
+        font-size: 11px;
+        text-align: justify;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    button.trigger {
+        padding: 0;
+        width: 36px;
+        min-width: auto;
+    }
+}

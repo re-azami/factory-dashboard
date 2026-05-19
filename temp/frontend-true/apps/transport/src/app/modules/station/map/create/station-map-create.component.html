@@ -1,0 +1,162 @@
+@if (loading) {
+<ngx-helper-loader></ngx-helper-loader>
+}
+
+<content>
+    @if (!loading) {
+    <div class="menu">
+        <!-- GROUP -->
+        @if (group) {
+        <div class="group page-overflow">{{ group.title }}</div>
+        }
+
+        <div class="buttons">
+            <!-- CALCULATE -->
+            @if (!station) {
+            <button mat-button type="button" color="primary" [disabled]="locations.length === 0" (click)="calculate()">
+                <mat-icon>group_work</mat-icon>
+            </button>
+            }
+            <!-- CREATE -->
+            @if (centers.length !== 0 && !station) {
+            <button mat-button type="button" color="primary" (click)="create()">
+                <mat-icon>save</mat-icon>
+            </button>
+            }
+            <!-- UPDATE -->
+            @if (centers.length !== 0 && !!station) {
+            <button mat-button type="button" color="primary" [routerLink]="['/station', 'map', station.id, 'update']">
+                <mat-icon>edit_note</mat-icon>
+            </button>
+            }
+            <!-- ROUTE -->
+            @if (centers.length !== 0 && !!station && routeAccess) {
+            <button mat-button type="button" color="primary" [routerLink]="['/route', 'create', station.id]">
+                <mat-icon>route</mat-icon>
+            </button>
+            }
+            <div class="seperator"></div>
+            <button mat-button type="button" color="primary" [routerLink]="['/station']">
+                <mat-icon color="warn">cancel</mat-icon>
+            </button>
+        </div>
+
+        <!-- CENTERS -->
+        @if (centers.length !== 0) { @if (!station) {
+        <div class="no-station">برای فعال کردن امکان ویرایش ایستگاه‌ها، اطلاعات را ذخیره کنید.</div>
+        } @else {
+        <div class="header">
+            <div class="title">{{ station.title }}</div>
+        </div>
+        <div class="counts">
+            <div class="count">
+                <div class="title">ایستگاه</div>
+                <div class="value">{{ station.count.center | number }}</div>
+            </div>
+            <div class="count">
+                <div class="title">مکان</div>
+                <div class="value">{{ station.count.location | number }}</div>
+            </div>
+            <div class="count">
+                <div class="title">مسافر</div>
+                <div class="value">{{ station.count.passenger | number }}</div>
+            </div>
+        </div>
+        }
+
+        <div class="header">
+            <div class="title">ایستگاه‌ها</div>
+        </div>
+        <mat-select [(value)]="centerIndex" (valueChange)="setCenterIndex()">
+            <mat-option [value]="null"></mat-option>
+            @for (center of centers; track $index) {
+            <mat-option [ngStyle]="{ color: center.color }" [value]="$index"> ایستگاه {{ $index + 1 }} </mat-option>
+            }
+        </mat-select>
+
+        <!-- CENTER -->
+        @if (centerIndex !== null) {
+        <table class="locations" [cellPadding]="0" [cellSpacing]="0">
+            <tr>
+                <th>مسافر</th>
+                <th>فاصله</th>
+                <th>زمان</th>
+            </tr>
+            @for (location of centers[centerIndex].locations; track $index) {
+            <tr>
+                <td>{{ location.passengers.length | number }}</td>
+                <td>{{ location.distance | number }}</td>
+                <td>{{ location.time | ngxHelperDuration }}</td>
+            </tr>
+            }
+        </table>
+        } }
+
+        <!-- DISTANCE -->
+        @if (distances.length !== 0) {
+        <div class="header">
+            <div class="title">فاصله از ایستگاه</div>
+            <button
+                mat-button
+                type="button"
+                color="primary"
+                [disabled]="distanceIndex === 0"
+                (click)="distanceIndex = distanceIndex - 1"
+            >
+                <mat-icon>keyboard_double_arrow_right</mat-icon>
+            </button>
+            <button
+                mat-button
+                type="button"
+                color="primary"
+                [disabled]="distanceIndex === distances.length - 1"
+                (click)="distanceIndex = distanceIndex + 1"
+            >
+                <mat-icon>keyboard_double_arrow_left</mat-icon>
+            </button>
+        </div>
+        <div class="distance">
+            <div class="data">
+                <div
+                    class="station"
+                    [ngStyle]="{ color: distances[distanceIndex].color }"
+                    (click)="this.centerIndex = distances[distanceIndex].station; setCenterIndex()"
+                >
+                    ایستگاه {{ distances[distanceIndex].station + 1 }}
+                </div>
+                <div class="index">{{ distanceIndex + 1 | number }} از {{ distances.length }}</div>
+            </div>
+            <div class="item">
+                <div class="title">فاصله:</div>
+                <div class="value">{{ distances[distanceIndex].distance | number }} متر</div>
+            </div>
+            <div class="item">
+                <div class="title">زمان:</div>
+                <div class="value">{{ distances[distanceIndex].time | ngxHelperDuration }}</div>
+            </div>
+            <div class="item">
+                <div class="title">مسافرها:</div>
+                <div class="value">
+                    <ul>
+                        @for (passenger of distances[distanceIndex].location.passengers; track $index) {
+                        <li>
+                            {{ passenger.name }}
+                        </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+    }
+
+    <div id="map" class="map"></div>
+
+    <tooltip-location [location]="selectedLocation"></tooltip-location>
+    <tooltip-center
+        [index]="selectedCenter?.index"
+        [center]="selectedCenter?.center"
+        [location]="selectedCenter?.location"
+    ></tooltip-center>
+</content>

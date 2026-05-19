@@ -1,0 +1,19 @@
+<page-title [title]="title"></page-title>
+
+<page-section>
+    <page-section-column [flex]="2">
+        <recipe-good [good]="'INGREDIENT'" [(goods)]="ingredientGoods"></recipe-good>
+        <div class="page-seperator"></div>
+        <page-section>
+            <page-section-column>
+                <recipe-good [good]="'ADDITIVE'" [(goods)]="additiveGoods"></recipe-good>
+            </page-section-column>
+            <page-section-column>
+                <recipe-good [good]="'CONSUMABLE'" [(goods)]="consumableGoods"></recipe-good>
+            </page-section-column>
+        </page-section>
+    </page-section-column>
+    <page-section-column>
+        <ngx-form [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form>
+    </page-section-column>
+</page-section>

@@ -1,0 +1,36 @@
+<page-alert [alerts]="alerts" [(showAlerts)]="showAlerts"></page-alert>
+
+<header>
+    <page-header
+        [id]="id"
+        [menu]="pageMenu"
+        [size]="size"
+        [loading]="loading"
+        [user]="user"
+        [hasAlert]="alerts.length > 0"
+        [(showAlerts)]="showAlerts"
+    ></page-header>
+</header>
+
+<content>
+    <ng-content></ng-content>
+</content>
+
+<footer [@footer]="user !== undefined && size.isMobile && pageMenu.length > 0 ? 'show' : 'hide'">
+    <page-footer [id]="id" [menu]="pageMenu"></page-footer>
+</footer>
+
+<!-- LOADING -->
+@if (loading) {
+<div class="loading"></div>
+}
+
+<!-- OFFLINE -->
+@if (offline) {
+<div class="offline">
+    <div class="message">خطا در اتصال به شبکه</div>
+</div>
+}
+
+<!-- UPDATE -->
+<div class="update" [@update]="updated ? 'show' : 'hide'" (click)="update()">به‌روزرسانی</div>

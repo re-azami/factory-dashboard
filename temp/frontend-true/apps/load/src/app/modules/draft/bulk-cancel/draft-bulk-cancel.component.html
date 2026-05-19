@@ -1,0 +1,57 @@
+<page-title [title]="title"></page-title>
+
+@if (!loading) {
+<!-- NO DRAFT -->
+@if (drafts.length === 0) {
+<div class="page-comment">حواله فعال و قابل لغو ثبت نشده است.</div>
+} @else {
+<page-section>
+    <page-section-column [width]="250" [sticky]="true">
+        <page-card [title]="'بارها'" [icon]="'terrain'" [padding]="'0'">
+            @for (item of cargos; track $index) {
+            <div class="cargo" (click)="setCargo(item.id)">
+                <div class="title">{{ item.title }}</div>
+                <div class="count">{{ item.count | number }} حواله</div>
+            </div>
+            }
+        </page-card>
+    </page-section-column>
+    <page-section-column>
+        <div class="drafts">
+            <table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+                <tr>
+                    <th class="frozen">شماره حواله</th>
+                    <th class="plate">ناوگان</th>
+                    <th>بار</th>
+                    <th>طرف حساب</th>
+                    <th>باربری</th>
+                </tr>
+                @for (item of drafts; track $index) {
+                <tr>
+                    <td class="frozen">
+                        <div class="code" (click)="selectDraft(item.id)">
+                            <mat-icon color="primary">
+                                {{ selected.includes(item.id) ? 'check_box' : 'check_box_outline_blank' }}
+                            </mat-icon>
+                            <div class="en">{{ item.code }}</div>
+                        </div>
+                    </td>
+                    <td><ngx-helper-plate [plate]="item.plate.split('-')"></ngx-helper-plate></td>
+                    <td>{{ item.cargo.title }}</td>
+                    <td>{{ item.cargo.party ? item.cargo.party.title : '' }}</td>
+                    <td>{{ item.transporter ? item.transporter.title : '' }}</td>
+                </tr>
+                }
+            </table>
+        </div>
+
+        @if (selected.length !== 0) {
+        <div class="page-seperator"></div>
+        <div class="selected">حواله‌های مشخص شده: {{ selected.length | number }}</div>
+
+        <div class="page-seperator"></div>
+        <ngx-form-responsive [ngxForm]="ngxForm" (ngxSubmit)="ngxSubmit($event)"></ngx-form-responsive>
+        }
+    </page-section-column>
+</page-section>
+} }

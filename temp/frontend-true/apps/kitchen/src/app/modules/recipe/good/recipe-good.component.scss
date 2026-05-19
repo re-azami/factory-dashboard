@@ -1,0 +1,53 @@
+:host {
+    display: block;
+    border-radius: 4px;
+    border: 1px solid var(--borderColor);
+
+    header {
+        display: flex;
+        align-items: center;
+
+        padding-right: 1rem;
+        border-radius: 4px 4px 0 0;
+        background-color: var(--backgroundColor);
+
+        .title {
+            flex: 1;
+        }
+    }
+
+    .empty {
+        padding: 3rem 0;
+        text-align: center;
+        font-size: 12px;
+        color: var(--warnColor);
+        border-top: 1px solid var(--borderColor);
+    }
+
+    .goods {
+        .good {
+            border-top: 1px solid var(--borderColor);
+
+            .header {
+                display: flex;
+                align-items: center;
+
+                .title {
+                    flex: 1;
+                    padding-right: 1rem;
+                }
+
+                .serving {
+                    font-size: 13px;
+                    padding-left: 1rem;
+                }
+            }
+
+            .description {
+                font-size: 12px;
+                text-align: justify;
+                padding: 0 1rem 1rem 1rem;
+            }
+        }
+    }
+}

@@ -1,0 +1,10 @@
+@if (parents.length > 0) {}
+<div class="parents">
+    @for (parent of parents; track $index) {
+    <div class="parent" [class.link]="!!route" [routerLink]="route ? route(parent) : null">
+        <div class="question">{{ warehouseQuestion[$index].title }}</div>
+        <div class="answer">{{ parent.dto.title }}</div>
+        <div class="mono">{{ parent.fullKey }}</div>
+    </div>
+    }
+</div>

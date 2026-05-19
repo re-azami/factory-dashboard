@@ -1,0 +1,40 @@
+.truck {
+    display: flex;
+    align-items: center;
+
+    .type {
+        flex: 1;
+    }
+}
+
+.truck-data {
+    margin-top: 2rem;
+
+    display: flex;
+    align-items: center;
+
+    .item {
+        flex-grow: 1;
+
+        .title {
+            font-size: 12px;
+            opacity: 0.75;
+        }
+    }
+}
+
+.truck-empty {
+    margin: 2rem 0;
+    text-align: center;
+    opacity: 0.75;
+}
+
+ul {
+    margin-right: 1rem;
+
+    li {
+        text-align: justify;
+        font-size: 13px;
+        margin-bottom: 1rem;
+    }
+}

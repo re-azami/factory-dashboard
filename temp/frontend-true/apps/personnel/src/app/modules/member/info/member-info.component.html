@@ -1,0 +1,97 @@
+<page-title [title]="title"></page-title>
+
+@if (!access.manager && !access.status && !access.update) {
+<member-info-view [member]="member"></member-info-view>
+} @else {
+<page-tab [activeTab]="activeTab" (activeTabChanged)="activeTab = $event">
+    <page-tab-content [title]="'مشخصات پرسنل'" [active]="activeTab === 0">
+        @if (activeTab === 0) {
+        <member-info-view [member]="member"></member-info-view>
+        }
+    </page-tab-content>
+
+    <!-- STATUS -->
+    @if (tabs.STATUS) {
+    <page-tab-content [title]="tabs.STATUS.title" [active]="activeTab === tabs.STATUS.index">
+        @if (activeTab === tabs.STATUS.index) {
+        <member-status [member]="member" (updated)="setMember($event)" (canceled)="activeTab = 0"></member-status>
+        }
+    </page-tab-content>
+    }
+    <!-- UPDATE -->
+    @if (tabs.UPDATE) {
+    <page-tab-content [title]="tabs.UPDATE.title">
+        @if (activeTab === tabs.UPDATE.index) {
+        <member-update
+            [member]="member"
+            (updated)="setMember($event); activeTab = 0"
+            (canceled)="activeTab = 0"
+        ></member-update>
+        }
+    </page-tab-content>
+    }
+    <!-- CODE -->
+    @if (tabs.CODE) {
+    <page-tab-content [title]="tabs.CODE.title">
+        @if (activeTab === tabs.CODE.index) {
+        <member-update-code
+            [member]="member"
+            (updated)="setMember($event); activeTab = 0"
+            (canceled)="activeTab = 0"
+        ></member-update-code>
+        }
+    </page-tab-content>
+    }
+    <!-- EMPLOYEMENT -->
+    @if (tabs.EMPLOYEMENT) {
+    <page-tab-content [title]="tabs.EMPLOYEMENT.title">
+        @if (activeTab === tabs.EMPLOYEMENT.index) {
+        <member-update-employement
+            [member]="member"
+            (updated)="setMember($event); activeTab = 0"
+            (canceled)="activeTab = 0"
+        ></member-update-employement>
+        }
+    </page-tab-content>
+    }
+    <!-- DEPARTMENT -->
+    @if (tabs.DEPARTMENT) {
+    <page-tab-content [title]="tabs.DEPARTMENT.title">
+        @if (activeTab === tabs.DEPARTMENT.index) {
+        <member-update-department
+            [groups]="groups"
+            [member]="member"
+            (updated)="setMember($event); activeTab = 0"
+            (canceled)="activeTab = 0"
+        ></member-update-department>
+        }
+    </page-tab-content>
+    }
+    <!-- POSITION -->
+    @if (tabs.POSITION) {
+    <page-tab-content [title]="tabs.POSITION.title">
+        @if (activeTab === tabs.POSITION.index) {
+        <member-update-position
+            [groups]="groups"
+            [member]="member"
+            (updated)="setMember($event); activeTab = 0"
+            (canceled)="activeTab = 0"
+        ></member-update-position>
+        }
+    </page-tab-content>
+    }
+    <!-- EDUCATION -->
+    @if (tabs.EDUCATION) {
+    <page-tab-content [title]="tabs.EDUCATION.title">
+        @if (activeTab === tabs.EDUCATION.index) {
+        <member-update-education
+            [groups]="groups"
+            [member]="member"
+            (updated)="setMember($event); activeTab = 0"
+            (canceled)="activeTab = 0"
+        ></member-update-education>
+        }
+    </page-tab-content>
+    }
+</page-tab>
+}

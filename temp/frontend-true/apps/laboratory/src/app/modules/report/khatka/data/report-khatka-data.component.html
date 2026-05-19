@@ -1,0 +1,92 @@
+@if (ID) {
+<page-title [title]="title"></page-title>
+
+@if (!loading) {
+<page-card [title]="'بار'" [icon]="'terrain'" [padding]="'0'">
+    <page-block [blocks]="blocks[0]" [column]="3" [border]="false"></page-block>
+    <page-block [blocks]="blocks[1]" [column]="3" [border]="false"></page-block>
+
+    <!-- PORTIONS -->
+    @if (portions.length > 0) {
+    <div class="portions">
+        <table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+            <tr>
+                <th>بار</th>
+                <th class="info">طرف حساب</th>
+                <th class="info">محموله</th>
+                <th class="center">نسبت</th>
+            </tr>
+            @for (item of portions; track $index) {
+            <tr>
+                <td>
+                    {{ item.title }}
+                    <div class="type">{{ loadCargoInfo[item.type].title }}</div>
+                </td>
+                <td class="info">{{ item.party?.title || '' }}</td>
+                <td class="info">{{ item.shipment?.title || '' }}</td>
+                <td class="center en">{{ item.proportion }}</td>
+            </tr>
+            }
+        </table>
+    </div>
+    }
+</page-card>
+
+<!-- CRUSHERS -->
+@for (location of laboratoryKhatkaList; track $index) {
+<!-- CHECK LOCATIONS -->
+@if (locations[location].count !== 0) {
+<div class="page-seperator"></div>
+<div class="result">
+    <page-card
+        [title]="laboratoryKhatkaInfo[location].title"
+        [icon]="'biotech'"
+        [padding]="'0'"
+        [buttons]="locations[location].buttons"
+    >
+        <div class="table">
+            <table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+                <tr>
+                    <th class="frozen">خط</th>
+                    <th class="title frozen-date">تاریخ</th>
+                    <th>تناژ خوراک</th>
+                    <th>تناژ تولید</th>
+                    <th>{{ laboratoryResultInfo['FE'].title }}</th>
+                    <th>{{ laboratoryResultInfo['FEO'].title }}</th>
+                    <th>{{ laboratoryResultInfo['GRIND'].title }}</th>
+                    <th>{{ laboratoryResultInfo['MOISTURE'].title }}</th>
+                    <th>{{ laboratoryResultInfo['SULPHUR'].title }}</th>
+                </tr>
+                @for (line of laboratoryLineList; track $index) {
+                <!-- CHECK LINE -->
+                @if (locations[location].lines[line].length > 0) {
+                <!-- CRUSHERS -->
+                @for (crusher of locations[location].lines[line]; track $index) {
+                <tr>
+                    <!-- LINE -->
+                    @if ($index === 0) {
+                    <td class="frozen" [rowSpan]="locations[location].lines[line].length">
+                        {{ laboratoryLineInfo[crusher.line].title }}
+                    </td>
+                    }
+                    <td class="title frozen-date">
+                        {{ crusher.time.begin | ngxHelperJalali }}
+                        <div class="time">
+                            {{ crusher.time.begin | ngxHelperJalali : { format: 'H:I' } }} تا
+                            {{ crusher.time.end | ngxHelperJalali : { format: 'H:I' } }}
+                        </div>
+                    </td>
+                    <td>{{ crusher.tonnage.feed | number }}</td>
+                    <td>{{ crusher.tonnage.product | number }}</td>
+                    <td>{{ getResult(crusher, location, 'FE') | number }}</td>
+                    <td>{{ getResult(crusher, location, 'FEO') | number }}</td>
+                    <td>{{ getResult(crusher, location, 'GRIND') | number }}</td>
+                    <td>{{ getResult(crusher, location, 'MOISTURE') | number }}</td>
+                    <td>{{ getResult(crusher, location, 'SULPHUR') | number }}</td>
+                </tr>
+                } } }
+            </table>
+        </div>
+    </page-card>
+</div>
+} } } }

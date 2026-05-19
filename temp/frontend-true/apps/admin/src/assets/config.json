@@ -1,0 +1,7 @@
+{
+    "domain": "cargo.ir",
+    "apiUrl": "http://localhost:3000/",
+    "applicationTitle": "اسمیران",
+    "applicationEnglish": "ESMIRAN",
+    "build": "00000000-0000.00"
+}

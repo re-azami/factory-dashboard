@@ -1,0 +1,13 @@
+<page-title [title]="title" (calendarChanged)="setDate($event)"></page-title>
+
+@if (from && to) {
+<page-tab [activeTab]="activeTab" (activeTabChanged)="activeTab = $event">
+    @for (item of laboratoryResultList; track $index) {
+    <page-tab-content [title]="laboratoryResultInfo[item].title" [active]="activeTab === $index">
+        @if (activeTab === $index) {
+        <report-average-test [from]="from" [to]="to" [test]="item"></report-average-test>
+        }
+    </page-tab-content>
+    }
+</page-tab>
+}

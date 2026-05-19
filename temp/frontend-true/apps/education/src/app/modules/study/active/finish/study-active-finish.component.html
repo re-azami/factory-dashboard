@@ -1,0 +1,9 @@
+<page-card [title]="study.course.title" [icon]="'school'" [padding]="'0'" [buttons]="buttons">
+    <page-section>
+        <page-section-column><page-block [blocks]="blocks[0]" [border]="false"></page-block></page-section-column>
+        <page-section-column><page-block [blocks]="blocks[1]" [border]="false"></page-block></page-section-column>
+    </page-section>
+</page-card>
+
+<div class="page-seperator"></div>
+<list [list]="list" [loading]="loading" [data]="participants"></list>

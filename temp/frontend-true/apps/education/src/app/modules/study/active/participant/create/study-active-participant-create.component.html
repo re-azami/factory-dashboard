@@ -1,0 +1,46 @@
+<header>
+    <ngx-helper-menu [menu]="departmentsMenu" [icon]="'business'" [title]="'واحد'" [border]="1"></ngx-helper-menu>
+    <div class="search">
+        <input type="text" placeholder="نام و نام خانوادگی" (keyup)="setNameFilter(nameInput.value)" #nameInput />
+        <mat-icon>search</mat-icon>
+    </div>
+    <div class="search">
+        <input type="text" placeholder="کدپرسنلی" class="en" dir="ltr" (keyup)="setCodeFilter(codeInput.value)" #codeInput />
+        <mat-icon>search</mat-icon>
+    </div>
+    <div class="seperator"></div>
+    <button
+        mat-flat-button
+        type="button"
+        [color]="study.participant.count + selected.length <= study.participant.maximum ? 'primary' : 'warn'"
+        [disabled]="selected.length === 0"
+        (click)="select()"
+    >
+        @if (selected.length !== 0) { &nbsp; {{ selected.length | number }} نفر }
+        <mat-icon [fontIcon]="'add'"></mat-icon>
+    </button>
+</header>
+
+<content class="personnel">
+    @for (personnel of personnels; track $index) {
+    <ngx-helper-list
+        [id]="personnel.id"
+        [data]="personnel"
+        [deactive]="selected.includes(personnel.id)"
+        (click)="toggle(personnel.id)"
+    >
+        <ng-container ngx-helper-list-icon>
+            <mat-icon [fontIcon]="selected.includes(personnel.id) ? 'task_alt' : 'circle'"></mat-icon>
+        </ng-container>
+        <ng-container ngx-helper-list-data>
+            <div class="name">{{ personnel.name.first + ' ' + personnel.name.last }}</div>
+            <div class="code en">{{ personnel.code }}</div>
+        </ng-container>
+        <ng-container ngx-helper-list-extra>
+            <div class="data">{{ personnel.position.title }} / {{ personnel.department.title }}</div>
+        </ng-container>
+    </ngx-helper-list>
+    } @empty {
+    <div class="page-comment">پرسنل ثبت نشده است.</div>
+    }
+</content>

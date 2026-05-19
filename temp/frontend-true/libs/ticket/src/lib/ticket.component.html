@@ -1,0 +1,4 @@
+@if (app) {
+<page-title [(page)]="page" [title]="title" (paramChanged)="loadList($event)"></page-title>
+<list [list]="list" [loading]="loading" [data]="tickets" [pagination]="pagination" (pageChanged)="page = $event"></list>
+}

@@ -1,0 +1,2 @@
+<page-title [(page)]="page" [title]="title" (paramChanged)="loadList($event)"></page-title>
+<list [list]="list" [loading]="loading" [data]="checkouts" [pagination]="pagination" (pageChanged)="page = $event"></list>

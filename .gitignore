@@ -20,8 +20,12 @@ data/models/
 # Local prompt drafts — kept out of git
 prompts/
 
-# Reference projects dropped in for learning — not part of this codebase
-temp/
+# Reference projects dropped in for learning — not part of this codebase.
+# `temp/frontend-true/` is the exception: it's the Angular reference monorepo
+# we mirror for the SPA migration and must be available on every dev host
+# (including the production server). See CLAUDE.md "Frontend (Angular SPA)".
+temp/*
+!temp/frontend-true/
 
 # Jupyter
 .ipynb_checkpoints/

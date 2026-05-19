@@ -1,0 +1,19 @@
+<page-title [title]="title"></page-title>
+
+@if (!loading) {
+<page-tab (activeTabChanged)="activeTab = $event">
+    @for (item of logs; track $index) {
+    <page-tab-content [title]="item.title" [active]="$index === 0">
+        <page-block
+            [blocks]="[
+                { title: 'اطلاعات', value: item.count },
+                { title: 'حجم', value: item.size | ngxHelperFileSize }
+            ]"
+        ></page-block>
+
+        <div class="page-seperator"></div>
+        <list [list]="activeTab === 0 ? dbList : serviceList" [loading]="loading" [data]="item.data"></list>
+    </page-tab-content>
+    }
+</page-tab>
+}

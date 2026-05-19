@@ -1,0 +1,235 @@
+@if (loading) {
+<ngx-helper-loader></ngx-helper-loader>
+} @else {
+<div class="header">
+    <div class="select">
+        <mat-form-field [appearance]="'fill'" [floatLabel]="'always'">
+            <mat-label>نوع بار</mat-label>
+            <mat-select (valueChange)="setType($event)" multiple [placeholder]="'تمام انواع بار'">
+                <mat-select-trigger>{{ filter.types.length > 0 ? filter.types.length + ' گزینه' : '' }}</mat-select-trigger>
+                @for (cargo of loadCargoList; track $index) {
+                <!-- CHECK SITE TYPE -->
+                @if (cargo !== 'SITE' || showSiteCargo) {
+                <mat-option [value]="cargo">{{ loadCargoInfo[cargo].title }}</mat-option>
+                } }
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div class="select">
+        <mat-form-field [appearance]="'fill'" [floatLabel]="'always'">
+            <mat-label>فرایند</mat-label>
+            <mat-select (valueChange)="setFlow($event)" multiple [placeholder]="'تمام مراحل فرایند'">
+                <mat-select-trigger>{{ filter.flows.length > 0 ? filter.flows.length + ' گزینه' : '' }}</mat-select-trigger>
+                @for (flow of loadFlowList; track $index) {
+                <mat-option [value]="flow">{{ loadFlowInfo[flow].title }}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <!-- CARGO -->
+    @if (cargos.length > 1) {
+    <div class="select">
+        <mat-form-field [appearance]="'fill'" [floatLabel]="'always'">
+            <mat-label>بار</mat-label>
+            <mat-select (valueChange)="setCargo($event)" multiple [placeholder]="'تمام بارها'">
+                <mat-select-trigger>
+                    {{ filter.cargos.length > 0 ? filter.cargos.length + ' گزینه' : '' }}
+                </mat-select-trigger>
+                @for (cargo of cargos; track $index) {
+                <mat-option [value]="cargo.id">{{ cargo.title }}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+    </div>
+    }
+    <!-- SHIPMENT -->
+    @if (shipments.length > 1) {
+    <div class="select">
+        <mat-form-field [appearance]="'fill'" [floatLabel]="'always'">
+            <mat-label>محموله</mat-label>
+            <mat-select (valueChange)="setShipment($event)" multiple [placeholder]="'تمام محموله‌ها'">
+                <mat-select-trigger>
+                    {{ filter.shipments.length > 0 ? filter.shipments.length + ' گزینه' : '' }}
+                </mat-select-trigger>
+                @for (shipment of shipments; track $index) {
+                <mat-option [value]="shipment.id">{{ shipment.title }}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+    </div>
+    }
+
+    <div class="item">
+        <div class="title">تعداد حواله</div>
+        <div class="value">{{ filtered.length | number }}</div>
+    </div>
+    <div
+        class="item click active"
+        [class.view]="view === 'ACTIVE'"
+        (click)="active.length === 0 ? undefined : (view = view !== 'ACTIVE' ? 'ACTIVE' : undefined)"
+    >
+        <div class="title">فعال</div>
+        <div class="value">{{ active.length | number }}</div>
+    </div>
+    <div
+        class="item click delay"
+        [class.view]="view === 'DELAY'"
+        (click)="view = delayed.length === 0 ? undefined : view !== 'DELAY' ? 'DELAY' : undefined"
+    >
+        <div class="title">تاخیر</div>
+        <div class="value">{{ delayed.length | number }}</div>
+    </div>
+    <div
+        class="item click cancel"
+        [class.view]="view === 'CANCEL'"
+        (click)="canceled.length === 0 ? undefined : (view = view !== 'CANCEL' ? 'CANCEL' : undefined)"
+    >
+        <div class="title">لغو شده</div>
+        <div class="value">{{ canceled.length | number }}</div>
+    </div>
+    <div
+        class="item click done"
+        [class.view]="view === 'FINISH'"
+        (click)="finished.list.length === 0 ? undefined : (view = view !== 'FINISH' ? 'FINISH' : undefined)"
+    >
+        <div class="title">پایان</div>
+        <div class="value">
+            {{ finished.list.length | number }} <span class="unit">حواله |</span> {{ finished.weight | number }}
+            <span class="unit">کیلو</span>
+        </div>
+    </div>
+</div>
+
+<table [cellPadding]="0" [cellSpacing]="0" [border]="0">
+    <tr>
+        <th>شماره حواله</th>
+        <th>بار</th>
+        <!-- PARTY -->
+        @if (!setting.hidden.party) {
+        <th>طرف حساب</th>
+        }
+        <!-- SHIPMENT -->
+        @if (!setting.hidden.shipment) {
+        <th>محموله</th>
+        }
+        <!-- TRANSPORTER -->
+        @if (!setting.hidden.transporter) {
+        <th>باربری</th>
+        }
+        <th>ناوگان</th>
+        <!-- DRIVER -->
+        @if (!setting.hidden.driver) {
+        <th>راننده</th>
+        }
+        <!-- MOBILE -->
+        @if (!setting.hidden.mobile) {
+        <th>موبایل</th>
+        }
+        <th>وزن خالی</th>
+        <th>وزن پر</th>
+        <th>وزن خالص</th>
+        <th colspan="2">ثبت</th>
+        <th>مرحله فرایند</th>
+        <th class="setting">
+            <button mat-button type="button" color="primary" (click)="changeSetting()"><mat-icon>settings</mat-icon></button>
+        </th>
+    </tr>
+    @for (draft of filtered; track $index; ) {
+    <!-- CHECK VIEW -->
+    @if (checkView(draft)) {
+    <tr>
+        <td class="code en">
+            <!-- CODE -->
+            @if (viewAccess) {
+            <div class="draft-code" [routerLink]="['/draft', 'info', draft.id]">
+                <mat-icon>open_in_new</mat-icon>
+                <div class="en">{{ draft.code }}</div>
+            </div>
+            } @else { {{ draft.code }} }
+
+            <!-- STEPS -->
+            @if (draft.status === 'ACTIVE') {
+            <div class="steps">
+                @for (step of steps[draft.id]; track $index) {
+                <div
+                    class="step"
+                    [style.background-color]="colors[step]"
+                    [style.border]="colors[step] === 'transparent' ? '1px solid var(--borderColor)' : ''"
+                ></div>
+                }
+            </div>
+            }
+        </td>
+        <td>
+            {{ draft.cargo.title }}
+            <div class="cargo-type">{{ loadCargoInfo[draft.cargo.type].title }}</div>
+        </td>
+        <!-- PARTY -->
+        @if (!setting.hidden.party) {
+        <td>{{ draft.cargo.party ? draft.cargo.party.title : '' }}</td>
+        }
+        <!-- SHIPMENT -->
+        @if (!setting.hidden.shipment) {
+        <td>{{ draft.cargo.shipment ? draft.cargo.shipment.title : '' }}</td>
+        }
+        <!-- TRANSPORTER -->
+        @if (!setting.hidden.transporter) {
+        <td>{{ draft.transporter ? draft.transporter.title : '' }}</td>
+        }
+        <td>
+            <div class="plate"><ngx-helper-plate [plate]="draft.plate.split('-')"></ngx-helper-plate></div>
+        </td>
+        <!-- DRIVER -->
+        @if (!setting.hidden.driver) {
+        <td>{{ draft.truck ? draft.truck.driver.name : '' }}</td>
+        }
+        <!-- MOBILE -->
+        @if (!setting.hidden.mobile) {
+        <td class="center en">{{ draft.truck ? (draft.truck.driver.mobile | ngxHelperMobile) : '' }}</td>
+        }
+        <td class="center weight">{{ draft.weight.empty | number }}</td>
+        <td class="center weight">{{ draft.weight.full | number }}</td>
+        <td class="center weight">{{ draft.weight.net | number }}</td>
+        <td class="center">{{ draft.date.create | ngxHelperJalali : { format: 'd N' } }}</td>
+        <td class="center">{{ draft.date.create | ngxHelperJalali : { format: 'H:I' } }}</td>
+        <td
+            class="flow"
+            [class.delay]="draft.status === 'ACTIVE' && delayed.includes(draft.id)"
+            [class.finish]="draft.status === 'FINISHED'"
+            [class.cancel]="draft.status === 'CANCELED'"
+            [colSpan]="draft.status === 'ACTIVE' ? 1 : 2"
+        >
+            {{ getDraftFlow(draft) }}
+            <!-- PREVOUS STEP -->
+            @if (draft.status === 'ACTIVE' && draft.previousStep) {
+            <div class="description">
+                <div class="info">
+                    <div class="title">مرحله قبل: {{ getDraftStep(draft.cargo.type, draft.previousStep.step) }}</div>
+                    <div>{{ getDuraton(draft.previousStep.date, { suffix: 'قبل' }) }}</div>
+                </div>
+            </div>
+            }
+            <!-- FINISH TIME -->
+            @if (draft.status === 'FINISHED') {
+            <div class="description">
+                <div class="info">
+                    <div class="title">{{ draft.date.finish | ngxHelperJalali : { format: 'H:I' } }}</div>
+                    <div>{{ getDuraton(draft.date.create, { from: draft.date.finish, prefix: 'زمان فرایند:' }) }}</div>
+                </div>
+            </div>
+            }
+            <!-- CANCEL DESCRIPTION -->
+            @if (draft.status === 'CANCELED' && draft.cancelDescription) {
+            <div class="description" [innerHTML]="draft.cancelDescription | ngxHelperMultiLine"></div>
+            }
+        </td>
+        <!-- TOOLS -->
+        @if (draft.status === 'ACTIVE') {
+        <td class="tools" [class.delay]="draft.status === 'ACTIVE' && delayed.includes(draft.id)">
+            <ngx-helper-menu [menu]="getMenu(draft)"></ngx-helper-menu>
+        </td>
+        }
+    </tr>
+    } }
+</table>
+}

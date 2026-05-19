@@ -1,0 +1,20 @@
+@if (blocks.length > 0) {
+
+<div class="blocks" [ngStyle]="{ 'grid-template-columns': columns }">
+    @for (block of blocks; track $index) {
+    <div class="block" [class.page-box-shadow]="border">
+        <div class="title">{{ block.title }}</div>
+        <div
+            class="value"
+            [class.empty]="values[$index] === null"
+            [class.en]="values[$index] !== null && !!block.english"
+            [ngClass]="[block.color ? 'color-' + block.color : '']"
+            [dir]="block.ltr ? 'ltr' : 'rtl'"
+        >
+            {{ values[$index] || 'مشخص نشده' }}
+        </div>
+    </div>
+    }
+</div>
+
+}

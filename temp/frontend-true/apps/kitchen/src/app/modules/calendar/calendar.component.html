@@ -1,0 +1,52 @@
+<page-title [title]="title" (calendarChanged)="setDate($event)"></page-title>
+
+@if (!loading) {
+<div class="calendar">
+    <table [cellPadding]="0" [cellSpacing]="0" [width]="'100%'" [border]="0">
+        <tr>
+            <th class="date frozen"></th>
+            @for (meal of kitchenMealList; track $index) {
+            <th>{{ kitchenMealInfo[meal].title }}</th>
+            }
+        </tr>
+
+        @for (day of days; track $index) {
+        <tr>
+            <td class="date frozen">
+                <div class="week">{{ day.date | ngxHelperJalali : { format: 'W' } }}</div>
+                <div class="date">{{ day.date | ngxHelperJalali : { format: 'd N Y' } }}</div>
+            </td>
+            @for (meal of kitchenMealList; track $index) {
+            <td class="meal" [class.empty]="!day.meals[meal]">
+                <!-- SELECTED -->
+                @if (day.meals[meal]) {
+                <div class="meal-info">
+                    <mat-icon [style.color]="day.meals[meal].isServed ? 'var(--blackColor)' : 'var(--borderColor)'">
+                        {{ day.meals[meal].isServed ? 'dining' : 'no_meals' }}
+                    </mat-icon>
+                    <div class="meal">
+                        <div
+                            class="recipe"
+                            [class.isLinked]="servingAccess"
+                            [routerLink]="servingAccess ? ['/calendar', day.meals[meal].id] : null"
+                        >
+                            {{ day.meals[meal].recipe.title }}
+                        </div>
+                        <div class="serving">سرو: {{ day.meals[meal].serving | number }}</div>
+                    </div>
+                    <ngx-helper-menu [menu]="getMenu(day.meals[meal])" [xPosition]="'before'"></ngx-helper-menu>
+                </div>
+                }
+                <!-- EMPTY -->
+                @else {
+                <!-- CHECK ACCESS -->
+                @if (calendarAccess) {
+                <button mat-button type="button" color="primary" (click)="create(day.date, meal)">انتخاب</button>
+                } }
+            </td>
+            }
+        </tr>
+        }
+    </table>
+</div>
+}

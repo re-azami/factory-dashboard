@@ -1,0 +1,69 @@
+<page-block [blocks]="blocks" [column]="2"></page-block>
+
+<div class="page-seperator"></div>
+<page-card
+    [title]="draft.cargo.title"
+    [icon]="'terrain'"
+    [description]="loadCargoInfo[draft.cargo.type].title"
+    [padding]="'0'"
+>
+    <div class="info">
+        <div class="item">
+            <div class="title">طرف حساب</div>
+            <div class="value" [class.empty]="!draft.cargo.party">
+                {{ draft.cargo.party ? draft.cargo.party.title : 'مشخص نشده' }}
+            </div>
+        </div>
+        <div class="item">
+            <div class="title">محموله</div>
+            <div class="value" [class.empty]="!draft.cargo.shipment">
+                {{ draft.cargo.shipment ? draft.cargo.shipment.title : 'مشخص نشده' }}
+            </div>
+        </div>
+        <div class="item">
+            <div class="title">باربری</div>
+            <div class="value" [class.empty]="!draft.transporter">
+                {{ draft.transporter ? draft.transporter.title : 'مشخص نشده' }}
+            </div>
+        </div>
+    </div>
+</page-card>
+
+<div class="page-seperator"></div>
+<page-card [title]="draft.truck ? draft.truck.type : ''" [icon]="'local_shipping'" [padding]="'0'">
+    <ngx-helper-plate [plate]="draft.plate.split('-')"></ngx-helper-plate>
+    @if (draft.truck) {
+    <div class="info">
+        <div class="item">
+            <div class="title">مالک</div>
+            <div class="value">{{ draft.truck.owner.name }}</div>
+        </div>
+        <div class="item">
+            <div class="title">راننده</div>
+            <div class="value">{{ draft.truck.driver.name }}</div>
+        </div>
+        <div class="item">
+            <div class="title">موبایل</div>
+            <div class="value en">{{ draft.truck.driver.mobile | ngxHelperMobile }}</div>
+        </div>
+    </div>
+    } @else {
+    <div class="no-truck">در سیستم ثبت نشده است</div>
+    }
+</page-card>
+
+<div class="page-seperator"></div>
+<div class="buttons">
+    <button mat-flat-button type="button" color="primary" class="print" (click)="print()">
+        <div class="button">
+            <mat-icon>print</mat-icon>
+            <div class="title">پرینت {{ loadCargoInfo[draft.cargo.type].draft }}</div>
+        </div>
+    </button>
+    <button mat-stroked-button type="button" color="primary" (click)="view()">
+        <div class="button">
+            <mat-icon>assignment</mat-icon>
+            <div class="title">مشاهده جزئیات</div>
+        </div>
+    </button>
+</div>
