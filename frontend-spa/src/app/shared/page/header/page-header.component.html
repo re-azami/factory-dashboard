@@ -50,6 +50,11 @@
 <div class="seperator"></div>
 
 <div class="icons" [@icon]="'show'">
+    @if (canInstall) {
+    <button mat-icon-button type="button" (click)="installApp()" aria-label="نصب اپلیکیشن">
+        <mat-icon>install_desktop</mat-icon>
+    </button>
+    }
     <button
         mat-icon-button
         type="button"

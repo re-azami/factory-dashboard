@@ -44,7 +44,32 @@
       "Bash(findstr -i python)",
       "Bash(git -C .trees/agentic_flow status --short)",
       "Bash(git -C .trees/ingestion status --short)",
-      "Bash(git -C .trees/write_tests status --short)"
+      "Bash(git -C .trees/write_tests status --short)",
+      "Bash(git fetch *)",
+      "Bash(git -C /home/factory/factory-dashboard diff -- .env)",
+      "Bash(git -C /home/factory/factory-dashboard status --short)",
+      "Read(//home/factory/.cache/ms-playwright/**)",
+      "Bash(python3 -m pip --version)",
+      "Bash(lsb_release -a)",
+      "Bash(dpkg -l python3-pip python3-venv python3-full)",
+      "Bash(python3 -c 'import __TRACKED_VAR__; print\\('\\\\''__TRACKED_VAR__: present'\\\\'', __TRACKED_VAR__.__version__ if hasattr\\(__TRACKED_VAR__, '\\\\''__version__'\\\\''\\) else '\\\\'''\\\\''\\)')",
+      "Bash(npx --version)",
+      "Read(//usr/local/lib/**)",
+      "Bash(/usr/bin/python3 -m pip show playwright)",
+      "Bash(env)",
+      "Bash(playwright-cli --version)",
+      "Bash(playwright-cli list *)",
+      "Bash(node -e \"const p=require\\('/usr/lib/node_modules/@playwright/cli/node_modules/playwright/lib/index.js'\\); console.log\\('chromium binary:', p.chromium.executablePath\\(\\)\\)\")",
+      "Bash(node -e \"console.log\\(process.env.PLAYWRIGHT_BROWSERS_PATH || require\\('os'\\).homedir\\(\\)+'/.cache/ms-playwright'\\)\")",
+      "Read(//home/factory/.cache/**)",
+      "Bash(node /usr/lib/node_modules/@playwright/cli/node_modules/playwright-core/cli.js --help)",
+      "Bash(node /usr/lib/node_modules/@playwright/cli/node_modules/playwright/cli.js --help)",
+      "Bash(node /usr/lib/node_modules/@playwright/cli/node_modules/playwright-core/cli.js install chromium)",
+      "Bash(playwright-cli --raw eval \"navigator.userAgent\")",
+      "Bash(playwright-cli close-all *)",
+      "Bash(git commit *)",
+      "Bash(python3 -c \"import json; json.load\\(open\\('.claude/settings.local.json'\\)\\); print\\('valid'\\)\")",
+      "Bash(git config *)"
     ]
   }
 }

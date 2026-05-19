@@ -16,23 +16,29 @@ import { PageAboutComponent } from '../about/page-about.component';
 import { IDeviceSize } from '../../interfaces/device-size';
 import { IPageMenu } from '../../interfaces/page-menu';
 import { AppService, ColorMode } from '../../services/app.service';
+import { InstallOutcome, PwaService } from '../../services/pwa.service';
 
 /**
  * Unit tests for PageHeaderComponent.
  *
  * Edge-case checklist coverage:
  *  1. Empty / missing input      — covered: pageMenus=[] renders no menu items; loading=false
- *                                  hides progress bar; AppService.colorMode defaults to LIGHT.
+ *                                  hides progress bar; AppService.colorMode defaults to LIGHT;
+ *                                  PwaService.canInstall=false hides the install button (zero matches).
  *  2. Boundary values            — covered: single menu item vs no menu items; size.isMobile
  *                                  true vs false changes header layout; colorMode toggled once
- *                                  flips icon + aria-label; subscription updates local state.
+ *                                  flips icon + aria-label; subscription updates local state;
+ *                                  canInstall toggle (false -> true -> false) shows/hides the
+ *                                  install button.
  *  3. Persian / Unicode text     — covered: title "داشبورد کارخانه", menu entry "داشبورد",
  *                                  about aria-label "درباره نرم‌افزار", color-mode aria-labels
- *                                  "تغییر به حالت تاریک" / "تغییر به حالت روشن".
+ *                                  "تغییر به حالت تاریک" / "تغییر به حالت روشن", install button
+ *                                  aria-label "نصب اپلیکیشن" (exact 12-codepoint check).
  *  4. Duplicate rows             — N/A: presentational component, no DB rows.
  *  5. Null DB columns            — N/A: no DB access.
  *  6. Calendar conversion        — N/A: no date logic.
- *  7. Permission denials         — N/A: no auth in this component.
+ *  7. Permission denials         — N/A: no auth in this component. (Install permission
+ *                                  outcomes belong to PwaService and are covered there.)
  *  8. LLM provider switches      — N/A: client-side only.
  */
 const COLOR_MODE_STORAGE_KEY = 'factory-dashboard:color-mode';
@@ -43,6 +49,8 @@ describe('PageHeaderComponent', () => {
     let component: PageHeaderComponent;
     let dialogService: jasmine.SpyObj<NgxHelperDialogService>;
     let router: jasmine.SpyObj<Router>;
+    let pwaService: jasmine.SpyObj<PwaService>;
+    let pwaCanInstallSubject: Subject<boolean>;
 
     const desktopSize: IDeviceSize = { width: 1280, height: 800, isMobile: false };
     const mobileSize: IDeviceSize = { width: 400, height: 800, isMobile: true };
@@ -59,6 +67,17 @@ describe('PageHeaderComponent', () => {
         dialogService = jasmine.createSpyObj<NgxHelperDialogService>('NgxHelperDialogService', ['open', 'close']);
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
 
+        // Default PwaService stub: install button hidden (canInstall=false). Suite-level
+        // tests that do not exercise the install affordance should see the same world as
+        // a freshly booted SPA where the browser has not fired beforeinstallprompt yet.
+        pwaCanInstallSubject = new Subject<boolean>();
+        pwaService = jasmine.createSpyObj<PwaService>(
+            'PwaService',
+            ['install'],
+            { canInstall: false, onCanInstallChanged: pwaCanInstallSubject.asObservable() },
+        );
+        pwaService.install.and.returnValue(Promise.resolve<InstallOutcome>('unavailable'));
+
         await TestBed.configureTestingModule({
             declarations: [PageHeaderComponent],
             imports: [
@@ -72,6 +91,7 @@ describe('PageHeaderComponent', () => {
             providers: [
                 { provide: NgxHelperDialogService, useValue: dialogService },
                 { provide: Router, useValue: router },
+                { provide: PwaService, useValue: pwaService },
             ],
         }).compileComponents();
 
@@ -293,6 +313,7 @@ describe('PageHeaderComponent', () => {
                     { provide: NgxHelperDialogService, useValue: dialogService },
                     { provide: Router, useValue: router },
                     { provide: AppService, useValue: spy },
+                    { provide: PwaService, useValue: pwaService },
                 ],
             });
 
@@ -471,6 +492,236 @@ describe('PageHeaderComponent', () => {
             subject.next('DARK');
 
             expect(built.component.colorMode).toBe('LIGHT');
+        });
+    });
+
+    /**
+     * Install button (PWA "نصب اپلیکیشن"). The component reads its initial `canInstall`
+     * from PwaService.canInstall in ngOnInit and subscribes to onCanInstallChanged.
+     * Click delegates to PwaService.install().
+     *
+     * The suite-level beforeEach already provides a default PwaService spy with
+     * canInstall=false. For "visible" cases we build a fresh TestBed with a spy that
+     * has canInstall=true so the *ngIf renders the button at initial change-detection.
+     */
+    describe('install button', () => {
+        const INSTALL_ARIA_LABEL = 'نصب اپلیکیشن';
+
+        function makePwaSpy(
+            initialCanInstall: boolean,
+            subject: Subject<boolean>,
+            installResult: Promise<InstallOutcome> = Promise.resolve<InstallOutcome>('unavailable'),
+        ): jasmine.SpyObj<PwaService> {
+            const spy = jasmine.createSpyObj<PwaService>(
+                'PwaService',
+                ['install'],
+                { canInstall: initialCanInstall, onCanInstallChanged: subject.asObservable() },
+            );
+            spy.install.and.returnValue(installResult);
+            return spy;
+        }
+
+        function buildHeaderWithPwaService(spy: jasmine.SpyObj<PwaService>): {
+            fixture: ComponentFixture<PageHeaderComponent>;
+            component: PageHeaderComponent;
+        } {
+            TestBed.resetTestingModule();
+            TestBed.configureTestingModule({
+                declarations: [PageHeaderComponent],
+                imports: [
+                    NoopAnimationsModule,
+                    MatButtonModule,
+                    MatDividerModule,
+                    MatIconModule,
+                    MatMenuModule,
+                    MatProgressBarModule,
+                ],
+                providers: [
+                    { provide: NgxHelperDialogService, useValue: dialogService },
+                    { provide: Router, useValue: router },
+                    { provide: PwaService, useValue: spy },
+                ],
+            });
+
+            const localFixture = TestBed.createComponent(PageHeaderComponent);
+            const localComponent = localFixture.componentInstance;
+            localComponent.id = undefined;
+            localComponent.menu = [];
+            localComponent.size = desktopSize;
+            localComponent.loading = false;
+            localFixture.detectChanges();
+            return { fixture: localFixture, component: localComponent };
+        }
+
+        it('hidden when canInstall is false by default (empty/missing input)', () => {
+            // Uses the suite-level pwaService spy (canInstall=false). detectChanges() runs ngOnInit.
+            setInputs([], desktopSize, false);
+
+            const buttons = fixture.nativeElement.querySelectorAll(
+                `button[aria-label="${INSTALL_ARIA_LABEL}"]`,
+            );
+            expect(buttons.length).toBe(0);
+            expect(component.canInstall).toBeFalse();
+        });
+
+        it('visible when canInstall is true at construction time', () => {
+            const subject = new Subject<boolean>();
+            const spy = makePwaSpy(true, subject);
+            const built = buildHeaderWithPwaService(spy);
+
+            const buttons = built.fixture.nativeElement.querySelectorAll(
+                `button[aria-label="${INSTALL_ARIA_LABEL}"]`,
+            );
+            expect(buttons.length).toBe(1);
+            expect(built.component.canInstall).toBeTrue();
+        });
+
+        it('appears when the subject emits true after the component mounts (false -> true transition)', () => {
+            const subject = new Subject<boolean>();
+            const spy = makePwaSpy(false, subject);
+            const built = buildHeaderWithPwaService(spy);
+
+            // Initially hidden.
+            let buttons = built.fixture.nativeElement.querySelectorAll(
+                `button[aria-label="${INSTALL_ARIA_LABEL}"]`,
+            );
+            expect(buttons.length).toBe(0);
+
+            // Browser fires beforeinstallprompt -> service emits true.
+            subject.next(true);
+            built.fixture.detectChanges();
+
+            buttons = built.fixture.nativeElement.querySelectorAll(
+                `button[aria-label="${INSTALL_ARIA_LABEL}"]`,
+            );
+            expect(buttons.length).toBe(1);
+            expect(built.component.canInstall).toBeTrue();
+        });
+
+        it('disappears when the subject emits false (boundary: true -> false transition after install)', () => {
+            const subject = new Subject<boolean>();
+            const spy = makePwaSpy(true, subject);
+            const built = buildHeaderWithPwaService(spy);
+
+            // Initially visible.
+            let buttons = built.fixture.nativeElement.querySelectorAll(
+                `button[aria-label="${INSTALL_ARIA_LABEL}"]`,
+            );
+            expect(buttons.length).toBe(1);
+
+            // appinstalled fires -> service emits false.
+            subject.next(false);
+            built.fixture.detectChanges();
+
+            buttons = built.fixture.nativeElement.querySelectorAll(
+                `button[aria-label="${INSTALL_ARIA_LABEL}"]`,
+            );
+            expect(buttons.length).toBe(0);
+            expect(built.component.canInstall).toBeFalse();
+        });
+
+        it('aria-label is the exact Persian string "نصب اپلیکیشن" (codepoint regression guard)', () => {
+            const subject = new Subject<boolean>();
+            const spy = makePwaSpy(true, subject);
+            const built = buildHeaderWithPwaService(spy);
+
+            const btn: HTMLButtonElement | null = built.fixture.nativeElement.querySelector(
+                `button[aria-label="${INSTALL_ARIA_LABEL}"]`,
+            );
+            expect(btn).not.toBeNull();
+            // Codepoint regression guard — exact string match, no transliteration.
+            expect(btn!.getAttribute('aria-label')).toBe('نصب اپلیکیشن');
+        });
+
+        it('renders the "install_desktop" Material icon inside the button', () => {
+            const subject = new Subject<boolean>();
+            const spy = makePwaSpy(true, subject);
+            const built = buildHeaderWithPwaService(spy);
+
+            const btn: HTMLButtonElement | null = built.fixture.nativeElement.querySelector(
+                `button[aria-label="${INSTALL_ARIA_LABEL}"]`,
+            );
+            expect(btn).not.toBeNull();
+            const icon = btn!.querySelector('mat-icon');
+            expect(icon?.textContent?.trim()).toBe('install_desktop');
+        });
+
+        it('clicking the install button invokes PwaService.install() exactly once', () => {
+            const subject = new Subject<boolean>();
+            const spy = makePwaSpy(true, subject, Promise.resolve<InstallOutcome>('accepted'));
+            const built = buildHeaderWithPwaService(spy);
+
+            const btn: HTMLButtonElement | null = built.fixture.nativeElement.querySelector(
+                `button[aria-label="${INSTALL_ARIA_LABEL}"]`,
+            );
+            expect(btn).not.toBeNull();
+            btn!.click();
+
+            expect(spy.install).toHaveBeenCalledTimes(1);
+        });
+
+        it('component.installApp() (programmatic) also delegates to PwaService.install()', () => {
+            const subject = new Subject<boolean>();
+            const spy = makePwaSpy(true, subject);
+            const built = buildHeaderWithPwaService(spy);
+
+            built.component.installApp();
+
+            expect(spy.install).toHaveBeenCalledTimes(1);
+        });
+
+        it('install button appears BEFORE the color-mode toggle inside the .icons region', () => {
+            // DOM order matters for tab order. The PWA install button comes first in the
+            // .icons row when present.
+            const subject = new Subject<boolean>();
+            const spy = makePwaSpy(true, subject);
+            const built = buildHeaderWithPwaService(spy);
+
+            const iconsRegion: HTMLElement | null = built.fixture.nativeElement.querySelector('.icons');
+            expect(iconsRegion).not.toBeNull();
+
+            const buttons = iconsRegion!.querySelectorAll('button');
+            const ariaLabels = Array.from(buttons).map((b) => b.getAttribute('aria-label'));
+            const installIdx = ariaLabels.indexOf(INSTALL_ARIA_LABEL);
+            const toggleIdx = ariaLabels.findIndex(
+                (l) => l === 'تغییر به حالت تاریک' || l === 'تغییر به حالت روشن',
+            );
+            const aboutIdx = ariaLabels.indexOf('درباره نرم‌افزار');
+            expect(installIdx).toBeGreaterThanOrEqual(0);
+            expect(toggleIdx).toBeGreaterThanOrEqual(0);
+            expect(aboutIdx).toBeGreaterThanOrEqual(0);
+            expect(installIdx).toBeLessThan(toggleIdx);
+            expect(toggleIdx).toBeLessThan(aboutIdx);
+        });
+
+        it('hydrates local canInstall from PwaService.canInstall on init (true case)', () => {
+            const subject = new Subject<boolean>();
+            const spy = makePwaSpy(true, subject);
+            const built = buildHeaderWithPwaService(spy);
+
+            expect(built.component.canInstall).toBeTrue();
+        });
+
+        it('hydrates local canInstall from PwaService.canInstall on init (false case)', () => {
+            const subject = new Subject<boolean>();
+            const spy = makePwaSpy(false, subject);
+            const built = buildHeaderWithPwaService(spy);
+
+            expect(built.component.canInstall).toBeFalse();
+        });
+
+        it('ngOnDestroy unsubscribes from onCanInstallChanged (late emissions do not mutate component)', () => {
+            const subject = new Subject<boolean>();
+            const spy = makePwaSpy(false, subject);
+            const built = buildHeaderWithPwaService(spy);
+
+            expect(built.component.canInstall).toBeFalse();
+
+            built.fixture.destroy();
+
+            // Late emission after destroy. Must NOT throw and must NOT mutate state.
+            expect(() => subject.next(true)).not.toThrow();
+            expect(built.component.canInstall).toBeFalse();
         });
     });
 });

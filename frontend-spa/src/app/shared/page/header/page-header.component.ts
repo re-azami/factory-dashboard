@@ -9,6 +9,7 @@ import { PageAboutComponent } from '../about/page-about.component';
 import { IDeviceSize } from '../../interfaces/device-size';
 import { IPageMenu, PageMenuChild } from '../../interfaces/page-menu';
 import { AppService, ColorMode } from '../../services/app.service';
+import { PwaService } from '../../services/pwa.service';
 
 @Component({
     selector: 'app-page-header',
@@ -37,13 +38,16 @@ export class PageHeaderComponent implements OnInit, OnDestroy {
     public applicationTitle: string = 'داشبورد کارخانه';
     public openedMenu?: number;
     public colorMode: ColorMode = 'LIGHT';
+    public canInstall: boolean = false;
 
     private onColorModeChanged?: Subscription;
+    private onCanInstallChanged?: Subscription;
 
     constructor(
         private readonly router: Router,
         private readonly ngxHelperDialogService: NgxHelperDialogService,
         public readonly appService: AppService,
+        private readonly pwaService: PwaService,
     ) {}
 
     ngOnInit(): void {
@@ -51,10 +55,16 @@ export class PageHeaderComponent implements OnInit, OnDestroy {
         this.onColorModeChanged = this.appService.onColorModeChanged.subscribe(
             (mode: ColorMode) => (this.colorMode = mode),
         );
+
+        this.canInstall = this.pwaService.canInstall;
+        this.onCanInstallChanged = this.pwaService.onCanInstallChanged.subscribe(
+            (canInstall: boolean) => (this.canInstall = canInstall),
+        );
     }
 
     ngOnDestroy(): void {
         this.onColorModeChanged?.unsubscribe();
+        this.onCanInstallChanged?.unsubscribe();
     }
 
     click(menu: PageMenuChild): void {
@@ -70,5 +80,9 @@ export class PageHeaderComponent implements OnInit, OnDestroy {
 
     toggleColorMode(): void {
         this.appService.toggleColorMode();
+    }
+
+    async installApp(): Promise<void> {
+        await this.pwaService.install();
     }
 }
