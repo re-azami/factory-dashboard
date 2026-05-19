@@ -32,6 +32,115 @@
     margin: 0;
 }
 
+::ng-deep .block-markdown {
+    display: block;
+
+    p {
+        unicode-bidi: plaintext;
+        margin: 0 0 0.5rem 0;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+        unicode-bidi: plaintext;
+        margin: 0.75rem 0 0.5rem 0;
+        font-weight: 600;
+        line-height: 1.3;
+    }
+
+    h1 {
+        font-size: 1.4rem;
+    }
+    h2 {
+        font-size: 1.25rem;
+    }
+    h3 {
+        font-size: 1.1rem;
+    }
+    h4 {
+        font-size: 1rem;
+    }
+
+    ul,
+    ol {
+        margin: 0.25rem 0 0.5rem 0;
+        padding-inline-start: 1.5rem;
+    }
+
+    li {
+        unicode-bidi: plaintext;
+        margin-bottom: 0.2rem;
+    }
+
+    blockquote {
+        margin: 0.5rem 0;
+        padding: 0.25rem 0.75rem;
+        border-inline-start: 3px solid var(--borderColor);
+        color: var(--grayColor);
+    }
+
+    pre,
+    code {
+        direction: ltr;
+        unicode-bidi: isolate;
+        text-align: left;
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+    pre {
+        margin: 0.5rem 0;
+        padding: 0.5rem 0.75rem;
+        background-color: var(--backgroundColor);
+        border: 1px solid var(--borderColor);
+        border-radius: 4px;
+        overflow-x: auto;
+
+        code {
+            background: none;
+            border: none;
+            padding: 0;
+            font-size: 0.9rem;
+        }
+    }
+
+    code {
+        background-color: var(--backgroundColor);
+        border: 1px solid var(--borderColor);
+        border-radius: 3px;
+        padding: 0.05rem 0.3rem;
+        font-size: 0.9em;
+    }
+
+    table {
+        direction: rtl;
+        border-collapse: collapse;
+        margin: 0.5rem 0;
+    }
+
+    th,
+    td {
+        text-align: start;
+        border: 1px solid var(--borderColor);
+        padding: 0.3rem 0.6rem;
+    }
+
+    th {
+        background-color: var(--backgroundColor);
+        font-weight: 600;
+    }
+
+    a {
+        color: var(--primaryColor);
+        text-decoration: underline;
+    }
+}
+
 .block-error {
     display: flex;
     align-items: center;

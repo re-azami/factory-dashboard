@@ -20,8 +20,6 @@ Recorded here so they're visible; resolve them in the noted task.
 
 ---
 
-## In Progress
-
 _(empty)_
 
 ---
@@ -42,16 +40,6 @@ _(empty)_
 ## To Do
 
 ### UI — Theme + PWA
-
-#### UI-001e — Render Markdown in chat assistant messages
-- [ ] Decide library: `ngx-markdown` vs hand-rolled (ask before adding the dep, per the no-silent-dep-omissions rule)
-- [ ] Render `**bold**`, `*italic*`, headings, lists, inline `code`, fenced ` ``` ` blocks, and GFM pipe tables (the agent uses pipe tables in its replies — see the «۱۱ روز در سال ۱۴۰۴…» reply that motivated this task)
-- [ ] Sanitize output (no raw HTML injection — assistant text is untrusted)
-- [ ] Persian/RTL still works: code blocks stay LTR (`direction: ltr; unicode-bidi: isolate`), paragraphs stay `unicode-bidi: plaintext`, table cells inherit RTL
-- [ ] Only applies to assistant `text` blocks — user bubbles stay literal
-- [ ] Angular unit tests cover: each markdown construct, sanitization, Persian inside markdown, pipe table from a real agent reply
-- [ ] Playwright e2e: ask a question whose answer uses bold + a pipe table, assert the rendered DOM has `<strong>` and `<table>` elements (not the literal `**` / `|` characters)
-- _Depends on:_ UI-001b
 
 #### UI-002 — PWA support
 - [ ] `manifest.json` (name, icons, theme color, start URL)
@@ -495,6 +483,16 @@ Seed list (extend as needed; target ≥ 20):
 ---
 
 ## Done
+
+#### UI-001e — Render Markdown in chat assistant messages _(2026-05-19)_
+- [x] Decide library: `ngx-markdown` vs hand-rolled (ask before adding the dep, per the no-silent-dep-omissions rule)
+- [x] Render `**bold**`, `*italic*`, headings, lists, inline `code`, fenced ` ``` ` blocks, and GFM pipe tables (the agent uses pipe tables in its replies — see the «۱۱ روز در سال ۱۴۰۴…» reply that motivated this task)
+- [x] Sanitize output (no raw HTML injection — assistant text is untrusted)
+- [x] Persian/RTL still works: code blocks stay LTR (`direction: ltr; unicode-bidi: isolate`), paragraphs stay `unicode-bidi: plaintext`, table cells inherit RTL
+- [x] Only applies to assistant `text` blocks — user bubbles stay literal
+- [x] Angular unit tests cover: each markdown construct, sanitization, Persian inside markdown, pipe table from a real agent reply
+- [x] Playwright e2e: ask a question whose answer uses bold + a pipe table, assert the rendered DOM has `<strong>` and `<table>` elements (not the literal `**` / `|` characters)
+- _Depends on:_ UI-001b
 
 #### UI-001d — Retire Streamlit frontend _(2026-05-19)_
 - [x] Remove `frontend/` service from docker-compose and stop building/publishing its image

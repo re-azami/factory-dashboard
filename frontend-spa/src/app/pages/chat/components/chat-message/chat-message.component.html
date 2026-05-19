@@ -2,7 +2,11 @@
     @for (block of message.blocks; track trackBlock($index, block)) {
         @switch (block.kind) {
             @case ('text') {
-                <p class="block-text">{{ asText(block).text }}</p>
+                @if (message.role === 'assistant') {
+                    <markdown class="block-markdown" [data]="asText(block).text"></markdown>
+                } @else {
+                    <p class="block-text">{{ asText(block).text }}</p>
+                }
             }
             @case ('tool') {
                 <app-chat-tool-card [tool]="asTool(block)"></app-chat-tool-card>

@@ -7,6 +7,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 
 import { NgxFormModule } from '@webilix/ngx-form';
 import { NgxHelperModule } from '@webilix/ngx-helper';
+import { MARKED_OPTIONS, MarkdownModule } from 'ngx-markdown';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -43,6 +44,12 @@ import { dateInterceptor } from './shared/interceptors/date.interceptor';
                 backgroundColor: 'rgb(238, 242, 246)',
                 iconSize: '18px !important',
                 dialogWidth: '500px',
+            },
+        }),
+        MarkdownModule.forRoot({
+            markedOptions: {
+                provide: MARKED_OPTIONS,
+                useValue: { gfm: true, breaks: false },
             },
         }),
 

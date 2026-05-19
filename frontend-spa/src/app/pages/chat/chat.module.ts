@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 
+import { MarkdownModule } from 'ngx-markdown';
+
 import { SharedModule } from '../../shared/shared.module';
 
 import { ChatRoutingModule } from './chat-routing.module';
@@ -10,6 +12,6 @@ import { ChatComposerComponent } from './components/chat-composer/chat-composer.
 
 @NgModule({
     declarations: [ChatComponent, ChatMessageComponent, ChatToolCardComponent, ChatComposerComponent],
-    imports: [SharedModule, ChatRoutingModule],
+    imports: [SharedModule, ChatRoutingModule, MarkdownModule],
 })
 export class ChatModule {}
