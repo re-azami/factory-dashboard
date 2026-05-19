@@ -12,8 +12,10 @@ services:
       test: ["CMD-SHELL", "pg_isready -U factory"]
       interval: 5s
       retries: 10
+    # Bind to loopback only — Postgres must not be reachable from the public internet.
+    # SSH-tunnel for remote DB access: ssh -L 5432:127.0.0.1:5432 user@host
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     restart: unless-stopped
 
   embeddings:
@@ -25,8 +27,10 @@ services:
       MODEL_DIR: /models
       HF_ENDPOINT: https://huggingface.co/
       HF_HUB_ENABLE_HF_TRANSFER: "0"
+    # Bind to loopback only — embedding API is consumed by the backend via the
+    # internal Docker network as `http://embeddings:8001`; no public access needed.
     ports:
-      - "8001:8001"
+      - "127.0.0.1:8001:8001"
     # GPU is opt-in via docker-compose.gpu.yml — see CLAUDE.md "GPU vs CPU hosts".
     # On CPU-only hosts (e.g. the DO droplet) the base file alone runs BGE-M3
     # on CPU; on laptops with NVIDIA, COMPOSE_FILE in .env layers the override.
@@ -47,8 +51,11 @@ services:
     volumes:
       # Read-only on purpose — the ingester reads files but must never modify or delete them.
       - ./data/raw:/data/raw:ro
+    # Bind to loopback only — the public entrypoint is host nginx on 443
+    # (production) / Angular dev server (laptop). Direct external access to
+    # the API on :8000 was a CORS+TLS bypass on the production server.
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     depends_on:
       db:
         condition: service_healthy
@@ -57,8 +64,10 @@ services:
   # Angular SPA — the project's frontend.
   frontend-spa:
     build: ./frontend-spa
+    # Bind to loopback only — host nginx proxies https://management.cargo.ir
+    # → 127.0.0.1:4200 on the server. On the laptop, browser hits localhost:4200.
     ports:
-      - "4200:80"
+      - "127.0.0.1:4200:80"
     depends_on:
       - backend
     restart: unless-stopped
