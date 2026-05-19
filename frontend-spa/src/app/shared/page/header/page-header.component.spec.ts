@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
@@ -14,23 +15,29 @@ import { PageHeaderComponent } from './page-header.component';
 import { PageAboutComponent } from '../about/page-about.component';
 import { IDeviceSize } from '../../interfaces/device-size';
 import { IPageMenu } from '../../interfaces/page-menu';
+import { AppService, ColorMode } from '../../services/app.service';
 
 /**
  * Unit tests for PageHeaderComponent.
  *
  * Edge-case checklist coverage:
  *  1. Empty / missing input      — covered: pageMenus=[] renders no menu items; loading=false
- *                                  hides progress bar.
+ *                                  hides progress bar; AppService.colorMode defaults to LIGHT.
  *  2. Boundary values            — covered: single menu item vs no menu items; size.isMobile
- *                                  true vs false changes header layout.
+ *                                  true vs false changes header layout; colorMode toggled once
+ *                                  flips icon + aria-label; subscription updates local state.
  *  3. Persian / Unicode text     — covered: title "داشبورد کارخانه", menu entry "داشبورد",
- *                                  about aria-label "درباره نرم‌افزار".
+ *                                  about aria-label "درباره نرم‌افزار", color-mode aria-labels
+ *                                  "تغییر به حالت تاریک" / "تغییر به حالت روشن".
  *  4. Duplicate rows             — N/A: presentational component, no DB rows.
  *  5. Null DB columns            — N/A: no DB access.
  *  6. Calendar conversion        — N/A: no date logic.
  *  7. Permission denials         — N/A: no auth in this component.
  *  8. LLM provider switches      — N/A: client-side only.
  */
+const COLOR_MODE_STORAGE_KEY = 'factory-dashboard:color-mode';
+const DARK_MODE_CLASS = 'dark-mode';
+
 describe('PageHeaderComponent', () => {
     let fixture: ComponentFixture<PageHeaderComponent>;
     let component: PageHeaderComponent;
@@ -41,6 +48,14 @@ describe('PageHeaderComponent', () => {
     const mobileSize: IDeviceSize = { width: 400, height: 800, isMobile: true };
 
     beforeEach(async () => {
+        // Reset color-mode state so the real AppService constructor starts from a clean slate.
+        try {
+            window.localStorage.removeItem(COLOR_MODE_STORAGE_KEY);
+        } catch {
+            /* ignore — storage may be disabled in some environments */
+        }
+        document.documentElement.classList.remove(DARK_MODE_CLASS);
+
         dialogService = jasmine.createSpyObj<NgxHelperDialogService>('NgxHelperDialogService', ['open', 'close']);
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
 
@@ -62,6 +77,15 @@ describe('PageHeaderComponent', () => {
 
         fixture = TestBed.createComponent(PageHeaderComponent);
         component = fixture.componentInstance;
+    });
+
+    afterEach(() => {
+        try {
+            window.localStorage.removeItem(COLOR_MODE_STORAGE_KEY);
+        } catch {
+            /* ignore */
+        }
+        document.documentElement.classList.remove(DARK_MODE_CLASS);
     });
 
     function setInputs(menu: IPageMenu[], size: IDeviceSize, loading: boolean, id?: string): void {
@@ -237,5 +261,216 @@ describe('PageHeaderComponent', () => {
         const btn: HTMLButtonElement | null = fixture.nativeElement.querySelector('.menu button[mat-button]');
         expect(btn).not.toBeNull();
         expect(btn!.disabled).toBeTrue();
+    });
+
+    /**
+     * Color-mode toggle button tests. The component reads its initial `colorMode` from
+     * AppService.colorMode in ngOnInit and subscribes to AppService.onColorModeChanged.
+     * Click delegates to AppService.toggleColorMode().
+     *
+     * We isolate these tests via TestBed.overrideProvider so each one can control the
+     * AppService spy independently — the suite-level `beforeEach` already configured a
+     * real AppService, but TestBed.overrideProvider is honored as long as it is called
+     * before TestBed.createComponent in our local helper.
+     */
+    describe('color-mode toggle', () => {
+        function buildHeaderWithAppService(spy: jasmine.SpyObj<AppService>): {
+            fixture: ComponentFixture<PageHeaderComponent>;
+            component: PageHeaderComponent;
+        } {
+            TestBed.resetTestingModule();
+            TestBed.configureTestingModule({
+                declarations: [PageHeaderComponent],
+                imports: [
+                    NoopAnimationsModule,
+                    MatButtonModule,
+                    MatDividerModule,
+                    MatIconModule,
+                    MatMenuModule,
+                    MatProgressBarModule,
+                ],
+                providers: [
+                    { provide: NgxHelperDialogService, useValue: dialogService },
+                    { provide: Router, useValue: router },
+                    { provide: AppService, useValue: spy },
+                ],
+            });
+
+            const localFixture = TestBed.createComponent(PageHeaderComponent);
+            const localComponent = localFixture.componentInstance;
+            localComponent.id = undefined;
+            localComponent.menu = [];
+            localComponent.size = desktopSize;
+            localComponent.loading = false;
+            localFixture.detectChanges();
+            return { fixture: localFixture, component: localComponent };
+        }
+
+        function makeAppServiceSpy(
+            initialMode: ColorMode,
+            subject: Subject<ColorMode>,
+        ): jasmine.SpyObj<AppService> {
+            return jasmine.createSpyObj<AppService>(
+                'AppService',
+                ['toggleColorMode'],
+                {
+                    colorMode: initialMode,
+                    onColorModeChanged: subject.asObservable(),
+                },
+            );
+        }
+
+        it('renders the toggle button with Persian aria-label "تغییر به حالت تاریک" when in LIGHT mode', () => {
+            const subject = new Subject<ColorMode>();
+            const spy = makeAppServiceSpy('LIGHT', subject);
+            const built = buildHeaderWithAppService(spy);
+
+            const btn: HTMLButtonElement | null = built.fixture.nativeElement.querySelector(
+                'button[aria-label="تغییر به حالت تاریک"]',
+            );
+            expect(btn).not.toBeNull();
+        });
+
+        it('toggle button icon is "dark_mode" when in LIGHT mode', () => {
+            const subject = new Subject<ColorMode>();
+            const spy = makeAppServiceSpy('LIGHT', subject);
+            const built = buildHeaderWithAppService(spy);
+
+            const btn: HTMLButtonElement | null = built.fixture.nativeElement.querySelector(
+                'button[aria-label="تغییر به حالت تاریک"]',
+            );
+            expect(btn).not.toBeNull();
+            const icon = btn!.querySelector('mat-icon');
+            expect(icon?.textContent?.trim()).toBe('dark_mode');
+        });
+
+        it('renders the toggle button with Persian aria-label "تغییر به حالت روشن" when in DARK mode', () => {
+            const subject = new Subject<ColorMode>();
+            const spy = makeAppServiceSpy('DARK', subject);
+            const built = buildHeaderWithAppService(spy);
+
+            const btn: HTMLButtonElement | null = built.fixture.nativeElement.querySelector(
+                'button[aria-label="تغییر به حالت روشن"]',
+            );
+            expect(btn).not.toBeNull();
+        });
+
+        it('toggle button icon is "light_mode" when in DARK mode', () => {
+            const subject = new Subject<ColorMode>();
+            const spy = makeAppServiceSpy('DARK', subject);
+            const built = buildHeaderWithAppService(spy);
+
+            const btn: HTMLButtonElement | null = built.fixture.nativeElement.querySelector(
+                'button[aria-label="تغییر به حالت روشن"]',
+            );
+            expect(btn).not.toBeNull();
+            const icon = btn!.querySelector('mat-icon');
+            expect(icon?.textContent?.trim()).toBe('light_mode');
+        });
+
+        it('toggle button appears BEFORE the about button inside the .icons region', () => {
+            const subject = new Subject<ColorMode>();
+            const spy = makeAppServiceSpy('LIGHT', subject);
+            const built = buildHeaderWithAppService(spy);
+
+            const iconsRegion: HTMLElement | null = built.fixture.nativeElement.querySelector('.icons');
+            expect(iconsRegion).not.toBeNull();
+
+            const buttons = iconsRegion!.querySelectorAll('button');
+            expect(buttons.length).toBeGreaterThanOrEqual(2);
+
+            const ariaLabels = Array.from(buttons).map((b) => b.getAttribute('aria-label'));
+            const toggleIdx = ariaLabels.indexOf('تغییر به حالت تاریک');
+            const aboutIdx = ariaLabels.indexOf('درباره نرم‌افزار');
+            expect(toggleIdx).toBeGreaterThanOrEqual(0);
+            expect(aboutIdx).toBeGreaterThanOrEqual(0);
+            expect(toggleIdx).toBeLessThan(aboutIdx);
+        });
+
+        it('clicking the toggle button delegates to AppService.toggleColorMode()', () => {
+            const subject = new Subject<ColorMode>();
+            const spy = makeAppServiceSpy('LIGHT', subject);
+            const built = buildHeaderWithAppService(spy);
+
+            const btn: HTMLButtonElement | null = built.fixture.nativeElement.querySelector(
+                'button[aria-label="تغییر به حالت تاریک"]',
+            );
+            expect(btn).not.toBeNull();
+            btn!.click();
+
+            expect(spy.toggleColorMode).toHaveBeenCalledTimes(1);
+        });
+
+        it('component.toggleColorMode() (programmatic) also delegates to AppService.toggleColorMode()', () => {
+            const subject = new Subject<ColorMode>();
+            const spy = makeAppServiceSpy('LIGHT', subject);
+            const built = buildHeaderWithAppService(spy);
+
+            built.component.toggleColorMode();
+
+            expect(spy.toggleColorMode).toHaveBeenCalledTimes(1);
+        });
+
+        it('hydrates local colorMode from AppService.colorMode on init (DARK case)', () => {
+            const subject = new Subject<ColorMode>();
+            const spy = makeAppServiceSpy('DARK', subject);
+            const built = buildHeaderWithAppService(spy);
+
+            expect(built.component.colorMode).toBe('DARK');
+        });
+
+        it('hydrates local colorMode from AppService.colorMode on init (LIGHT case)', () => {
+            const subject = new Subject<ColorMode>();
+            const spy = makeAppServiceSpy('LIGHT', subject);
+            const built = buildHeaderWithAppService(spy);
+
+            expect(built.component.colorMode).toBe('LIGHT');
+        });
+
+        it('subscription updates the local colorMode field and re-renders aria-label/icon', () => {
+            const subject = new Subject<ColorMode>();
+            const spy = makeAppServiceSpy('LIGHT', subject);
+            const built = buildHeaderWithAppService(spy);
+
+            // Initially LIGHT.
+            let btn: HTMLButtonElement | null = built.fixture.nativeElement.querySelector(
+                'button[aria-label="تغییر به حالت تاریک"]',
+            );
+            expect(btn).not.toBeNull();
+            expect(btn!.querySelector('mat-icon')?.textContent?.trim()).toBe('dark_mode');
+
+            // Service emits DARK.
+            subject.next('DARK');
+            built.fixture.detectChanges();
+
+            expect(built.component.colorMode).toBe('DARK');
+            btn = built.fixture.nativeElement.querySelector('button[aria-label="تغییر به حالت روشن"]');
+            expect(btn).not.toBeNull();
+            expect(btn!.querySelector('mat-icon')?.textContent?.trim()).toBe('light_mode');
+
+            // Service emits LIGHT again (boundary: toggle back to original).
+            subject.next('LIGHT');
+            built.fixture.detectChanges();
+
+            expect(built.component.colorMode).toBe('LIGHT');
+            btn = built.fixture.nativeElement.querySelector('button[aria-label="تغییر به حالت تاریک"]');
+            expect(btn).not.toBeNull();
+            expect(btn!.querySelector('mat-icon')?.textContent?.trim()).toBe('dark_mode');
+        });
+
+        it('ngOnDestroy unsubscribes from onColorModeChanged (no late updates after destroy)', () => {
+            const subject = new Subject<ColorMode>();
+            const spy = makeAppServiceSpy('LIGHT', subject);
+            const built = buildHeaderWithAppService(spy);
+
+            expect(built.component.colorMode).toBe('LIGHT');
+
+            built.fixture.destroy();
+
+            // After destroy, late emissions must not mutate the (now-detached) component.
+            subject.next('DARK');
+
+            expect(built.component.colorMode).toBe('LIGHT');
+        });
     });
 });

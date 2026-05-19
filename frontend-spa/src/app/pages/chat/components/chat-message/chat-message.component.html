@@ -1,0 +1,18 @@
+<div class="bubble" [class.user]="message.role === 'user'" [class.assistant]="message.role === 'assistant'">
+    @for (block of message.blocks; track trackBlock($index, block)) {
+        @switch (block.kind) {
+            @case ('text') {
+                <p class="block-text">{{ asText(block).text }}</p>
+            }
+            @case ('tool') {
+                <app-chat-tool-card [tool]="asTool(block)"></app-chat-tool-card>
+            }
+            @case ('error') {
+                <div class="block-error" role="alert">
+                    <mat-icon>error_outline</mat-icon>
+                    <span>{{ asError(block).error }}</span>
+                </div>
+            }
+        }
+    }
+</div>

@@ -38,7 +38,10 @@ from playwright.sync_api import Page, expect
 
 
 PAGE_TITLE = "داشبورد کارخانه"
-DASHBOARD_PLACEHOLDER = "صفحه چت و تاریخچه به‌زودی اضافه می‌شوند"
+# UI-001b moved the dashboard to ``/dashboard`` (root now redirects to ``/chat``)
+# and updated the placeholder copy. Keep this in sync with
+# ``frontend-spa/src/app/pages/dashboard/dashboard.component.html``.
+DASHBOARD_PLACEHOLDER = "به‌زودی نمودارها و خلاصه‌های روزانه اینجا اضافه می‌شود."
 MENU_DASHBOARD = "داشبورد"
 ABOUT_LABEL = "درباره نرم‌افزار"
 
@@ -90,7 +93,14 @@ def test_spa_loads_with_persian_title(page: Page, spa_url, require_spa):
 
 
 def test_dashboard_placeholder_renders(page: Page, spa_url, require_spa):
-    _goto_and_wait_for_bootstrap(page, spa_url)
+    # UI-001b: dashboard moved off ``/`` (root now redirects to ``/chat``).
+    # Navigate explicitly to ``/dashboard`` to verify the placeholder renders.
+    page.goto(f"{spa_url}/dashboard")
+    page.wait_for_function(
+        "() => { const r = document.querySelector('app-root');"
+        " return !!r && r.children.length > 1; }"
+    )
+    expect(page.get_by_role("button", name=ABOUT_LABEL)).to_be_visible()
 
     expect(page.get_by_text(DASHBOARD_PLACEHOLDER)).to_be_visible()
 
@@ -121,9 +131,10 @@ def test_header_menu_renders_dashboard_entry(page: Page, spa_url, require_spa):
 
     dashboard_button.click()
 
-    # The menu entry routes to ``['/']`` (see app.component.ts), so the URL
-    # should remain at the SPA root after the click.
-    expect(page).to_have_url(re.compile(r".*/$|.*:\d+$"))
+    # UI-001b: the menu entry routes to ``['/dashboard']`` (see
+    # app.component.ts) since root now redirects to ``/chat``. After the
+    # click the URL must land on ``/dashboard`` (optionally trailing slash).
+    expect(page).to_have_url(re.compile(r".*/dashboard/?$"))
 
 
 def test_about_button_has_correct_aria_label(page: Page, spa_url, require_spa):

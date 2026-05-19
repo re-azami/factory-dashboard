@@ -43,37 +43,22 @@ _(empty)_
 
 ### UI — Theme + PWA
 
-#### UI-001a-dark — Add dark mode to Angular SPA (deferred from UI-001a)
-- [ ] Define dark palette as overrides on top of `theme/style/factory/color.scss` light tokens
-- [ ] Add `AppService.colorMode` + `toggleColorMode()` (RxJS Subject) — pattern not in reference, build it here
-- [ ] Add a toggle button to the page header (Persian aria-labels "تغییر به حالت تاریک"/"تغییر به حالت روشن")
-- [ ] Persist choice to localStorage under `factory-dashboard:color-mode` (`LIGHT`/`DARK`)
-- [ ] Angular unit tests + Playwright e2e
-- _Depends on:_ UI-001a
-
-#### UI-001b — Port Chat page to Angular SPA
-- [ ] Build Chat route in the new Angular SPA
-- [ ] NDJSON stream parser for `POST /chat` (text, tool_start, tool_end, error events)
-- [ ] Tool-card collapsible component with SQL/Python syntax highlighting
-- [ ] Persian/RTL handling for mixed-script messages
-- [ ] Agent mode selector (Simple / Deep) — reuse from existing Streamlit semantics
-- [ ] Angular unit tests + Playwright e2e
-- _Depends on:_ UI-001a
-
-#### UI-001c — Port Query History page to Angular SPA
-- [ ] Build History route in the new Angular SPA
-- [ ] `GET /history?limit=N` fetch + paginated render
-- [ ] Tool-calls expandable JSON view
-- [ ] Angular unit tests + Playwright e2e
-- [ ] Once chat + history parity is verified, remove Streamlit `frontend/` service from docker-compose (track in a follow-up cleanup task — do not delete in this one)
-- _Depends on:_ UI-001b
-
 #### UI-001d — Retire Streamlit frontend
 - [ ] Remove `frontend/` service from docker-compose and stop building/publishing its image
 - [ ] Delete `frontend/` Python code and `frontend/tests/`
 - [ ] Drop Streamlit-specific Playwright tests in `tests/e2e/` (replaced by SPA-targeted ones)
 - [ ] Update CLAUDE.md (Common Commands, Architecture sections) to reflect Angular SPA
 - _Depends on:_ UI-001c
+
+#### UI-001e — Render Markdown in chat assistant messages
+- [ ] Decide library: `ngx-markdown` vs hand-rolled (ask before adding the dep, per the no-silent-dep-omissions rule)
+- [ ] Render `**bold**`, `*italic*`, headings, lists, inline `code`, fenced ` ``` ` blocks, and GFM pipe tables (the agent uses pipe tables in its replies — see the «۱۱ روز در سال ۱۴۰۴…» reply that motivated this task)
+- [ ] Sanitize output (no raw HTML injection — assistant text is untrusted)
+- [ ] Persian/RTL still works: code blocks stay LTR (`direction: ltr; unicode-bidi: isolate`), paragraphs stay `unicode-bidi: plaintext`, table cells inherit RTL
+- [ ] Only applies to assistant `text` blocks — user bubbles stay literal
+- [ ] Angular unit tests cover: each markdown construct, sanitization, Persian inside markdown, pipe table from a real agent reply
+- [ ] Playwright e2e: ask a question whose answer uses bold + a pipe table, assert the rendered DOM has `<strong>` and `<table>` elements (not the literal `**` / `|` characters)
+- _Depends on:_ UI-001b
 
 #### UI-002 — PWA support
 - [ ] `manifest.json` (name, icons, theme color, start URL)
@@ -495,6 +480,31 @@ Seed list (extend as needed; target ≥ 20):
 ---
 
 ## Done
+
+#### UI-001c — Port Query History page to Angular SPA _(2026-05-19)_
+- [x] Build History route in the new Angular SPA
+- [x] `GET /history?limit=N` fetch + paginated render
+- [x] Tool-calls expandable JSON view
+- [x] Angular unit tests + Playwright e2e
+- [x] Once chat + history parity is verified, remove Streamlit `frontend/` service from docker-compose (track in a follow-up cleanup task — do not delete in this one)
+- _Depends on:_ UI-001b
+
+#### UI-001b — Port Chat page to Angular SPA _(2026-05-19)_
+- [x] Build Chat route in the new Angular SPA
+- [x] NDJSON stream parser for `POST /chat` (text, tool_start, tool_end, error events)
+- [x] Tool-card collapsible component with SQL/Python syntax highlighting
+- [x] Persian/RTL handling for mixed-script messages
+- [x] Agent mode selector (Simple / Deep) — reuse from existing Streamlit semantics
+- [x] Angular unit tests + Playwright e2e
+- _Depends on:_ UI-001a
+
+#### UI-001a-dark — Add dark mode to Angular SPA (deferred from UI-001a) _(2026-05-14)_
+- [x] Define dark palette as overrides on top of `theme/style/factory/color.scss` light tokens
+- [x] Add `AppService.colorMode` + `toggleColorMode()` (RxJS Subject) — pattern not in reference, build it here
+- [x] Add a toggle button to the page header (Persian aria-labels "تغییر به حالت تاریک"/"تغییر به حالت روشن")
+- [x] Persist choice to localStorage under `factory-dashboard:color-mode` (`LIGHT`/`DARK`)
+- [x] Angular unit tests + Playwright e2e
+- _Depends on:_ UI-001a
 
 #### UI-001a — Angular SPA scaffold _(2026-05-14)_
 - [x] **Resolve Open Decision #1 (frontend stack)** — RESOLVED 2026-05-14: Angular 21 SPA, NgModule-based, mirroring `temp/frontend-true/apps/admin/`

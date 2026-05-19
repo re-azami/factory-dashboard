@@ -1,0 +1,132 @@
+<mat-expansion-panel class="tool-card" [expanded]="false">
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            <div class="header-row">
+                <span class="tool-name">{{ tool.name }}</span>
+                @if (tool.state === 'running') {
+                    <mat-progress-spinner
+                        mode="indeterminate"
+                        diameter="16"
+                        [attr.aria-label]="'در حال اجرا…'"
+                    ></mat-progress-spinner>
+                    <span class="status-label">در حال اجرا…</span>
+                } @else if (tool.state === 'complete') {
+                    <mat-icon class="status-icon-complete" [attr.aria-label]="'تکمیل شد'">check_circle</mat-icon>
+                    <span class="status-label">تکمیل شد</span>
+                }
+            </div>
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <div class="body">
+        <!-- ── INPUT ───────────────────────────────────────────────────── -->
+        <div class="section">
+            <h4 class="section-title">ورودی</h4>
+
+            @switch (tool.name) {
+                @case ('execute_sql') {
+                    @if (sqlQuery !== null) {
+                        <pre class="code"><code class="lang-sql">{{ sqlQuery }}</code></pre>
+                    } @else {
+                        <pre class="code"><code>{{ fallbackArgsJson }}</code></pre>
+                    }
+                }
+                @case ('python_exec') {
+                    @if (pythonCode !== null) {
+                        <pre class="code"><code class="lang-python">{{ pythonCode }}</code></pre>
+                    } @else {
+                        <pre class="code"><code>{{ fallbackArgsJson }}</code></pre>
+                    }
+                }
+                @case ('semantic_search') {
+                    @if (semanticQuery !== null) {
+                        <p class="semantic-query">{{ semanticQuery }}</p>
+                        @if (semanticLimit !== null) {
+                            <p class="caption">limit: {{ semanticLimit }}</p>
+                        }
+                    } @else {
+                        <pre class="code"><code>{{ fallbackArgsJson }}</code></pre>
+                    }
+                }
+                @case ('save_memory') {
+                    <p class="memory-kind">
+                        <span class="chip">{{ memoryKind }}</span>
+                    </p>
+                    <pre class="code"><code>{{ memoryContent }}</code></pre>
+                    @if (memorySourceQuestion !== null) {
+                        <p class="caption">source_question: {{ memorySourceQuestion }}</p>
+                    }
+                }
+                @default {
+                    <pre class="code"><code>{{ fallbackArgsJson }}</code></pre>
+                }
+            }
+        </div>
+
+        <!-- ── RESULT ──────────────────────────────────────────────────── -->
+        @if (tool.state === 'complete') {
+            <div class="section">
+                <h4 class="section-title">نتیجه</h4>
+
+                @if (hasTabularResult) {
+                    @if (tabularRows.length === 0) {
+                        <p class="empty-result">نتیجه‌ای یافت نشد</p>
+                    } @else {
+                        <div class="table-wrap">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        @for (col of tabularColumns; track $index) {
+                                            <th>{{ col }}</th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (row of tabularRows; track $index) {
+                                        <tr>
+                                            @for (col of tabularColumns; track $index) {
+                                                <td>{{ renderCell(cellAt(row, col)) }}</td>
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    @if (tabularRowCount !== null || tabularWarning !== null) {
+                        <p class="caption">
+                            @if (tabularRowCount !== null) {
+                                <span>{{ tabularRowCount }} ردیف</span>
+                            }
+                            @if (tabularWarning !== null) {
+                                <span class="warning">{{ tabularWarning }}</span>
+                            }
+                        </p>
+                    }
+                } @else if (hasPythonResult) {
+                    @if (pythonError !== null) {
+                        <pre class="code code-error">{{ pythonError }}</pre>
+                    }
+                    @if (pythonStdout) {
+                        <pre class="code"><code>{{ pythonStdout }}</code></pre>
+                    }
+                    @if (pythonNote !== null) {
+                        <p class="caption">{{ pythonNote }}</p>
+                    }
+                } @else if (hasMemoryResult) {
+                    <p class="memory-confirm">
+                        ذخیره شد
+                        @if (memorySavedId !== null) {
+                            <span class="caption">(id: {{ memorySavedId }})</span>
+                        }
+                        @if (memoryResultKind !== null) {
+                            <span class="chip">{{ memoryResultKind }}</span>
+                        }
+                    </p>
+                } @else {
+                    <pre class="code"><code>{{ rawOutput }}</code></pre>
+                }
+            </div>
+        }
+    </div>
+</mat-expansion-panel>

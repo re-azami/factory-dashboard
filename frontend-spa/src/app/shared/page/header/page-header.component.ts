@@ -1,12 +1,14 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 import { NgxHelperDialogService } from '@webilix/ngx-helper';
 
 import { PageAboutComponent } from '../about/page-about.component';
 import { IDeviceSize } from '../../interfaces/device-size';
 import { IPageMenu, PageMenuChild } from '../../interfaces/page-menu';
+import { AppService, ColorMode } from '../../services/app.service';
 
 @Component({
     selector: 'app-page-header',
@@ -26,7 +28,7 @@ import { IPageMenu, PageMenuChild } from '../../interfaces/page-menu';
     ],
     standalone: false,
 })
-export class PageHeaderComponent {
+export class PageHeaderComponent implements OnInit, OnDestroy {
     @Input({ required: true }) id?: string;
     @Input({ required: true }) menu!: IPageMenu[];
     @Input({ required: true }) size!: IDeviceSize;
@@ -34,8 +36,26 @@ export class PageHeaderComponent {
 
     public applicationTitle: string = 'داشبورد کارخانه';
     public openedMenu?: number;
+    public colorMode: ColorMode = 'LIGHT';
 
-    constructor(private readonly router: Router, private readonly ngxHelperDialogService: NgxHelperDialogService) {}
+    private onColorModeChanged?: Subscription;
+
+    constructor(
+        private readonly router: Router,
+        private readonly ngxHelperDialogService: NgxHelperDialogService,
+        public readonly appService: AppService,
+    ) {}
+
+    ngOnInit(): void {
+        this.colorMode = this.appService.colorMode;
+        this.onColorModeChanged = this.appService.onColorModeChanged.subscribe(
+            (mode: ColorMode) => (this.colorMode = mode),
+        );
+    }
+
+    ngOnDestroy(): void {
+        this.onColorModeChanged?.unsubscribe();
+    }
 
     click(menu: PageMenuChild): void {
         if (menu === 'DIVIDER') return;
@@ -46,5 +66,9 @@ export class PageHeaderComponent {
 
     about(): void {
         this.ngxHelperDialogService.open(PageAboutComponent, 'درباره نرم‌افزار', { padding: '0px' });
+    }
+
+    toggleColorMode(): void {
+        this.appService.toggleColorMode();
     }
 }

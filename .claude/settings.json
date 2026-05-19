@@ -103,12 +103,29 @@
       "PowerShell(\"cleaned\")",
       "Bash(echo \"exit=$?\")",
       "PowerShell($conns = Get-NetTCPConnection -LocalPort 4200 -State Listen -ErrorAction SilentlyContinue; if \\($conns\\) { $conns | ForEach-Object { try { Stop-Process -Id $_.OwningProcess -Force -ErrorAction Stop; Write-Output \"killed PID $\\($_.OwningProcess\\)\" } catch { Write-Output \"failed to kill PID $\\($_.OwningProcess\\): $_\" } } } else { Write-Output \"no listener on 4200\" })",
-      "Bash(grep -v -E \"\\\\.\\(woff|ttf|eot|svg|otf|ico|gif|png\\)$\")"
+      "Bash(grep -v -E \"\\\\.\\(woff|ttf|eot|svg|otf|ico|gif|png\\)$\")",
+      "Bash(dir C:\\\\Users\\\\User\\\\.claude\\\\scrum_master_rules.md)",
+      "Bash(dir C:\\\\Users\\\\User\\\\.claude\\\\*.md)",
+      "Bash(xargs -I {} head -50 {})",
+      "Bash(xargs ls -1)",
+      "Bash(npx tsc *)",
+      "Read(//tmp/**)",
+      "PowerShell($dockerDesktop = Get-Process -Name 'Docker Desktop' -ErrorAction SilentlyContinue; if \\($null -eq $dockerDesktop\\) { $exe = Join-Path $env:ProgramFiles 'Docker\\\\Docker\\\\Docker Desktop.exe'; if \\(Test-Path $exe\\) { Start-Process -FilePath $exe; \"Docker Desktop launch initiated from $exe\" } else { \"Docker Desktop.exe not found at default location: $exe\" } } else { \"Docker Desktop already running \\(PID $\\($dockerDesktop.Id\\)\\)\" })",
+      "Bash(npx --no-install playwright-cli --version)",
+      "Bash(npx playwright-cli *)",
+      "Bash(Remove-Item c:/Users/User/OneDrive/Documents/Agentic/agentic_projects/factory-dashboard/.chat-debug.ndjson)",
+      "Bash(docker exec *)",
+      "Bash(npx --silent playwright-cli --raw eval \"document.querySelector\\('mat-progress-bar'\\) === null\")",
+      "Bash(cd /c/Users/User/OneDrive/Documents/Agentic/agentic_projects/factory-dashboard/frontend-spa && grep -r \"provideHttpClient\" node_modules/@angular/common/http/index.d.ts 2>/dev/null | head -5)",
+      "Read(//c/c/Users/User/OneDrive/Documents/Agentic/agentic_projects/factory-dashboard/frontend-spa/node_modules/@angular/common/http/**)",
+      "Bash(echo \"EXIT=$?\")",
+      "Bash(rm chat-bugfix-verified.png && ls chat-bugfix-verified.png 2>&1; echo \"exit=$?\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\User\\OneDrive\\Documents\\Agentic\\agentic_projects\\factory-dashboard\\.claude",
       "c:\\Users\\User\\OneDrive\\Documents\\Agentic\\agentic_projects\\factory-dashboard\\.claude\\commands",
-      "c:\\Users\\User\\.claude"
+      "c:\\Users\\User\\.claude",
+      "C:\\Users\\User\\OneDrive\\Documents\\Agentic\\agentic_projects\\factory-dashboard"
     ]
   }
 }

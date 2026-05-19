@@ -50,6 +50,14 @@
 <div class="seperator"></div>
 
 <div class="icons" [@icon]="'show'">
+    <button
+        mat-icon-button
+        type="button"
+        (click)="toggleColorMode()"
+        [attr.aria-label]="colorMode === 'LIGHT' ? 'تغییر به حالت تاریک' : 'تغییر به حالت روشن'"
+    >
+        <mat-icon>{{ colorMode === 'LIGHT' ? 'dark_mode' : 'light_mode' }}</mat-icon>
+    </button>
     <button mat-icon-button type="button" (click)="about()" aria-label="درباره نرم‌افزار">
         <mat-icon>info</mat-icon>
     </button>

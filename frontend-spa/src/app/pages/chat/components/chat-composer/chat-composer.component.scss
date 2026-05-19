@@ -1,0 +1,56 @@
+.composer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    padding: 0.75rem;
+    border: 1px solid var(--borderColor);
+    border-radius: 8px;
+    background-color: var(--whiteColor);
+
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.top-row {
+    justify-content: space-between;
+}
+
+.mode-group {
+    // The reference monorepo doesn't set a specific size on toggle groups; rely on Material defaults.
+    flex: 0 0 auto;
+}
+
+.clear-button {
+    color: var(--grayColor);
+
+    mat-icon {
+        margin-inline-end: 0.25rem;
+    }
+}
+
+.input-row {
+    align-items: flex-end;
+}
+
+.text-field {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.send-button {
+    flex: 0 0 auto;
+    min-width: 96px;
+
+    mat-icon {
+        margin-inline-end: 0.25rem;
+    }
+}

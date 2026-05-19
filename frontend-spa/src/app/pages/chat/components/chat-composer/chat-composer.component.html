@@ -1,0 +1,49 @@
+<div class="composer">
+    <div class="row top-row">
+        <mat-button-toggle-group
+            class="mode-group"
+            aria-label="حالت عامل"
+            [value]="mode"
+            [disabled]="disabled"
+            (change)="onModeChange($event.value)"
+        >
+            <mat-button-toggle value="simple">ساده</mat-button-toggle>
+            <mat-button-toggle value="deep">پژوهش عمیق</mat-button-toggle>
+        </mat-button-toggle-group>
+
+        <button
+            mat-button
+            type="button"
+            class="clear-button"
+            (click)="onClearClick()"
+        >
+            <mat-icon>delete_sweep</mat-icon>
+            <span>پاک کردن گفتگو</span>
+        </button>
+    </div>
+
+    <div class="row input-row">
+        <mat-form-field class="text-field" appearance="fill">
+            <textarea
+                matInput
+                rows="2"
+                [formControl]="text"
+                placeholder="سؤال خود را به فارسی یا انگلیسی بنویسید…"
+                (keydown)="onTextareaKeydown($event)"
+            ></textarea>
+        </mat-form-field>
+
+        <button
+            mat-flat-button
+            color="primary"
+            type="button"
+            class="send-button"
+            (click)="onSendClick()"
+            [disabled]="sendDisabled"
+            aria-label="ارسال پیام"
+        >
+            <mat-icon>send</mat-icon>
+            <span>ارسال</span>
+        </button>
+    </div>
+</div>

@@ -20,7 +20,9 @@ import { DashboardComponent } from './dashboard.component';
  *  1. Empty / missing input      — N/A: component takes no inputs.
  *  2. Boundary values            — N/A: no numeric thresholds.
  *  3. Persian / Unicode text     — covered: title "داشبورد کارخانه" and placeholder
- *                                  "صفحه چت و تاریخچه به‌زودی اضافه می‌شوند".
+ *                                  "به‌زودی نمودارها و خلاصه‌های روزانه اینجا اضافه می‌شود."
+ *                                  (placeholder copy was updated in UI-001b after the chat
+ *                                  page replaced the old "صفحه چت و تاریخچه…" stub).
  *  4. Duplicate rows             — N/A: presentational, no DB rows.
  *  5. Null DB columns            — N/A: no DB access.
  *  6. Calendar conversion        — N/A: no date logic.
@@ -52,10 +54,10 @@ describe('DashboardComponent', () => {
         expect(titleEl!.textContent?.trim()).toBe('داشبورد کارخانه');
     });
 
-    it('renders the Persian placeholder "صفحه چت و تاریخچه به‌زودی اضافه می‌شوند"', () => {
+    it('renders the Persian placeholder "به‌زودی نمودارها و خلاصه‌های روزانه اینجا اضافه می‌شود."', () => {
         const placeholderEl: HTMLElement | null = fixture.nativeElement.querySelector('.dashboard .placeholder');
         expect(placeholderEl).not.toBeNull();
-        expect(placeholderEl!.textContent?.trim()).toBe('صفحه چت و تاریخچه به‌زودی اضافه می‌شوند');
+        expect(placeholderEl!.textContent?.trim()).toBe('به‌زودی نمودارها و خلاصه‌های روزانه اینجا اضافه می‌شود.');
     });
 
     it('contains an <app-page-updated> element as the first child of the host', () => {

@@ -1,0 +1,90 @@
+<section class="history-page" role="main">
+    <div class="controls">
+        <label for="historyLimit" class="slider-label">نمایش آخرین N پرسش</label>
+        <mat-slider min="5" max="100" step="5" discrete showTickMarks>
+            <input
+                matSliderThumb
+                id="historyLimit"
+                [value]="limit"
+                (valueChange)="onLimitChange($event)"
+                [attr.aria-label]="'نمایش آخرین N پرسش'"
+            />
+        </mat-slider>
+        <span class="limit-value">{{ limit }}</span>
+        <button mat-stroked-button color="primary" (click)="onRefresh()" [disabled]="loading">
+            <mat-icon>refresh</mat-icon>
+            <span>بارگذاری مجدد</span>
+        </button>
+    </div>
+
+    @if (loading) {
+        <div class="loading-indicator" aria-live="polite">
+            <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
+        </div>
+    }
+
+    @if (error !== null) {
+        <div class="error-banner" role="alert">{{ error }}</div>
+    }
+
+    @if (!loading && error === null && entries.length === 0) {
+        <div class="empty-state">
+            <mat-icon class="empty-icon">history_toggle_off</mat-icon>
+            <p class="empty-hint">پرسشی ثبت نشده است</p>
+        </div>
+    }
+
+    @if (entries.length > 0) {
+        <div class="entries">
+            @for (entry of entries; track trackEntry($index, entry)) {
+                <article class="entry">
+                    <h3 class="entry-question">{{ entry.question }}</h3>
+                    <p class="entry-meta">
+                        @if (entry.asked_at) {
+                            <span class="meta-bit">🕒 {{ entry.asked_at | date: 'medium' }}</span>
+                        }
+                        @if (entry.llm_provider) {
+                            <span class="meta-bit"
+                                ><span class="ltr-inline">{{ entry.llm_provider }}</span></span
+                            >
+                        }
+                        @if (entry.agent_mode) {
+                            <span class="meta-bit"
+                                >حالت: <span class="ltr-inline">{{ entry.agent_mode }}</span></span
+                            >
+                        }
+                    </p>
+                    @if (entry.answer) {
+                        <p class="entry-answer">{{ entry.answer }}</p>
+                    }
+                    @if (entry.tool_calls && entry.tool_calls.length > 0) {
+                        <mat-expansion-panel class="tool-calls">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title
+                                    >فراخوانی ابزارها ({{ entry.tool_calls.length }})</mat-panel-title
+                                >
+                            </mat-expansion-panel-header>
+                            <div class="tool-calls-body">
+                                @for (tc of entry.tool_calls; track $index) {
+                                    <div class="tool-call">
+                                        <p class="tool-name">
+                                            <span class="ltr-inline">{{ tc.tool }}</span>
+                                        </p>
+                                        <div class="tc-section">
+                                            <h4 class="tc-section-title">ورودی</h4>
+                                            <pre class="code"><code>{{ formatJson(tc.input) }}</code></pre>
+                                        </div>
+                                        <div class="tc-section">
+                                            <h4 class="tc-section-title">خروجی</h4>
+                                            <pre class="code"><code>{{ formatJson(tc.output) }}</code></pre>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </mat-expansion-panel>
+                    }
+                </article>
+            }
+        </div>
+    }
+</section>

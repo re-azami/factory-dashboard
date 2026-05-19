@@ -1,0 +1,28 @@
+<section class="chat-page" role="main">
+    @if (messages.length === 0) {
+        <div class="empty-state">
+            <mat-icon class="empty-icon">forum</mat-icon>
+            <p class="empty-hint">سؤالی از داده‌های کارخانه بپرسید</p>
+        </div>
+    } @else {
+        <div class="messages" role="log" aria-live="polite">
+            @for (msg of messages; track trackMessage($index, msg)) {
+                <app-chat-message [message]="msg"></app-chat-message>
+            }
+            @if (isStreaming) {
+                <div class="streaming-indicator" aria-live="polite">
+                    <mat-progress-spinner mode="indeterminate" diameter="18"></mat-progress-spinner>
+                    <span>در حال پاسخ‌گویی…</span>
+                </div>
+            }
+        </div>
+    }
+
+    <app-chat-composer
+        [mode]="mode"
+        [disabled]="isStreaming"
+        (submitted)="onSubmit($event)"
+        (modeChange)="onModeChange($event)"
+        (cleared)="onClear()"
+    ></app-chat-composer>
+</section>

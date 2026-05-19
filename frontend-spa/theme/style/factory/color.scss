@@ -13,3 +13,19 @@
     --whiteColor: rgb(255, 255, 255);
     --grayColor: rgb(100, 100, 100);
 }
+
+html.dark-mode {
+    --primaryColor: rgb(170, 195, 205);
+    --primaryColorRGB: 170, 195, 205;
+    --accentColor: rgb(228, 190, 146);
+    --accentColorRGB: 228, 190, 146;
+    --warnColor: rgb(255, 89, 67);
+    --warnColorRGB: 255, 89, 67;
+
+    --borderColor: rgb(60, 65, 70);
+    --backgroundColor: rgb(24, 28, 32);
+    --highlightColor: rgb(34, 40, 45);
+    --blackColor: rgb(238, 242, 246);
+    --whiteColor: rgb(34, 40, 45);
+    --grayColor: rgb(160, 160, 160);
+}
