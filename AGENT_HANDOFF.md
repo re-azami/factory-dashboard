@@ -16,7 +16,6 @@ Three Docker services are up and working:
 |---------|------|--------|
 | PostgreSQL 16 + pgvector | 5432 | Healthy |
 | FastAPI backend + Claude agent | 8000 | Running |
-| Streamlit chat UI | 8501 | Running |
 
 **Data ingested:** `Production_1405.xlsx` — 33 daily sheets (1 month, Farvardin 1405)
 - 33 `daily_report` rows
@@ -53,7 +52,7 @@ Quantization to Q4_K_M is the next step (script ready, not yet run).
 
 ```
 factory-dashboard/
-├── docker-compose.yml              4 services: db, embeddings, backend, frontend
+├── docker-compose.yml              4 services: db, embeddings, backend, frontend-spa
 ├── .env                            ANTHROPIC_API_KEY is set here
 ├── .env.example                    template (LLM_PROVIDER, model keys)
 ├── TASKS.md                        step-by-step project checklist
@@ -92,7 +91,6 @@ factory-dashboard/
 │   ├── download_gemma_4_31b.ps1    resume download of google/gemma-4-31B-it
 │   └── quantize_gemma.ps1          quantize BF16 → Q4_K_M GGUF via Docker
 │
-├── frontend/app.py                 Streamlit: Chat / Upload Data / Query History pages
 └── migrations/versions/
     └── 001_initial.py              Alembic migration (all 5 tables + pgvector + read-only role)
 ```
@@ -198,7 +196,7 @@ Steps:
 
 ### 3. Ingest more Excel files
 
-Drop additional yearly Excel files into `data/raw/factory/` and upload via Streamlit Upload page. The parser handles 3 template variants (58/59/63 rows) and uses anchor-based cell finding.
+Drop additional yearly Excel files into `data/raw/factory/` and ingest via `POST /ingest?source=factory`. The parser handles 3 template variants (58/59/63 rows) and uses anchor-based cell finding.
 
 ### 4. Add new Excel types (kitchen, store, weighing, sales)
 

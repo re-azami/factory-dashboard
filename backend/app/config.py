@@ -51,11 +51,9 @@ class Settings:
     jwt_access_token_minutes: int = int(os.getenv("JWT_ACCESS_TOKEN_MINUTES", "720"))  # 12 h
 
     # CORS — comma-separated list of allowed frontend origins. Default covers
-    # both the Streamlit dev port (:8501) and the Angular SPA (:4200) that
-    # runs in parallel during the migration. Production deployments override
-    # via env.
+    # the Angular SPA (:4200). Production deployments override via env.
     frontend_origin: str = os.getenv(
-        "FRONTEND_ORIGIN", "http://localhost:8501,http://localhost:4200"
+        "FRONTEND_ORIGIN", "http://localhost:4200"
     )
 
 

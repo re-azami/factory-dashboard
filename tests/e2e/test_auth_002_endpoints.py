@@ -10,7 +10,7 @@ Covered:
   - GET  /auth/me happy path + missing / garbage / malformed Authorization
   - POST /auth/logout (stateless — always 200 ok)
   - CORS — Origin echo only for the configured FRONTEND_ORIGIN
-  - Streamlit still loads with title "Factory Dashboard"
+  - SPA still loads with title "داشبورد کارخانه"
 
 Admin-credential-dependent tests skip cleanly when ADMIN_USERNAME /
 ADMIN_PASSWORD aren't set (same pattern as test_auth_001_seed.py). The CORS,
@@ -38,8 +38,8 @@ from app.auth.permissions import PERMISSION_NAMES  # noqa: E402
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
 
-# The CORS allowlist is the Streamlit frontend origin published by docker-compose.
-ALLOWED_ORIGIN = "http://localhost:8501"
+# The CORS allowlist is the Angular SPA origin published by docker-compose.
+ALLOWED_ORIGIN = "http://localhost:4200"
 EVIL_ORIGIN = "http://evil.example.com"
 
 # Shared, human-readable invalid-creds message — the backend returns the same
@@ -207,11 +207,13 @@ class TestCors:
 
 
 class TestFrontendStillLoads:
-    """Streamlit smoke — auth endpoints + CORS tightening must not regress the UI."""
+    """SPA smoke — auth endpoints + CORS tightening must not regress the UI."""
 
     def test_frontend_renders_chat_input(self, page: Page):
+        # The Angular SPA serves the chat page at /chat; / redirects there.
+        # Persian title + placeholder per the SPA's Iran-Yekan / RTL design.
         page.goto("/")
-        expect(page).to_have_title("Factory Dashboard")
+        expect(page).to_have_title("داشبورد کارخانه")
         expect(
-            page.get_by_placeholder("Type your question (Persian or English)...")
+            page.get_by_placeholder("سؤال خود را به فارسی یا انگلیسی بنویسید…")
         ).to_be_visible()

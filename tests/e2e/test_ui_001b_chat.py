@@ -23,12 +23,6 @@ Locator policy (mirrors test_ui_001a_scaffold.py and test_ui_001a_dark.py):
   (``banner`` for the header, ``main`` for the chat content area).
 
 NO Material CSS class selectors. NO xpath. NO ``:nth-child``.
-
-Note on ``require_stack``: the session-scoped autouse fixture in
-``tests/e2e/conftest.py`` insists on Streamlit (port 8501) being reachable.
-That is a session-wide pre-condition for the whole e2e suite, so these chat
-tests will not run unless Streamlit is also up. We do NOT loosen it from this
-file (the spec forbids modifying conftest.py); see the report back to Stage 4.
 """
 import re
 
@@ -153,8 +147,7 @@ def test_chat_submits_question_and_streams_answer(
     expect(main.get_by_text(QUESTION).first).to_be_visible(timeout=10_000)
 
     # 2. The agent runs ``execute_sql``. The tool card renders the tool name
-    #    verbatim — wait up to 90s for the LLM round-trip (same budget the
-    #    Streamlit test_chat.py uses).
+    #    verbatim — wait up to 90s for the LLM round-trip.
     expect(page.get_by_text("execute_sql").first).to_be_visible(timeout=90_000)
 
     # 3. The streaming indicator eventually disappears when the agent finishes.

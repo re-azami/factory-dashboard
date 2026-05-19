@@ -44,13 +44,6 @@ maps to ``role="button"`` (Material's CDK marks the header div with
 ``role="button"`` and an ``aria-expanded`` state). The accessible name is
 derived from the ``<mat-panel-title>`` text content, so the header is
 locatable via ``get_by_role("button", name=re.compile(r"فراخوانی ابزارها"))``.
-
-Note on ``require_stack``: the session-scoped autouse fixture in
-``tests/e2e/conftest.py`` insists on Streamlit (port 8501) being reachable.
-That is a session-wide pre-condition for the whole e2e suite, so these
-history tests will not run unless Streamlit is also up. We do NOT loosen it
-from this file (the spec forbids modifying conftest.py); see the report
-back to Stage 4.
 """
 import json
 import re

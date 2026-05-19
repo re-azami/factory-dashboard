@@ -6,12 +6,9 @@ import { PageService } from '../../shared/services/page.service';
 import { HistoryEntry } from './models/history-entry';
 
 /**
- * Query History page.
- *
- * Mirrors the Streamlit history view (frontend/app.py lines 300–335): fetches
- * the most recent N entries via `GET /history?limit=N`, lets the user adjust
- * N with a slider, and exposes each entry's tool_calls in an expandable JSON
- * view.
+ * Query History page. Fetches the most recent N entries via `GET /history?limit=N`,
+ * lets the user adjust N with a slider, and exposes each entry's tool_calls in an
+ * expandable JSON view.
  *
  * The global loadingInterceptor handles the page-header progress bar — the
  * component only tracks an inline spinner state via `loading`.

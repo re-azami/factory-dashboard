@@ -76,7 +76,7 @@ TASK ID: <XXX-NNN>
 FILES MODIFIED IN STAGE 1: <list from Stage 1>
 FEATURE: <title + relevant checklist lines>
 
-JOB: Write pytest unit tests under backend/tests/ (or frontend/tests/ for frontend changes) covering the new behavior. For every edge-case category in the rules file, either add a test or add a one-line comment stating why it does not apply. Do not run the tests, do not write a Playwright test, do not edit TODO.md.
+JOB: Write pytest unit tests under backend/tests/ for backend changes, or Karma unit tests under frontend-spa/src/ for SPA changes, covering the new behavior. For every edge-case category in the rules file, either add a test or add a one-line comment stating why it does not apply. Do not run the tests, do not write a Playwright test, do not edit TODO.md.
 
 REPORT BACK: list of test files created/modified, and test count per edge-case category (e.g. "empty input: 2, boundary: 3, ...").
 """
@@ -123,13 +123,12 @@ FILES IN PLAY: <accumulated file list from Stages 1-3>
 CYCLE: <N+1> of max 3
 
 JOB:
-1. Run all three pytest suites in order:
+1. Run both pytest suites in order:
    - python -m pytest backend/tests
-   - python -m pytest frontend/tests
    - python -m pytest tests/e2e
-   If tests/e2e fails with a connection error (backend/frontend unreachable), run `docker compose up -d db backend frontend` ONCE and re-run only that suite. Do not start the stack before the first failure.
+   If tests/e2e fails with a connection error (backend/SPA unreachable), run `docker compose up -d db backend frontend-spa` ONCE and re-run only that suite. Do not start the stack before the first failure.
 
-2. If all three suites pass: return status GREEN.
+2. If both suites pass: return status GREEN.
 
 3. If any suite fails:
    - Diagnose the root cause from the assertion + traceback.

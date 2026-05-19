@@ -187,14 +187,14 @@ class TestCORS:
         resp = client.options(
             "/health",
             headers={
-                "Origin": "http://localhost:8501",
+                "Origin": "http://localhost:4200",
                 "Access-Control-Request-Method": "GET",
                 "Access-Control-Request-Headers": "Authorization",
             },
         )
         # FastAPI CORS middleware returns 200 on preflight when origin is allowed.
         assert resp.status_code == 200
-        assert resp.headers.get("access-control-allow-origin") == "http://localhost:8501"
+        assert resp.headers.get("access-control-allow-origin") == "http://localhost:4200"
 
     def test_preflight_from_disallowed_origin_is_not_echoed(self, client):
         resp = client.options(

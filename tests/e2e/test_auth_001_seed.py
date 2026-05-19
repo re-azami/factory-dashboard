@@ -9,7 +9,7 @@ made today are at the system boundary:
   - the seeded admin has every canonical permission
   - the factory_ro role used by the SQL agent CANNOT read these tables
 
-The Streamlit frontend is also smoke-loaded with Playwright as a regression
+The Angular SPA is also smoke-loaded with Playwright as a regression
 guard — the new lifespan code path must not break startup.
 
 The full Playwright login-flow check is AUTH-010's responsibility; once
@@ -155,13 +155,15 @@ class TestBackendStillHealthy:
 
 
 class TestFrontendStillLoads:
-    """Streamlit smoke — auth migration + seed must not regress the chat UI."""
+    """SPA smoke — auth migration + seed must not regress the chat UI."""
 
     def test_frontend_renders_chat_input(self, page: Page):
+        # The Angular SPA serves the chat page at /chat; / redirects there.
+        # Persian title + placeholder per the SPA's Iran-Yekan / RTL design.
         page.goto("/")
-        expect(page).to_have_title("Factory Dashboard")
+        expect(page).to_have_title("داشبورد کارخانه")
         expect(
-            page.get_by_placeholder("Type your question (Persian or English)...")
+            page.get_by_placeholder("سؤال خود را به فارسی یا انگلیسی بنویسید…")
         ).to_be_visible()
 
 

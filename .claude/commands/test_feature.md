@@ -13,10 +13,10 @@ Use the `playwright-cli` skill to exercise the feature described above against t
    - If `$ARGUMENTS` is empty, stop and ask the user which feature to test.
    - If the feature is ambiguous, ask one clarifying question before opening the browser.
 
-2. **Make sure the app is reachable.** Default frontend is Streamlit on `http://localhost:8501`; backend on `http://localhost:8000`. If the relevant service is not running, tell the user instead of starting it yourself.
+2. **Make sure the app is reachable.** Default frontend is the Angular SPA on `http://localhost:4200`; backend on `http://localhost:8000`. If the relevant service is not running, tell the user instead of starting it yourself.
 
 3. **Drive the browser via `playwright-cli`** (invoke the `playwright-cli` skill for the exact command surface):
-   - `playwright-cli open http://localhost:8501` (or the URL most relevant to the feature)
+   - `playwright-cli open http://localhost:4200` (or the URL most relevant to the feature)
    - `playwright-cli snapshot` to get refs
    - Interact with `click`, `fill`, `select`, `press`, etc. using refs from the snapshot
    - After each meaningful action, take another `snapshot` to verify the expected state

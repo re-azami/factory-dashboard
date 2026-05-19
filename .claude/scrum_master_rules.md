@@ -28,7 +28,7 @@ Tests must be **deterministic**: no real network calls, no real wall-clock time 
 
 ## Playwright locator rules (mandatory in Stage 3 — integration test)
 
-The frontend framework may change (Streamlit may be replaced). Tests must survive that.
+The UI library (currently Angular Material) will change versions underneath us. Tests must survive that.
 
 **Allowed locators:**
 
@@ -41,9 +41,8 @@ The frontend framework may change (Streamlit may be replaced). Tests must surviv
 
 **Forbidden:**
 
-- Streamlit-specific CSS class names or selectors.
-- DOM workarounds for hidden radio inputs or other Streamlit quirks.
-- xpath that depends on Streamlit's DOM structure.
+- Angular Material CSS class selectors (`.mat-toolbar`, `.mdc-button`, etc.) — the Material version is going to change underneath us.
+- xpath that depends on the framework's DOM structure.
 - `:nth-child` / positional selectors.
 
 **UI language:** the project's UI is in Persian. Match Persian labels (e.g. `get_by_role("button", name="ارسال")`); do not assume English text.

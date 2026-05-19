@@ -145,8 +145,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         name: string,
         output: string,
     ): void {
-        // Prefer matching by id; fall back to the most recent running tool of
-        // the same name (matches the Streamlit fallback used in frontend/app.py).
+        // Prefer matching by id; fall back to the most recent running tool of the same name.
         let target: ChatToolBlock | undefined;
         if (id !== null) {
             target = assistant.blocks.find(
